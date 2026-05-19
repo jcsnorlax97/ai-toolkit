@@ -1,0 +1,23 @@
+# Local issue scratchpad
+.scratch/issues/*.md
+!.scratch/issues/.gitkeep
+
+# Work-log captures are personal source material, not part of this skills repo.
+obsidian_log_formatter/
+
+# Local Claude/Codex state
+.claude/settings.local.json
+CLAUDE.local.md
+.codex/
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+*.p12
+
+# OS/editor noise
+.DS_Store
+.idea/
+.vscode/
