@@ -16,6 +16,16 @@ project adapter.
 
 ## Skills
 
+- Use `/diagnose` for disciplined debugging and performance regression work.
+- Use `/grill-with-docs` when plans need to be challenged against domain language and ADRs.
+- Use `/improve-codebase-architecture` for architecture review and refactoring opportunities.
+- Use `/prototype` for throwaway design or UI experiments.
+- Use `/setup-matt-pocock-skills` when a downstream repo needs agent-skill configuration.
+- Use `/tdd` for test-first feature or bug-fix work.
+- Use `/to-issues` to split a plan or PRD into independently grabbable issues.
+- Use `/to-prd` to turn conversation context into a PRD.
+- Use `/triage` to classify and move issues through workflow states.
+- Use `/zoom-out` when the current code or plan needs broader context.
 - Use `/grill-spec` when requirements, terminology, scope, or acceptance checks are unclear.
 - Use `/ship-vertical-slice` when implementing a focused behavior or refactor.
 - Use `/diagnose-regression` when behavior is failing, flaky, or slower than expected.

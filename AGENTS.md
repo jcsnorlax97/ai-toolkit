@@ -13,6 +13,7 @@
 - `.claude/skills/` is the Claude Code project adapter.
 - `scripts/install-codex-skills.sh` installs canonical skills into `~/.codex/skills/`.
 - `scripts/install-claude-code-skills.sh` installs canonical skills into `~/.claude/skills/`.
+- Some engineering skills are imported from `mattpocock/skills`; preserve `NOTICE.md`.
 - Read `docs/specs/0001-cross-tool-skills-repo.md` before changing layout or install behavior.
 
 ## Delivery Loop
@@ -20,8 +21,8 @@
 1. Clarify the request with `grill-spec` when the task is ambiguous, cross-cutting, or domain-heavy.
 2. Update `CONTEXT.md` when a domain term or relationship is clarified.
 3. Record an ADR only when the decision is hard to reverse, surprising without context, and the result of a real trade-off.
-4. Implement with `ship-vertical-slice`: one behavior, one test, one slice at a time.
-5. If behavior is broken or regressed, switch to `diagnose-regression`.
+4. Implement with `tdd` or `ship-vertical-slice`: one behavior, one test, one slice at a time.
+5. If behavior is broken or regressed, switch to `diagnose` or `diagnose-regression`.
 6. End substantial work with a short verification summary and next-step risks.
 
 ## Repo Docs

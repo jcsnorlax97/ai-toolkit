@@ -2,9 +2,8 @@
 
 Reusable engineering workflows for AI coding agents.
 
-This repository stores portable skills for software engineering work such as
-spec clarification, vertical delivery, and regression diagnosis. The design is
-tool-aware but keeps one canonical source for every skill.
+This repository stores portable skills for software engineering work. The
+design is tool-aware but keeps one canonical source for every skill.
 
 ## Repository Name
 
@@ -52,9 +51,22 @@ Do not maintain duplicated skill bodies by hand.
 
 ## Current Skills
 
+- `diagnose`: disciplined diagnosis loop for hard bugs and regressions.
+- `grill-with-docs`: stress-test plans against domain language and ADRs.
+- `improve-codebase-architecture`: surface refactoring opportunities that improve testability and navigability.
+- `prototype`: build throwaway prototypes to answer design questions.
+- `setup-matt-pocock-skills`: scaffold repo-local configuration consumed by the engineering skills.
+- `tdd`: deliver behavior with a red-green-refactor loop.
+- `to-issues`: turn plans or specs into independently grabbable issues.
+- `to-prd`: turn conversation context into a product requirements document.
+- `triage`: triage issues through explicit workflow states.
+- `zoom-out`: ask for broader context when a code area or decision feels too narrow.
 - `grill-spec`: clarify ambiguous requirements, vocabulary, scope, and acceptance checks.
 - `ship-vertical-slice`: deliver one externally verifiable behavior at a time.
 - `diagnose-regression`: debug by reproducing, minimizing, instrumenting, fixing, and regression testing.
+
+The upstream-compatible engineering skill set is imported from
+`mattpocock/skills`. See `NOTICE.md` for attribution and source details.
 
 ## Bootstrap On Claude Code
 
@@ -75,6 +87,9 @@ For personal usage across all projects:
 ./scripts/install-claude-code-skills.sh
 ```
 
+Rerun this command after pulling new repo changes only when you want to install
+new personal Claude Code skills. Existing skill directories are skipped.
+
 ## Bootstrap On Codex
 
 Install the canonical skills into the local Codex skills directory:
@@ -89,6 +104,13 @@ The default target is:
 ~/.codex/skills/
 ```
 
+Rerun this command after pulling new repo changes only when you want to install
+new personal Codex skills. Existing skill directories are skipped.
+
+Project-local Claude Code usage through `.claude/skills/` does not need a
+separate setup rerun after pulling; the symlinks point at the canonical
+`skills/engineering/` directories in this repo.
+
 ## Development
 
 After editing skills or adapters, run:
@@ -99,3 +121,9 @@ After editing skills or adapters, run:
 
 Keep each `SKILL.md` concise. Move long references, examples, or scripts into
 supporting files inside the skill directory.
+
+## Attribution
+
+Some engineering skills are imported from
+[`mattpocock/skills`](https://github.com/mattpocock/skills), licensed under MIT.
+See `NOTICE.md`.

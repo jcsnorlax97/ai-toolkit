@@ -50,8 +50,18 @@ Installation scripts copy canonical skill directories into personal tool
 directories. Copying is preferred for personal installs because it works across
 machines and filesystems that may not preserve symlinks reliably.
 
+Rerunning an install script after pulling latest changes installs newly added
+skills and skips existing targets. This avoids overwriting a user's customized
+personal skills.
+
 Project-level Claude Code usage uses `.claude/skills/`. In this repo those
 entries are symlinks so local edits immediately affect the canonical files.
+
+## Upstream Imports
+
+The upstream-compatible engineering skills are imported from
+`mattpocock/skills` under the MIT License. Keep `NOTICE.md` updated whenever a
+substantial upstream import or refresh happens.
 
 ## Verification Requirements
 
