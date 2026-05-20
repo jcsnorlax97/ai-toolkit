@@ -60,8 +60,9 @@ entries are symlinks so local edits immediately affect the canonical files.
 ## Upstream Imports
 
 The upstream-compatible engineering skills are imported from
-`mattpocock/skills` under the MIT License. Keep `NOTICE.md` updated whenever a
-substantial upstream import or refresh happens.
+`mattpocock/skills` under the MIT License. They were not originally authored in
+this repository. Keep `NOTICE.md` updated whenever a substantial upstream
+import or refresh happens.
 
 ## Verification Requirements
 

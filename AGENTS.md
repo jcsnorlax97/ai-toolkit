@@ -13,7 +13,9 @@
 - `.claude/skills/` is the Claude Code project adapter.
 - `scripts/install-codex-skills.sh` installs canonical skills into `~/.codex/skills/`.
 - `scripts/install-claude-code-skills.sh` installs canonical skills into `~/.claude/skills/`.
-- Some engineering skills are imported from `mattpocock/skills`; preserve `NOTICE.md`.
+- The upstream engineering skills are imported from `mattpocock/skills`; do not present them as original work from this repo.
+- Local companion skills are `grill-spec`, `ship-vertical-slice`, and `diagnose-regression`.
+- Preserve `NOTICE.md` when changing or refreshing imported skills.
 - Read `docs/specs/0001-cross-tool-skills-repo.md` before changing layout or install behavior.
 
 ## Delivery Loop

@@ -51,6 +51,13 @@ Do not maintain duplicated skill bodies by hand.
 
 ## Current Skills
 
+### Imported From `mattpocock/skills`
+
+These skills were not built in this repo. They are imported from
+[`mattpocock/skills`](https://github.com/mattpocock/skills) and kept here so
+this repository can act as a cross-tool install source. See `NOTICE.md` for
+attribution and source details.
+
 - `diagnose`: disciplined diagnosis loop for hard bugs and regressions.
 - `grill-with-docs`: stress-test plans against domain language and ADRs.
 - `improve-codebase-architecture`: surface refactoring opportunities that improve testability and navigability.
@@ -61,12 +68,14 @@ Do not maintain duplicated skill bodies by hand.
 - `to-prd`: turn conversation context into a product requirements document.
 - `triage`: triage issues through explicit workflow states.
 - `zoom-out`: ask for broader context when a code area or decision feels too narrow.
+
+### Local Additions
+
+These skills were added in this repo as small companion workflows.
+
 - `grill-spec`: clarify ambiguous requirements, vocabulary, scope, and acceptance checks.
 - `ship-vertical-slice`: deliver one externally verifiable behavior at a time.
 - `diagnose-regression`: debug by reproducing, minimizing, instrumenting, fixing, and regression testing.
-
-The upstream-compatible engineering skill set is imported from
-`mattpocock/skills`. See `NOTICE.md` for attribution and source details.
 
 ## Bootstrap On Claude Code
 
@@ -124,6 +133,6 @@ supporting files inside the skill directory.
 
 ## Attribution
 
-Some engineering skills are imported from
+The upstream engineering skills are imported from
 [`mattpocock/skills`](https://github.com/mattpocock/skills), licensed under MIT.
 See `NOTICE.md`.

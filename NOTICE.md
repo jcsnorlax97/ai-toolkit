@@ -1,17 +1,35 @@
 # Notices
 
-This repository includes engineering skill material imported from:
+This repository includes engineering skills imported from:
 
 ```text
 mattpocock/skills
 https://github.com/mattpocock/skills
 ```
 
-Imported source:
+Imported upstream source path:
 
 ```text
 skills/engineering/*
 ```
+
+Imported skills:
+
+```text
+skills/engineering/diagnose
+skills/engineering/grill-with-docs
+skills/engineering/improve-codebase-architecture
+skills/engineering/prototype
+skills/engineering/setup-matt-pocock-skills
+skills/engineering/tdd
+skills/engineering/to-issues
+skills/engineering/to-prd
+skills/engineering/triage
+skills/engineering/zoom-out
+```
+
+These imported skills were not originally authored in this repository. This
+repository stores them as a cross-tool distribution and installation source.
 
 Upstream commit used for the import:
 
