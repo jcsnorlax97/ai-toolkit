@@ -35,6 +35,7 @@
 - `docs/agents/issue-tracker.md`: where work items live and how to create them.
 - `docs/agents/triage-labels.md`: canonical triage states.
 - `docs/agents/domain.md`: where agents should read domain context from.
+- `docs/intake.md`: repo-level queue of unprocessed notes and captures to grill later.
 - `skills/`: repo-local skills that define reusable workflows.
 - `.claude/skills/`: Claude Code adapter for project-local skill discovery.
 - `scripts/`: deterministic install and verification commands.

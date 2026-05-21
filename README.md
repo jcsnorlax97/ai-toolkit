@@ -31,6 +31,7 @@ Rationale:
 ├── docs/
 │   ├── adr/
 │   ├── agents/
+│   ├── intake.md
 │   └── specs/
 ├── scripts/
 └── skills/
@@ -130,6 +131,9 @@ After editing skills or adapters, run:
 
 Keep each `SKILL.md` concise. Move long references, examples, or scripts into
 supporting files inside the skill directory.
+
+Unprocessed notes and article captures are tracked in `docs/intake.md` and may
+live under ignored scratch paths such as `.scratch/captures/`.
 
 ## Attribution
 
