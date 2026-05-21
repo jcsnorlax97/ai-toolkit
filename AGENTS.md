@@ -16,6 +16,7 @@
 - The upstream engineering skills are imported from `mattpocock/skills`; do not present them as original work from this repo.
 - Local companion skills are `grill-spec`, `ship-vertical-slice`, and `diagnose-regression`.
 - Preserve `NOTICE.md` when changing or refreshing imported skills.
+- Update `docs/upstream-sources.md` before importing or refreshing external skill material.
 - Read `docs/specs/0001-cross-tool-skills-repo.md` before changing layout or install behavior.
 
 ## Delivery Loop

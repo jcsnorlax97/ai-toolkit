@@ -56,7 +56,7 @@ Do not maintain duplicated skill bodies by hand.
 These skills were not built in this repo. They are imported from
 [`mattpocock/skills`](https://github.com/mattpocock/skills) and kept here so
 this repository can act as a cross-tool install source. See `NOTICE.md` for
-attribution and source details.
+attribution and `docs/upstream-sources.md` for license verification details.
 
 - `diagnose`: disciplined diagnosis loop for hard bugs and regressions.
 - `grill-with-docs`: stress-test plans against domain language and ADRs.
@@ -135,4 +135,4 @@ supporting files inside the skill directory.
 
 The upstream engineering skills are imported from
 [`mattpocock/skills`](https://github.com/mattpocock/skills), licensed under MIT.
-See `NOTICE.md`.
+See `NOTICE.md` and `docs/upstream-sources.md`.

@@ -64,6 +64,25 @@ The upstream-compatible engineering skills are imported from
 this repository. Keep `NOTICE.md` updated whenever a substantial upstream
 import or refresh happens.
 
+## License And Source Review
+
+Before importing or refreshing external skill material:
+
+1. Identify the source repository and exact paths being imported.
+2. Verify the license from the upstream repository's license file or official
+   repository metadata.
+3. Confirm the license permits the planned use, modification, redistribution,
+   and publication.
+4. Record the source, imported paths, local paths, license, copyright notice,
+   verification date, and import commit in `docs/upstream-sources.md`.
+5. Preserve required notices in `NOTICE.md`.
+6. Do not import unclear, missing-license, proprietary, or incompatible material
+   without explicit human review.
+
+The source registry is part of the design, not optional bookkeeping. It exists
+so a public skills repo can be audited without reconstructing history from git
+alone.
+
 ## Verification Requirements
 
 `scripts/verify-skills.sh` must check:

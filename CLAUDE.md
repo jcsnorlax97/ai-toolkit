@@ -17,7 +17,7 @@ project adapter.
 ## Skills
 
 The following skills are imported from `mattpocock/skills`; preserve attribution
-in `NOTICE.md` when changing or refreshing them.
+in `NOTICE.md` and `docs/upstream-sources.md` when changing or refreshing them.
 
 - Use `/diagnose` for disciplined debugging and performance regression work.
 - Use `/grill-with-docs` when plans need to be challenged against domain language and ADRs.

@@ -1,6 +1,7 @@
 # Local issue scratchpad
 .scratch/issues/*.md
 !.scratch/issues/.gitkeep
+.scratch/captures/
 
 # Work-log captures are personal source material, not part of this skills repo.
 obsidian_log_formatter/

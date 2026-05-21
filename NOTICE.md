@@ -46,3 +46,9 @@ Copyright (c) 2026 Matt Pocock
 The upstream MIT license permits use, copy, modification, merge, publication,
 distribution, sublicense, and sale, provided the copyright notice and permission
 notice are included in substantial portions of the software.
+
+License verification details are tracked in:
+
+```text
+docs/upstream-sources.md
+```

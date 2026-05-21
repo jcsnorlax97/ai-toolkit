@@ -14,6 +14,8 @@ Canonical source: The directory that owns the maintained copy of a skill. In thi
 
 Adapter: A tool-specific exposure layer that points at or installs from the canonical source. Examples: `.claude/skills/`, `~/.claude/skills/`, `~/.codex/skills/`
 
+Source registry: A repository document that records each external skill source, imported paths, license, copyright notice, verification date, and obligations. In this repo, the source registry is `docs/upstream-sources.md`. Avoid: informal attribution
+
 Agent team workflow: A repeatable workflow for decomposing a larger goal into bounded agent roles, context packets, handoffs, and acceptance checks. Avoid: agent swarm, autonomous team
 
 Agent role: A reusable responsibility template inside an agent team workflow, such as product manager, frontend engineer, backend engineer, reviewer, or tester. Avoid: persona, bot
@@ -47,6 +49,7 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
 - A workflow can be captured as one or more skills.
 - A skill should improve repeatability, not just verbosity.
 - A skill should be edited in its canonical source, then exposed through adapters.
+- Imported skills must be backed by the source registry and required license notices.
 - An agent team workflow may define agent roles, but a subagent runtime is tool-specific.
 - An agent team workflow may use ad hoc workers when a task needs delegation without a reusable role.
 - An agent team workflow should be used when work is multi-domain, parallelizable, and context-heavy.
