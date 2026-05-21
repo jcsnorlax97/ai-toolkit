@@ -22,6 +22,9 @@ Current unprocessed captures:
 
 Current external review-workflow references to grill before adoption:
 
+- User-provided legacy `staff-review` skill: useful as a reference for review
+  dimensions, severity labels, and constructive review principles. Do not import
+  directly; grill against `docs/specs/0004-staff-level-review.md` first.
 - ClaudSkills `staff-review`: conceptually relevant, but license/source details
   must be verified before importing.
 - `speckit-staff-review-run`: relevant as a read-only staff-level review

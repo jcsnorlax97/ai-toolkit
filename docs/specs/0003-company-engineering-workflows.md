@@ -97,6 +97,11 @@ Candidate stages:
 8. Run TDD fix loop again if architecture changes are made.
 9. Store durable and temporary artifacts in the right location.
 
+Primary outputs:
+
+- Development Execution Plan
+- Development Journal
+
 Decision gates:
 
 - Skip prototype when the solution space is already clear.
@@ -204,6 +209,99 @@ risk_if_skipped:
 artifact_destination:
 ```
 
+#### Development Execution Plan
+
+The workflow first produces a development execution plan.
+
+```markdown
+# Development Execution Plan
+
+## Goal
+
+...
+
+## Entry Criteria
+
+...
+
+## Requirement State
+
+- source:
+- open questions:
+- accepted scope:
+- out of scope:
+
+## Learning Strategy
+
+- strategy: tdd | prototype | prototype-then-tdd | tdd-with-spike
+- reason:
+- artifact expectations:
+- exit criteria:
+
+## Selected Team Profile
+
+- mode: single-agent | agent-team
+- roles:
+- why:
+
+## Stage Plan
+
+- stage:
+- behavior source skill:
+- expected output:
+- fallback:
+
+## Gates
+
+- staff-level review:
+- diagram:
+- architecture improvement:
+
+## Artifact Plan
+
+- durable artifacts:
+- scratch artifacts:
+- private artifacts:
+
+## Verification Plan
+
+- commands:
+- manual checks:
+- not run:
+
+## Stop Conditions
+
+...
+```
+
+#### Development Journal
+
+The workflow maintains a development journal during execution.
+
+```markdown
+# Development Journal
+
+## Stage Updates
+
+- timestamp:
+- stage:
+- result:
+- files changed:
+- verification:
+- next action:
+
+## Decisions
+
+...
+
+## Follow-ups
+
+...
+```
+
+The execution plan is the current intent. The journal records what actually
+happened as the workflow crosses checkpoints.
+
 ### PR Review Workflow
 
 Candidate skill name:
@@ -236,6 +334,12 @@ Candidate stages:
 5. Produce findings ordered by severity.
 6. Record verification performed or not performed.
 7. Store review artifacts according to sensitivity.
+
+Primary outputs:
+
+- Review Context Bundle
+- Review Report
+- Optional private Review Notes
 
 Decision gates:
 
@@ -281,9 +385,93 @@ Review-fix mode requires:
 - Produce a changed-files summary.
 - Do not push or comment on the PR unless explicitly asked.
 
+#### Review Context Bundle
+
+The workflow first produces a bounded review context bundle.
+
+```markdown
+# Review Context Bundle
+
+## Primary PR
+
+- repo:
+- branch:
+- base:
+- PR:
+- diff source:
+
+## Included Context
+
+- changed files:
+- docs:
+- ADRs:
+- tests/CI:
+- extra repos:
+
+## Excluded Context
+
+- paths not inspected:
+- repos not inspected:
+- reason:
+
+## Review Constraints
+
+- read-only: yes
+- allowed commands:
+- disallowed paths:
+- sensitivity:
+```
+
+#### Review Report
+
+The workflow produces a review report with findings grounded in evidence.
+
+```markdown
+# Review Report
+
+## Findings
+
+- severity:
+- file/area:
+- issue:
+- evidence:
+- recommendation:
+
+## Verification
+
+- commands run:
+- checks reviewed:
+- not run:
+
+## Risk Summary
+
+...
+
+## Follow-ups
+
+...
+```
+
+#### Review Notes
+
+Review notes are optional and should be private or scratch by default.
+
+Use review notes for:
+
+- Multi-repo investigation notes
+- Sensitive company context
+- Intermediate reasoning
+- Candidate findings that were rejected
+
+Do not turn review notes directly into PR comments. Promote only the final,
+evidence-backed findings from the review report.
+
 ## Staff-Level Review
 
 `staff-level-review` is the canonical checkpoint term in this repository.
+
+See `docs/specs/0004-staff-level-review.md` for the reusable checkpoint
+definition.
 
 There is no assumed standard external `staff-review` skill. If a private or
 external `staff-review` skill is available, the workflow may invoke it at the
