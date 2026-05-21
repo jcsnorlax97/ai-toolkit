@@ -20,6 +20,17 @@ Current unprocessed captures:
 - `.scratch/captures/2026-05-21-founder-playbook-skills-grill-brief.md`
 - `.scratch/captures/2026-05-21-methodology-intake-skills-grill-brief.md`
 
+Current external review-workflow references to grill before adoption:
+
+- ClaudSkills `staff-review`: conceptually relevant, but license/source details
+  must be verified before importing.
+- `speckit-staff-review-run`: relevant as a read-only staff-level review
+  pattern, but appears tied to spec-kit structure.
+- Empire `team-review`: relevant as a specialist review/team review pattern;
+  license and source should be checked before reuse.
+- Nanostack workflow model: relevant for phase-based delivery and artifact
+  handoff, but not a direct staff-review skill.
+
 ## Processing Rules
 
 - Do not commit `.scratch/captures/`.

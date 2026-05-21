@@ -10,6 +10,8 @@ Skill: A reusable agent workflow packaged as instructions, and optionally script
 
 Workflow: A repeatable multi-step engineering process with entry criteria, exit criteria, and expected outputs. Avoid: vibe, freestyle
 
+Workflow skill: A skill that orchestrates multiple lower-level skills, gates, artifacts, and verification steps for a recurring engineering process. Avoid: macro, one-click automation
+
 Canonical source: The directory that owns the maintained copy of a skill. In this repo, canonical skills live under `skills/engineering/`. Avoid: duplicate source, copied truth
 
 Adapter: A tool-specific exposure layer that points at or installs from the canonical source. Examples: `.claude/skills/`, `~/.claude/skills/`, `~/.codex/skills/`
@@ -18,6 +20,8 @@ Source registry: A repository document that records each external skill source, 
 
 Agent team workflow: A repeatable workflow for decomposing a larger goal into bounded agent roles, context packets, handoffs, and acceptance checks. Avoid: agent swarm, autonomous team
 
+Team profile: A reusable selection of agent roles, responsibilities, and context boundaries for a class of work. Avoid: fixed roster, department
+
 Agent role: A reusable responsibility template inside an agent team workflow, such as product manager, frontend engineer, backend engineer, reviewer, or tester. Avoid: persona, bot
 
 Ad hoc worker: A task-specific delegated agent that is not part of the reusable role catalog but receives a bounded context packet and output contract from the coordinator. Avoid: unspecified helper, generic subagent
@@ -25,6 +29,12 @@ Ad hoc worker: A task-specific delegated agent that is not part of the reusable 
 Subagent runtime: A specific tool's mechanism for running delegated agents or workers. Examples: Codex sub-agents, Claude Code subagents. Avoid: agent team workflow
 
 Execution packet: A tool-neutral plan produced by an agent team workflow that defines roles, context packets, ownership boundaries, handoffs, verification, and stop conditions. Avoid: runtime config, prompt dump
+
+Artifact store: The intended location for durable or temporary outputs such as diagrams, review notes, prototype verdicts, PRDs, ADRs, and handoff notes. Avoid: random output folder
+
+Review context bundle: A bounded set of repositories, files, diffs, docs, commands, and constraints provided for PR review. Avoid: whole machine context
+
+Staff-level review: A read-only engineering review checkpoint that evaluates correctness, architecture, security, privacy, performance, test quality, operational risk, maintainability, and requirement compliance. Avoid: staff-review unless referring to an external or private skill
 
 Analysis-only mode: A delegation mode where a role or worker may inspect context and report findings, risks, and proposed plans but may not edit files. Avoid: passive mode
 
@@ -47,10 +57,13 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
 ## Relationships
 
 - A workflow can be captured as one or more skills.
+- A workflow skill may orchestrate lower-level skills and select a team profile.
 - A skill should improve repeatability, not just verbosity.
 - A skill should be edited in its canonical source, then exposed through adapters.
 - Imported skills must be backed by the source registry and required license notices.
 - An agent team workflow may define agent roles, but a subagent runtime is tool-specific.
+- A team profile defines who should work; a workflow defines when and why they work.
+- Staff-level review is the canonical review checkpoint term; external `staff-review` skills are optional dependencies until their source and license are verified.
 - An agent team workflow may use ad hoc workers when a task needs delegation without a reusable role.
 - An agent team workflow should be used when work is multi-domain, parallelizable, and context-heavy.
 - An agent team workflow should first produce an execution packet before targeting a subagent runtime.
