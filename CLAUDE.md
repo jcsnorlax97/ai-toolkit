@@ -33,6 +33,9 @@ in `NOTICE.md` and `docs/upstream-sources.md` when changing or refreshing them.
 The following skills are local additions in this repository.
 
 - Use `/grill-spec` when requirements, terminology, scope, or acceptance checks are unclear.
+- Use `/methodology-intake` to classify external methodology sources before promoting them into repo artifacts.
+- Use `/setup-agent-team` to create a bounded manual execution packet for multi-domain, parallelizable, context-heavy agent-team work, or to refuse when single-agent work is more appropriate.
+- Use `/staff-level-review` for read-only findings-first engineering review across correctness, architecture, safety, tests, and operability.
 - Use `/ship-vertical-slice` when implementing a focused behavior or refactor.
 - Use `/diagnose-regression` when behavior is failing, flaky, or slower than expected.
 

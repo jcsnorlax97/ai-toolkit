@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Draft / initial skill extracted
 
 ## Goal
 
@@ -35,11 +35,13 @@ An execution packet includes:
 
 - Goal
 - Trigger reason
+- Project baseline and worktree state
 - Selected agent roles
 - Context packet per role
 - Ownership boundaries
 - Parallelizable tasks
 - Blocking dependencies
+- External systems and credential policy
 - Handoff protocol
 - Integration owner
 - Verification plan
@@ -106,6 +108,8 @@ The Coordinator decides what context each role or worker receives.
 Context packets should be intentionally bounded:
 
 - Include the task goal.
+- Include the project baseline when it affects ownership, such as clean
+  worktree, dirty worktree, fully untracked project, or missing repo guide.
 - Include only the files, decisions, constraints, and prior outputs needed.
 - State what the worker owns.
 - State what the worker must not change.
@@ -114,6 +118,23 @@ Context packets should be intentionally bounded:
 
 The goal is to maximize output quality and efficiency by avoiding both missing
 context and unnecessary context.
+
+## Project Baseline
+
+The Coordinator must record the target project's baseline before delegation.
+
+The baseline should include:
+
+- Repository path
+- Relevant repo guide or instruction files
+- Whether the worktree is clean, dirty, or fully untracked
+- Known user changes that must be preserved
+- Existing verification command results, if any
+- Whether the task continues an existing project or starts a new one
+
+A dirty or untracked baseline does not block the workflow, but it must tighten
+ownership boundaries and checkpoint cadence. Roles must not normalize, stage,
+commit, delete, or overwrite unrelated files unless explicitly assigned.
 
 ## Ad Hoc Workers
 
@@ -158,6 +179,44 @@ Edit mode requires:
 The Coordinator may make small integration edits, but broad write access should
 be assigned deliberately.
 
+## External Systems And Credentials
+
+The execution packet must identify external systems before delegation.
+
+External systems include:
+
+- Hosted databases
+- Cloud services
+- Payment providers
+- Email providers
+- Auth providers
+- Analytics services
+- Third-party APIs
+- Package registries
+- Production or staging environments
+
+For each external system, the packet should define:
+
+- Purpose in the task
+- Whether it is required for implementation, verification, or both
+- Whether a no-secret verification path exists
+- Whether a disposable test environment is required
+- Who provides credentials or access
+- Which credentials, scopes, or roles are needed
+- Whether production data or production credentials are forbidden
+- Stop condition when credentials or access are unavailable
+
+Default rules:
+
+- Prefer no-secret verification before credentialed verification.
+- Use disposable test environments for risky or stateful integration checks.
+- Do not use production credentials, production customer data, private vault
+  content, or live payment/email systems unless the user explicitly approves
+  that specific use.
+- Do not ask workers to infer, locate, or exfiltrate credentials.
+- If credentials are needed, stop and request explicit user-provided test
+  credentials or a narrower no-secret slice.
+
 ## File Deletion Safety
 
 Roles and workers must not batch-delete files or directories.
@@ -183,6 +242,7 @@ The execution packet must define:
 - Read scope
 - Write scope
 - Allowed commands or command families, when relevant
+- Package manager and dependency execution policy, when relevant
 - Disallowed paths
 - When to ask for more access
 
@@ -195,6 +255,32 @@ Default restrictions:
   folders.
 - If more context is needed, report the reason and wait for Coordinator or user
   approval.
+
+## Package Execution Safety
+
+Package managers are an execution boundary, not just a setup detail.
+
+The execution packet must distinguish:
+
+- local project scripts, such as `npm run check` or `npm start`
+- dependency installation, such as `npm install`, `npm ci`, or package-manager
+  equivalents
+- remote package execution, such as `npx`, `npm exec`, `pnpm dlx`, or similar
+  commands that may fetch and run package code
+
+Default rules:
+
+- Prefer existing local scripts when they do not install new dependencies.
+- Do not use `npx` or remote package execution as a security shortcut.
+- Do not add, update, or install dependencies without explicit approval.
+- Pin package names and versions before any approved install or remote
+  execution.
+- Prefer lockfile-based installs and review install scripts before running
+  them.
+- Use `--ignore-scripts` or an isolated runtime when install scripts are not
+  required for the task.
+- Ask for approval before running package-manager commands that fetch from a
+  registry or execute package code outside the current repo.
 
 ## Isolated Runtime
 

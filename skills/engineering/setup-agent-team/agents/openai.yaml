@@ -1,0 +1,4 @@
+interface:
+  display_name: "Setup Agent Team"
+  short_description: "Create bounded manual execution packets for agent-team work."
+  default_prompt: "Create a manual execution packet for this multi-domain task, or explain why agent-team setup should be refused."

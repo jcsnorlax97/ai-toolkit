@@ -62,6 +62,14 @@ Edit mode: A delegation mode where a role or worker may edit only explicitly ass
 
 Workspace sandbox: The default safety boundary for an agent team workflow, limiting each role or worker to assigned files, documents, context packets, and write scopes. Avoid: full machine access
 
+External system: A hosted service, API, database, auth provider, email provider, payment provider, package registry, or deployed environment outside the local repo that a workflow may depend on. Avoid: integration thing, outside service
+
+No-secret verification path: A verification route that proves useful behavior without credentials, production data, private vault access, live payments, real email, or state-changing third-party calls. Avoid: fake test, partial proof
+
+Credentialed verification path: A verification route that requires explicit credentials, access tokens, service accounts, test users, or external environment permissions. Avoid: real test, full test
+
+Disposable test environment: A temporary or non-production external environment used for integration verification without production credentials or production data. Avoid: production-like by default, throwaway account
+
 Isolated runtime: An optional hardened execution environment such as Docker, a devcontainer, or an ephemeral worktree used for high-risk or long-running delegated work. Avoid: mandatory container for every task
 
 Manual mode: An agent team workflow mode where the coordinator produces an execution packet and waits for the user to approve or launch workers. Avoid: stalled workflow
@@ -97,6 +105,8 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
 - An issue destination is for a source that can already become a tracked, scoped, independently verifiable work item.
 - Agent roles and ad hoc workers default to analysis-only mode unless an execution packet explicitly grants edit mode.
 - Agent roles and ad hoc workers operate inside a workspace sandbox by default.
+- An agent team workflow should identify external systems and separate no-secret verification paths from credentialed verification paths before delegation.
+- Credentialed verification should use disposable test environments unless the user explicitly approves a specific production or live-system use.
 - Isolated runtimes are optional hardening for high-risk or long-running delegated work.
 - Agent team workflows may run in manual mode or checkpointed autonomous mode, but not unrestricted autonomous mode.
 - An issue may produce code, documentation, or a new skill.
