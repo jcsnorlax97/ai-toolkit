@@ -6,6 +6,23 @@
 - Prefer concise, direct engineering communication.
 - If the repo is missing context, inspect first and create the minimum viable scaffolding before coding.
 
+## Personal AI OS Roadmap
+
+Before planning work related to methodology intake, engineering skills, agent
+workflows, staff-level review, external workflow intake, or cross-system roadmap
+decisions, read the canonical roadmap from the `ai-ops-ecosystem-spec` repo:
+
+```text
+spec/ROADMAP.md
+```
+
+In the standard sibling-repo workspace layout, this repo can reach it at
+`../ai-ops-ecosystem-spec/spec/ROADMAP.md`. If that repo is not available, ask
+the user where the canonical roadmap is cloned.
+
+Use that roadmap as the current source of truth for priorities and for deciding
+which workflows are still being grilled before becoming formal skills.
+
 ## Repository Design
 
 - Recommended repo name: `agentic-engineering-skills`.

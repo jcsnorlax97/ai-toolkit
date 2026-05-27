@@ -15,12 +15,19 @@ Scratch captures may live under:
 .scratch/captures/
 ```
 
-Current unprocessed captures:
+Capture processing status:
 
 - `.scratch/captures/2026-05-21-founder-playbook-skills-grill-brief.md`
+  remains unprocessed.
 - `.scratch/captures/2026-05-21-methodology-intake-skills-grill-brief.md`
+  produced the initial `methodology-intake` skill and glossary updates. Keep it
+  available as source evidence for future intake examples and follow-up skills.
 
 Current external review-workflow references to grill before adoption:
+
+The local `staff-level-review` skill now exists and is derived from
+`docs/specs/0004-staff-level-review.md`. The references below remain parked;
+do not import them unless source, license, and fit are verified.
 
 - User-provided legacy `staff-review` skill: useful as a reference for review
   dimensions, severity labels, and constructive review principles. Do not import

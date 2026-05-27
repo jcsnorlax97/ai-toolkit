@@ -32,6 +32,26 @@ Execution packet: A tool-neutral plan produced by an agent team workflow that de
 
 Artifact store: The intended location for durable or temporary outputs such as diagrams, review notes, prototype verdicts, PRDs, ADRs, and handoff notes. Avoid: random output folder
 
+Methodology intake: A read-only workflow for evaluating an external methodology source before deciding whether it should become a rule, skill, context term, ADR, spec, issue, or no-op. Avoid: inspiration dump, prompt collection
+
+External methodology source: An article, repository, paper, tool list, framework, workflow, or public discussion being considered for adoption into this repo's workflow system. Avoid: internet idea, random source
+
+Tool-list-only source: An external methodology source that primarily lists tools, SDKs, repositories, or frameworks without enough trigger criteria, workflow steps, outputs, verification, and stop conditions to become a skill. Avoid: tool worship
+
+Intake destination: The single primary outcome assigned by methodology intake. Valid destinations are Rule, Skill, Context term, ADR, Spec, Issue, and No-op. Avoid: tag pile, mixed outcome
+
+Retention status: The parking decision for an external methodology source after classification, independent from its intake destination. Valid statuses are discard, parked, and revisit-on-trigger. Avoid: destination, triage state
+
+No-op: An intake destination meaning the source should not create or update a formal workflow artifact. A no-op source may still be retained, parked, or revisited according to its retention status. Avoid: delete, forget
+
+Rule: An intake destination for a judgment principle that can be absorbed into an existing workflow without defining a new workflow structure. Avoid: reminder, preference
+
+Spec: An intake destination for source material that should define or change cross-workflow structure, process, contracts, artifact policy, or acceptance rules. Avoid: long note, checklist pile
+
+Context term: An intake destination for stable project language that will be reused across workflows, specs, or skills and affects classification, acceptance, or boundary decisions. Avoid: article jargon, branded term
+
+ADR destination: An intake destination for a hard-to-reverse, surprising-without-context repo decision that comes from a real trade-off surfaced during methodology intake. Avoid: interesting decision, note
+
 Review context bundle: A bounded set of repositories, files, diffs, docs, commands, and constraints provided for PR review. Avoid: whole machine context
 
 Staff-level review: A read-only engineering review checkpoint that evaluates correctness, architecture, security, privacy, performance, test quality, operational risk, maintainability, and requirement compliance. Avoid: staff-review unless referring to an external or private skill
@@ -67,6 +87,14 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
 - An agent team workflow may use ad hoc workers when a task needs delegation without a reusable role.
 - An agent team workflow should be used when work is multi-domain, parallelizable, and context-heavy.
 - An agent team workflow should first produce an execution packet before targeting a subagent runtime.
+- A methodology intake assigns one intake destination and one retention status.
+- A tool-list-only source may be retained for later reference without being promoted into a formal workflow artifact.
+- An external methodology source should be classified as Skill only when it defines a repeatable workflow with trigger criteria, inputs, steps, outputs, verification, stop conditions, and repo fit.
+- A no-op source does not create or update skills, specs, ADRs, issues, or glossary terms.
+- A rule fits inside an existing workflow; a spec changes structure or contracts across workflows.
+- A context term belongs in the glossary only when it stabilizes recurring project language rather than preserving one source's jargon.
+- An ADR destination is for the repo decision caused by a source, not for the source merely being interesting.
+- An issue destination is for a source that can already become a tracked, scoped, independently verifiable work item.
 - Agent roles and ad hoc workers default to analysis-only mode unless an execution packet explicitly grants edit mode.
 - Agent roles and ad hoc workers operate inside a workspace sandbox by default.
 - Isolated runtimes are optional hardening for high-risk or long-running delegated work.
