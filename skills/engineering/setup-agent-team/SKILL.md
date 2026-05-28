@@ -46,8 +46,9 @@ single-agent workflow.
 6. Define ownership boundaries, read/write scopes, and disallowed paths.
 7. Identify external systems and credential policy.
 8. Identify package-manager and dependency-execution policy.
-9. Define parallelizable tasks, blocking dependencies, handoff protocol,
-   integration owner, verification plan, budgets, and stop conditions.
+9. Define parallelizable tasks, parallelization safety, blocking dependencies,
+   handoff protocol, integration owner, verification plan, budgets, and stop
+   conditions.
 10. Output the execution packet and wait for user approval before any worker
     launch or implementation.
 
@@ -89,6 +90,7 @@ Produce these fields:
 - Context packet per role
 - Ownership boundaries
 - Parallelizable tasks
+- Parallelization safety
 - Blocking dependencies
 - External systems and credential policy
 - Package execution policy
@@ -139,6 +141,19 @@ Default rules:
 - Use an isolated runtime or `--ignore-scripts` when install scripts are not
   required.
 
+## Parallelization Safety
+
+Before recommending parallel workers, state:
+
+- Independent file or artifact sets
+- Shared contracts, schemas, interfaces, routes, or docs
+- Expected integration order
+- Whether an integration checkpoint is required before more edits
+- Conflict risk: low, medium, or high
+
+If independent ownership cannot be stated clearly, downgrade to sequential work
+or a single-agent workflow.
+
 ## Output Templates
 
 ### Refusal
@@ -165,6 +180,7 @@ Default rules:
 ## Context Packet Per Role
 ## Ownership Boundaries
 ## Parallelizable Tasks
+## Parallelization Safety
 ## Blocking Dependencies
 ## External Systems And Credential Policy
 ## Package Execution Policy
@@ -193,6 +209,9 @@ Require every future role or worker to report:
 - Passed:
 - Failed:
 - Not run:
+## Knowledge And Documentation Updates
+- Durable knowledge update required:
+- Documentation update required:
 ## Next Handoff
 - Recommended next owner:
 - Context they need:

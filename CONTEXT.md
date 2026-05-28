@@ -30,6 +30,10 @@ Subagent runtime: A specific tool's mechanism for running delegated agents or wo
 
 Execution packet: A tool-neutral plan produced by an agent team workflow that defines roles, context packets, ownership boundaries, handoffs, verification, and stop conditions. Avoid: runtime config, prompt dump
 
+Parallelization safety: The execution-packet section that proves delegated workers can proceed in parallel by naming independent ownership, shared contracts, integration order, checkpoint need, and conflict risk. Avoid: just run several agents
+
+Knowledge update requirement: A handoff signal that durable context, docs, ADRs, specs, or glossary entries may need updating after the assigned work. Avoid: save everything, raw transcript
+
 Artifact store: The intended location for durable or temporary outputs such as diagrams, review notes, prototype verdicts, PRDs, ADRs, and handoff notes. Avoid: random output folder
 
 Methodology intake: A read-only workflow for evaluating an external methodology source before deciding whether it should become a rule, skill, context term, ADR, spec, issue, or no-op. Avoid: inspiration dump, prompt collection
@@ -95,6 +99,8 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
 - An agent team workflow may use ad hoc workers when a task needs delegation without a reusable role.
 - An agent team workflow should be used when work is multi-domain, parallelizable, and context-heavy.
 - An agent team workflow should first produce an execution packet before targeting a subagent runtime.
+- An agent team execution packet should include parallelization safety before parallel workers are launched.
+- Agent handoffs should state whether durable knowledge or documentation updates are required.
 - A methodology intake assigns one intake destination and one retention status.
 - A tool-list-only source may be retained for later reference without being promoted into a formal workflow artifact.
 - An external methodology source should be classified as Skill only when it defines a repeatable workflow with trigger criteria, inputs, steps, outputs, verification, stop conditions, and repo fit.

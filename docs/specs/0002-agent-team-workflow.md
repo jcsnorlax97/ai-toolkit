@@ -40,6 +40,7 @@ An execution packet includes:
 - Context packet per role
 - Ownership boundaries
 - Parallelizable tasks
+- Parallelization safety
 - Blocking dependencies
 - External systems and credential policy
 - Handoff protocol
@@ -178,6 +179,23 @@ Edit mode requires:
 
 The Coordinator may make small integration edits, but broad write access should
 be assigned deliberately.
+
+## Parallelization Safety
+
+The Coordinator must prove that parallel work is safe before assigning parallel
+workers.
+
+The execution packet should state:
+
+- Independent file or artifact sets
+- Shared contracts, schemas, interfaces, routes, or docs
+- Expected integration order
+- Whether an integration checkpoint is required before more edits
+- Conflict risk: low, medium, or high
+
+If the Coordinator cannot describe independent ownership and shared contracts
+clearly, the work should be run sequentially or downgraded to a single-agent
+workflow.
 
 ## External Systems And Credentials
 
@@ -359,6 +377,11 @@ Every role and worker must report back using a standard handoff format.
 - Passed:
 - Failed:
 - Not run:
+
+## Knowledge And Documentation Updates
+
+- Durable knowledge update required:
+- Documentation update required:
 
 ## Next Handoff
 
