@@ -35,10 +35,12 @@ raw transcript, and not a formal skill.
    redacted excerpt.
 4. Read accessible source content when permitted and technically possible.
 5. Extract only enough context for later review.
-6. Redact sensitive values and private details before writing.
-7. Resolve the work-log root and create only today's `notes/` folder.
-8. Write or update one markdown input note.
-9. Report the capture file path, source access status, redactions, and any
+6. Classify the note with `scope: work | personal | mixed`; infer
+   conservatively when the source has no explicit scope.
+7. Redact sensitive values and private details before writing.
+8. Resolve the work-log root and create only today's `notes/` folder.
+9. Write or update one markdown input note.
+10. Report the capture file path, source access status, scope, redactions, and any
    assumptions.
 
 ## Source Routing
@@ -143,6 +145,7 @@ source_type:
 source_url:
 source_access_status:
 project:
+scope:
 topic:
 candidate_tags:
   - work/log
@@ -156,6 +159,7 @@ Source type:
 Source URL:
 Source access status:
 Project:
+Scope:
 Topic:
 Why captured:
 
