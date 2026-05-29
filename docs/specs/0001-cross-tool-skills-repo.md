@@ -111,6 +111,9 @@ deleting it.
 Project-level Claude Code usage uses `.claude/skills/`. In this repo those
 entries are symlinks so local edits immediately affect the canonical files.
 
+Operational commands, the scenario-by-scenario behavior matrix, and
+macOS/Windows notes live in `docs/install.md`.
+
 ## Upstream Imports
 
 The upstream-compatible engineering skills are imported from
@@ -162,4 +165,5 @@ When adding a new skill:
 2. Add or refresh `.claude/skills/<skill-name>`.
 3. Run `./scripts/verify-skills.sh`.
 4. Run `./scripts/verify-personal-skill-links.sh` after personal install or repair.
-5. Update `README.md` only if the skill changes the public catalog or bootstrap story.
+5. Update `README.md` and `docs/install.md` only if the skill changes the
+   public catalog or bootstrap story.
