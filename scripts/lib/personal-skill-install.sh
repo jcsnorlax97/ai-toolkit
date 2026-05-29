@@ -54,6 +54,18 @@ create_symlink() {
   fi
 }
 
+move_to_backup() {
+  existing_path="$1"
+  backup_dir="$2"
+  backup_name="$3"
+
+  backup_target="$backup_dir/$backup_name"
+  mkdir -p "$backup_dir"
+  [ ! -e "$backup_target" ] || fail "Backup target already exists: $backup_target"
+  mv "$existing_path" "$backup_target"
+  printf '%s\n' "$backup_target"
+}
+
 replace_symlink() {
   link_source="$1"
   link_target="$2"
@@ -115,7 +127,15 @@ install_personal_skills() {
         fi
       fi
     elif [ -e "$current_link" ]; then
-      fail "Current link path exists but is not a symlink: $current_link"
+      if [ "$keep_existing" -eq 1 ]; then
+        fail "Current link path exists but is not a symlink: $current_link"
+      fi
+
+      backup_dir="$state_dir/.agentic-engineering-skills-backups/$backup_stamp"
+      backup_target="$(move_to_backup "$current_link" "$backup_dir" "current")"
+      create_symlink "$root_dir" "$current_link"
+      printf 'Moved existing repo current path to backup: %s\n' "$backup_target"
+      printf 'Created repo current link: %s -> %s\n' "$current_link" "$root_dir"
     else
       create_symlink "$root_dir" "$current_link"
       printf 'Created repo current link: %s -> %s\n' "$current_link" "$root_dir"
@@ -172,10 +192,7 @@ install_personal_skills() {
       fi
 
       backup_dir="$target_dir/.agentic-engineering-skills-backups/$backup_stamp"
-      backup_target="$backup_dir/$skill_name"
-      mkdir -p "$backup_dir"
-      [ ! -e "$backup_target" ] || fail "Backup target already exists: $backup_target"
-      mv "$target" "$backup_target"
+      backup_target="$(move_to_backup "$target" "$backup_dir" "$skill_name")"
       create_symlink "$desired" "$target"
       migrated=$((migrated + 1))
       printf 'Moved existing %s skill to backup: %s\n' "$tool_label" "$backup_target"

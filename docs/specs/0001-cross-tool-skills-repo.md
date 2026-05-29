@@ -94,6 +94,11 @@ run with Windows symlink creation enabled, such as
 elevated shell. If `ln -s` does not produce a real symlink, the installer must
 fail instead of treating a copied directory or placeholder as success.
 
+If an older Windows run left the stable repo pointer path as a non-symlink, the
+installer moves that path into the state directory's timestamped backup folder
+before creating the real symlink. It must preserve the old path rather than
+deleting it.
+
 Project-level Claude Code usage uses `.claude/skills/`. In this repo those
 entries are symlinks so local edits immediately affect the canonical files.
 

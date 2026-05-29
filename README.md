@@ -193,6 +193,12 @@ silently leaving a copied directory or placeholder. Verify with:
 ./scripts/install-claude-code-skills.sh --verify-only
 ```
 
+If an earlier Windows run left a non-symlink at
+`~/.local/share/agentic-engineering-skills/current`, rerun the installer after
+pulling this version. The installer will move that stale `current` path into
+`.agentic-engineering-skills-backups/<timestamp>/current` under the state
+directory, then create the real symlink.
+
 If you run from WSL, `~/.claude/skills/` means the WSL home directory. That is
 only correct when Claude Code is also running in WSL. For Windows Claude Code,
 set `CLAUDE_SKILLS_DIR` to the Windows user's Claude skills directory.
