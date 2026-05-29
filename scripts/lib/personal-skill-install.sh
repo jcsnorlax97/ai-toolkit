@@ -22,13 +22,45 @@ fail() {
   exit 1
 }
 
+symlink_failure_hint() {
+  case "$(uname -s 2>/dev/null || true)" in
+    MINGW*|MSYS*|CYGWIN*)
+      cat >&2 <<'HINT'
+
+Windows note:
+  This script requires real directory symlinks. In Git Bash, enable Windows
+  Developer Mode or run the shell with privileges that can create symlinks.
+  Prefer:
+
+    MSYS=winsymlinks:nativestrict ./scripts/install-claude-code-skills.sh
+
+  If you run from WSL, the default ~/.claude/skills path is inside WSL, not the
+  Windows user's Claude Code profile, unless you explicitly set CLAUDE_SKILLS_DIR.
+HINT
+      ;;
+  esac
+}
+
+create_symlink() {
+  link_source="$1"
+  link_target="$2"
+
+  ln -s "$link_source" "$link_target"
+
+  if [ ! -L "$link_target" ]; then
+    printf 'ERROR: ln -s did not create a real symlink: %s -> %s\n' "$link_target" "$link_source" >&2
+    symlink_failure_hint
+    exit 1
+  fi
+}
+
 replace_symlink() {
   link_source="$1"
   link_target="$2"
   link_parent="$(dirname "$link_target")"
   tmp_link="$link_parent/.tmp-link.$$.$RANDOM"
 
-  ln -s "$link_source" "$tmp_link"
+  create_symlink "$link_source" "$tmp_link"
   mv -f "$tmp_link" "$link_target"
 }
 
@@ -85,7 +117,7 @@ install_personal_skills() {
     elif [ -e "$current_link" ]; then
       fail "Current link path exists but is not a symlink: $current_link"
     else
-      ln -s "$root_dir" "$current_link"
+      create_symlink "$root_dir" "$current_link"
       printf 'Created repo current link: %s -> %s\n' "$current_link" "$root_dir"
     fi
 
@@ -144,14 +176,14 @@ install_personal_skills() {
       mkdir -p "$backup_dir"
       [ ! -e "$backup_target" ] || fail "Backup target already exists: $backup_target"
       mv "$target" "$backup_target"
-      ln -s "$desired" "$target"
+      create_symlink "$desired" "$target"
       migrated=$((migrated + 1))
       printf 'Moved existing %s skill to backup: %s\n' "$tool_label" "$backup_target"
       printf 'Linked %s skill: %s -> %s\n' "$tool_label" "$target" "$desired"
       continue
     fi
 
-    ln -s "$desired" "$target"
+    create_symlink "$desired" "$target"
     linked=$((linked + 1))
     printf 'Linked %s skill: %s -> %s\n' "$tool_label" "$target" "$desired"
   done

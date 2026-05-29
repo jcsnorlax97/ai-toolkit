@@ -173,6 +173,30 @@ To check personal links without changing them:
 ./scripts/verify-personal-skill-links.sh
 ```
 
+## Windows Notes
+
+These scripts are Bash scripts. On Windows, run them from Git Bash or a WSL
+shell that matches the Claude Code runtime you use.
+
+For Windows Claude Code running outside WSL, prefer Git Bash with real Windows
+symlinks enabled. Windows may require Developer Mode or an elevated shell to
+create directory symlinks. A reliable invocation is:
+
+```bash
+MSYS=winsymlinks:nativestrict ./scripts/install-claude-code-skills.sh
+```
+
+If `ln -s` cannot create a real symlink, the installer now fails instead of
+silently leaving a copied directory or placeholder. Verify with:
+
+```bash
+./scripts/install-claude-code-skills.sh --verify-only
+```
+
+If you run from WSL, `~/.claude/skills/` means the WSL home directory. That is
+only correct when Claude Code is also running in WSL. For Windows Claude Code,
+set `CLAUDE_SKILLS_DIR` to the Windows user's Claude skills directory.
+
 Project-local Claude Code usage through `.claude/skills/` does not need a
 separate setup rerun after pulling; the symlinks point at the canonical
 `skills/engineering/` directories in this repo.

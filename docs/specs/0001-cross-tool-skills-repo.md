@@ -88,6 +88,12 @@ links, repairs broken or stale symlinks, migrates older copy-based targets to a
 timestamped backup unless `--keep-existing` is passed, and updates the stable
 repo link when needed.
 
+On Windows, installation still requires real symlink support. Git Bash should be
+run with Windows symlink creation enabled, such as
+`MSYS=winsymlinks:nativestrict`, and Windows may require Developer Mode or an
+elevated shell. If `ln -s` does not produce a real symlink, the installer must
+fail instead of treating a copied directory or placeholder as success.
+
 Project-level Claude Code usage uses `.claude/skills/`. In this repo those
 entries are symlinks so local edits immediately affect the canonical files.
 
