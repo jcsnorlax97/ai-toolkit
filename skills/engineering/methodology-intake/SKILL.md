@@ -14,11 +14,13 @@ work after reviewing the report.
 
 - External methodology source: article, repository, X thread, paper, tool list,
   framework, workflow, or public discussion.
+- Optional captured input note from `capture-input-note`.
 - Optional user goal: learn, critique, adapt, implement, reject, or park.
 
 ## Workflow
 
-1. Read the source or the provided excerpt closely enough to classify it.
+1. Read the source, captured input note, or provided excerpt closely enough to
+   classify it.
 2. Check current repo language in `CONTEXT.md` and relevant roadmap/spec docs.
 3. Produce one Markdown methodology intake report.
 4. Assign exactly one primary intake destination.
@@ -70,6 +72,17 @@ Classify a source as `Skill` only when it shows a repeatable workflow:
 
 If these signals are missing, prefer `Rule`, `Spec`, `Issue`, `Context term`,
 or `No-op`.
+
+## Relationship To Capture Input Note
+
+`capture-input-note` preserves source material as a redacted work-log inbox
+note. `methodology-intake` classifies whether that source should change repo
+artifacts.
+
+Use a captured input note as the preferred input when the source is
+authenticated, private, long, noisy, likely to disappear, or needs redaction.
+Do not create persistent captures inside methodology intake; run
+`capture-input-note` first when capture is needed.
 
 ## Tool-List-Only Sources
 

@@ -76,10 +76,14 @@ These skills were added in this repo as small companion workflows.
 
 - `grill-spec`: clarify ambiguous requirements, vocabulary, scope, and acceptance checks.
 - `methodology-intake`: classify external methodology sources before promoting them into repo artifacts.
+- `capture-input-note`: capture external sources as redacted work-log inbox notes before later review, daily logging, or methodology intake.
 - `setup-agent-team`: create a bounded manual execution packet for multi-domain, parallelizable, context-heavy agent-team work, or refuse when work should stay single-agent.
 - `staff-level-review`: perform read-only, findings-first engineering review across correctness, architecture, safety, tests, and operability.
 - `ship-vertical-slice`: deliver one externally verifiable behavior at a time.
 - `diagnose-regression`: debug by reproducing, minimizing, instrumenting, fixing, and regression testing.
+
+See `docs/specs/0005-capture-input-note-vs-methodology-intake.md` for the
+boundary between source capture and methodology adoption.
 
 ## Bootstrap On Claude Code
 

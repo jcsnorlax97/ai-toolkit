@@ -240,5 +240,8 @@ specific source to be captured.
 This skill creates source material in `inbox/.../notes/`.
 
 It does not create final daily notes or promote the source into durable
-knowledge. Use `daily-work-log` for generated daily summaries and
-`methodology-intake` for adoption decisions.
+knowledge. It records enough redacted context for later review.
+
+Use `daily-work-log` for generated daily summaries. Use `methodology-intake`
+after capture when deciding whether the source should become a Rule, Skill,
+Context term, ADR, Spec, Issue, or No-op.

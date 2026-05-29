@@ -32,11 +32,13 @@ which workflows are still being grilled before becoming formal skills.
 - `scripts/install-claude-code-skills.sh` installs canonical skills into `~/.claude/skills/`.
 - The upstream engineering skills are imported from `mattpocock/skills`; do not present them as original work from this repo.
 - Local companion skills are `grill-spec`, `methodology-intake`,
-  `setup-agent-team`, `staff-level-review`, `ship-vertical-slice`, and
-  `diagnose-regression`.
+  `capture-input-note`, `setup-agent-team`, `staff-level-review`,
+  `ship-vertical-slice`, and `diagnose-regression`.
 - Preserve `NOTICE.md` when changing or refreshing imported skills.
 - Update `docs/upstream-sources.md` before importing or refreshing external skill material.
 - Read `docs/specs/0001-cross-tool-skills-repo.md` before changing layout or install behavior.
+- Read `docs/specs/0005-capture-input-note-vs-methodology-intake.md` before
+  changing either source-capture or methodology-adoption behavior.
 
 ## Delivery Loop
 
