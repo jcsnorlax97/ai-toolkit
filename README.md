@@ -104,8 +104,23 @@ For personal usage across all projects:
 ./scripts/install-claude-code-skills.sh
 ```
 
-Rerun this command after pulling new repo changes only when you want to install
-new personal Claude Code skills. Existing skill directories are skipped.
+This creates personal skill symlinks under:
+
+```text
+~/.claude/skills/
+```
+
+The symlinks point through a stable machine-local repo link:
+
+```text
+~/.local/share/agentic-engineering-skills/current
+```
+
+After that, pulling this repo updates existing personal Claude Code skills
+without recopying them. If an older copied skill directory already exists, the
+installer moves it into `.agentic-engineering-skills-backups/<timestamp>/` under
+the target skills directory, then creates the symlink. Pass `--keep-existing` to
+leave non-symlink targets untouched.
 
 ## Bootstrap On Codex
 
@@ -121,8 +136,21 @@ The default target is:
 ~/.codex/skills/
 ```
 
-Rerun this command after pulling new repo changes only when you want to install
-new personal Codex skills. Existing skill directories are skipped.
+Codex personal installs use the same symlink behavior as Claude Code. Pulling
+the repo updates existing installed skills because the personal entries point at
+the canonical `skills/engineering/` directories through the stable repo link.
+
+If this repo is renamed or moved, rerun either install script, or run:
+
+```bash
+./scripts/repair-personal-skill-links.sh
+```
+
+To check personal links without changing them:
+
+```bash
+./scripts/verify-personal-skill-links.sh
+```
 
 Project-local Claude Code usage through `.claude/skills/` does not need a
 separate setup rerun after pulling; the symlinks point at the canonical

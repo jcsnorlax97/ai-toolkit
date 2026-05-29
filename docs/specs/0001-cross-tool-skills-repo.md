@@ -30,8 +30,9 @@ Tool-specific adapters point at or install from that source tree.
 
 ```text
 .claude/skills/<skill-name> -> ../../skills/engineering/<skill-name>
-~/.claude/skills/<skill-name>  copied from skills/engineering/<skill-name>
-~/.codex/skills/<skill-name>   copied from skills/engineering/<skill-name>
+~/.local/share/agentic-engineering-skills/current -> <this repo clone>
+~/.claude/skills/<skill-name>  -> ~/.local/share/agentic-engineering-skills/current/skills/engineering/<skill-name>
+~/.codex/skills/<skill-name>   -> ~/.local/share/agentic-engineering-skills/current/skills/engineering/<skill-name>
 ```
 
 ## Repository-Level Files
@@ -46,13 +47,33 @@ Tool-specific adapters point at or install from that source tree.
 
 ## Install Behavior
 
-Installation scripts copy canonical skill directories into personal tool
-directories. Copying is preferred for personal installs because it works across
-machines and filesystems that may not preserve symlinks reliably.
+Installation scripts link canonical skill directories into personal tool
+directories through a stable machine-local repo link:
 
-Rerunning an install script after pulling latest changes installs newly added
-skills and skips existing targets. This avoids overwriting a user's customized
-personal skills.
+```text
+~/.local/share/agentic-engineering-skills/current
+```
+
+Rerunning an install script after pulling latest changes repairs personal
+symlinks and links any newly added skills. Because installed skills point at the
+canonical source, existing skills see the latest repo version without manual
+deletion or recopying.
+
+If a personal target already exists as a real directory from an older copy-based
+install, the installer moves that directory into:
+
+```text
+<tool-skills-dir>/.agentic-engineering-skills-backups/<timestamp>/<skill-name>
+```
+
+It then creates the symlink. This preserves local customizations without keeping
+the stale copy active. Pass `--keep-existing` to leave non-symlink targets in
+place.
+
+If the repository is renamed or moved, rerun an install script or
+`scripts/repair-personal-skill-links.sh` from the new clone. Existing personal
+skill links continue to point through the stable repo link, so repair updates
+the repo pointer instead of rewriting every path by hand.
 
 Project-level Claude Code usage uses `.claude/skills/`. In this repo those
 entries are symlinks so local edits immediately affect the canonical files.
@@ -107,4 +128,5 @@ When adding a new skill:
 1. Create `skills/engineering/<skill-name>/SKILL.md`.
 2. Add or refresh `.claude/skills/<skill-name>`.
 3. Run `./scripts/verify-skills.sh`.
-4. Update `README.md` only if the skill changes the public catalog or bootstrap story.
+4. Run `./scripts/verify-personal-skill-links.sh` after personal install or repair.
+5. Update `README.md` only if the skill changes the public catalog or bootstrap story.
