@@ -35,11 +35,12 @@ sibling repo:
 - Recommended repo name: `agentic-engineering-skills`.
 - `skills/` is the canonical source for reusable skills.
 - `.claude/skills/` is the Claude Code project adapter.
-- `scripts/install-codex-skills.sh` links canonical skills into `~/.codex/skills/`.
-- `scripts/install-claude-code-skills.sh` links canonical skills into `~/.claude/skills/`.
-- Personal installs point through the stable repo link
-  `~/.local/share/agentic-engineering-skills/current`; after moving or
-  renaming the repo, run `scripts/repair-personal-skill-links.sh`.
+- `scripts/install-codex-skills.sh` exposes canonical skills in `~/.codex/skills/`.
+- `scripts/install-claude-code-skills.sh` exposes canonical skills in `~/.claude/skills/`.
+- Personal installs use symlinks by default on macOS/Linux/WSL and copy mode by
+  default on Windows Git Bash/MSYS/Cygwin. Symlink installs point through
+  `~/.local/share/agentic-engineering-skills/current`; after moving or renaming
+  the repo, run `scripts/repair-personal-skill-links.sh`.
 - The upstream engineering skills are imported from `mattpocock/skills`; do not present them as original work from this repo.
 - Local companion skills are `grill-spec`, `methodology-intake`,
   `capture-input-note`, `setup-agent-team`, `staff-level-review`,

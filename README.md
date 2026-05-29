@@ -104,22 +104,26 @@ For personal usage across all projects:
 ./scripts/install-claude-code-skills.sh
 ```
 
-This creates personal skill symlinks under:
+This installs personal skills under:
 
 ```text
 ~/.claude/skills/
 ```
 
-The symlinks point through a stable machine-local repo link:
+By default, macOS/Linux/WSL use symlinks through a stable machine-local repo
+link:
 
 ```text
 ~/.local/share/agentic-engineering-skills/current
 ```
 
-After that, pulling this repo updates existing personal Claude Code skills
-without recopying them. If an older copied skill directory already exists, the
-installer moves it into `.agentic-engineering-skills-backups/<timestamp>/` under
-the target skills directory, then creates the symlink. Pass `--keep-existing` to
+Windows Git Bash/MSYS/Cygwin defaults to copy mode to avoid symlink privilege
+problems. In copy mode, rerun the installer after pulling this repo to refresh
+personal skills.
+
+If an older copied skill directory already exists in link mode, the installer
+moves it into `.agentic-engineering-skills-backups/<timestamp>/` under the
+target skills directory, then creates the symlink. Pass `--keep-existing` to
 leave non-symlink targets untouched.
 
 ## Bootstrap On Codex
@@ -136,9 +140,7 @@ The default target is:
 ~/.codex/skills/
 ```
 
-Codex personal installs use the same symlink behavior as Claude Code. Pulling
-the repo updates existing installed skills because the personal entries point at
-the canonical `skills/engineering/` directories through the stable repo link.
+Codex personal installs use the same install modes as Claude Code.
 
 ## Personal Install Scripts
 
@@ -147,13 +149,27 @@ different entrypoints for different scopes:
 
 ```text
 scripts/install-codex-skills.sh
-  Ensure Codex personal skills under ~/.codex/skills/ are linked and repaired.
+  Ensure Codex personal skills under ~/.codex/skills/ are installed.
 
 scripts/install-claude-code-skills.sh
-  Ensure Claude Code personal skills under ~/.claude/skills/ are linked and repaired.
+  Ensure Claude Code personal skills under ~/.claude/skills/ are installed.
 
 scripts/repair-personal-skill-links.sh
   Convenience wrapper that runs both install scripts.
+```
+
+Install mode is automatic by default:
+
+```text
+macOS/Linux/WSL: symlink mode
+Windows Git Bash/MSYS/Cygwin: copy mode
+```
+
+You can force either behavior:
+
+```bash
+./scripts/install-claude-code-skills.sh --copy
+./scripts/install-claude-code-skills.sh --link
 ```
 
 Use a specific `install-*-skills.sh` script when you only care about one tool.
@@ -167,7 +183,7 @@ If this repo is renamed or moved, rerun the relevant install script, or run:
 ./scripts/repair-personal-skill-links.sh
 ```
 
-To check personal links without changing them:
+To check personal installs without changing them:
 
 ```bash
 ./scripts/verify-personal-skill-links.sh
@@ -175,33 +191,125 @@ To check personal links without changing them:
 
 ## Windows Notes
 
-These scripts are Bash scripts. On Windows, run them from Git Bash or a WSL
-shell that matches the Claude Code runtime you use.
+These scripts are Bash scripts. On Windows, run them from Git Bash, or from
+PowerShell / `pwsh` by invoking Git Bash's `bash`.
 
-For Windows Claude Code running outside WSL, prefer Git Bash with real Windows
-symlinks enabled. Windows may require Developer Mode or an elevated shell to
-create directory symlinks. A reliable invocation is:
+For Windows Claude Code running outside WSL, the simplest path is copy mode.
+That is now the default when the script detects Git Bash/MSYS/Cygwin, so it does
+not require Windows Developer Mode, administrator rights, or symlink privileges.
 
-```bash
-MSYS=winsymlinks:nativestrict ./scripts/install-claude-code-skills.sh
+First confirm which `bash` you are using:
+
+```powershell
+where.exe bash
+bash -lc "uname -s; echo \$HOME"
 ```
 
-If `ln -s` cannot create a real symlink, the installer now fails instead of
-silently leaving a copied directory or placeholder. Verify with:
+Expected for Git Bash:
+
+```text
+MINGW64_NT...
+/c/Users/<WindowsUser>
+```
+
+If you see `Linux` and `/home/<user>`, you are in WSL.
+
+### Git Bash
+
+From Git Bash:
+
+```bash
+./scripts/install-claude-code-skills.sh
+./scripts/install-claude-code-skills.sh --verify-only
+```
+
+### VS Code With Git Bash Terminal
+
+If the VS Code integrated terminal profile is Git Bash, use the same command:
+
+```bash
+./scripts/install-claude-code-skills.sh
+./scripts/install-claude-code-skills.sh --verify-only
+```
+
+### VS Code With PowerShell Or `pwsh`
+
+If the VS Code integrated terminal is PowerShell / `pwsh`, call Git Bash's
+`bash` from PowerShell:
+
+```powershell
+bash ./scripts/install-claude-code-skills.sh
+bash ./scripts/install-claude-code-skills.sh --verify-only
+```
+
+If PowerShell resolves `bash` to WSL instead of Git Bash, select the Git Bash
+terminal profile in VS Code or put Git Bash earlier on `PATH`.
+
+### WSL
+
+Use WSL only when Claude Code is also running inside WSL. In that case:
+
+```bash
+./scripts/install-claude-code-skills.sh
+./scripts/install-claude-code-skills.sh --verify-only
+```
+
+If Claude Code is the Windows app, do not use the default WSL `~/.claude/skills`
+target. It points to the WSL home directory, not the Windows user's Claude Code
+profile. Prefer Git Bash or PowerShell calling Git Bash for Windows Claude Code.
+
+### Optional Windows Symlink Mode
+
+Only use this if you specifically want Windows symlinks and your machine allows
+creating them:
+
+```bash
+MSYS=winsymlinks:nativestrict ./scripts/install-claude-code-skills.sh --link
+./scripts/install-claude-code-skills.sh --link --verify-only
+```
+
+Windows may require Developer Mode or an elevated shell for this. If `ln -s`
+cannot create a real symlink, link mode fails instead of silently leaving a
+copied directory or placeholder.
+
+### Verify Install
+
+For default Windows copy mode, verify through the installer:
 
 ```bash
 ./scripts/install-claude-code-skills.sh --verify-only
 ```
 
+From PowerShell:
+
+```powershell
+bash ./scripts/install-claude-code-skills.sh --verify-only
+Test-Path "$HOME\.claude\skills\diagnose\SKILL.md"
+```
+
+If you forced `--link`, verify real symlinks from Git Bash:
+
+From Git Bash:
+
+```bash
+test -L ~/.claude/skills/diagnose
+readlink ~/.claude/skills/diagnose
+```
+
+From PowerShell:
+
+```powershell
+Get-Item "$HOME\.claude\skills\diagnose" | Format-List FullName,LinkType,Target
+```
+
+`LinkType` should report a symbolic link only when using `--link`.
+
 If an earlier Windows run left a non-symlink at
 `~/.local/share/agentic-engineering-skills/current`, rerun the installer after
 pulling this version. The installer will move that stale `current` path into
 `.agentic-engineering-skills-backups/<timestamp>/current` under the state
-directory, then create the real symlink.
-
-If you run from WSL, `~/.claude/skills/` means the WSL home directory. That is
-only correct when Claude Code is also running in WSL. For Windows Claude Code,
-set `CLAUDE_SKILLS_DIR` to the Windows user's Claude skills directory.
+directory, then create the real symlink when you use `--link`. Default Windows
+copy mode does not need the stable `current` symlink.
 
 Project-local Claude Code usage through `.claude/skills/` does not need a
 separate setup rerun after pulling; the symlinks point at the canonical

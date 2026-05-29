@@ -3,13 +3,17 @@ set -eu
 
 usage() {
   cat <<'USAGE'
-Usage: install script [--verify-only] [--keep-existing]
+Usage: install script [--link|--copy] [--verify-only] [--keep-existing]
 
-Installs personal skills as symlinks through a stable current link:
+Installs personal skills from the canonical skills directory.
 
-  ~/.local/share/agentic-engineering-skills/current
+Default mode is automatic:
+  - macOS/Linux/WSL: symlinks through ~/.local/share/agentic-engineering-skills/current
+  - Windows Git Bash/MSYS/Cygwin: copy snapshots, avoiding symlink privileges
 
 Options:
+  --link           Force symlink mode.
+  --copy           Force copy mode.
   --verify-only    Check links without changing them.
   --keep-existing  Leave non-symlink targets in place instead of moving them
                    to a backup directory and linking the canonical skill.
@@ -66,6 +70,25 @@ move_to_backup() {
   printf '%s\n' "$backup_target"
 }
 
+copy_skill_snapshot() {
+  skill_source="$1"
+  skill_target="$2"
+
+  mkdir -p "$skill_target"
+  cp -R "$skill_source/." "$skill_target/"
+}
+
+verify_copy_snapshot() {
+  skill_source="$1"
+  skill_target="$2"
+  label="$3"
+
+  [ -d "$skill_target" ] || fail "$label copy is missing: $skill_target"
+  if ! diff -qr "$skill_source" "$skill_target" >/dev/null 2>&1; then
+    fail "$label copy differs from canonical source: $skill_target"
+  fi
+}
+
 replace_symlink() {
   link_source="$1"
   link_target="$2"
@@ -85,9 +108,16 @@ install_personal_skills() {
 
   verify_only=0
   keep_existing=0
+  install_mode="${AGENTIC_SKILLS_INSTALL_MODE:-auto}"
 
   while [ "$#" -gt 0 ]; do
     case "$1" in
+      --link)
+        install_mode=link
+        ;;
+      --copy)
+        install_mode=copy
+        ;;
       --verify-only)
         verify_only=1
         ;;
@@ -107,12 +137,36 @@ install_personal_skills() {
 
   [ -d "$source_dir" ] || fail "Missing source directory: $source_dir"
 
+  case "$install_mode" in
+    auto)
+      case "$(uname -s 2>/dev/null || true)" in
+        MINGW*|MSYS*|CYGWIN*)
+          install_mode=copy
+          ;;
+        *)
+          install_mode=link
+          ;;
+      esac
+      ;;
+    link|copy)
+      ;;
+    *)
+      fail "Unknown install mode: $install_mode"
+      ;;
+  esac
+
   root_dir="$(cd "$root_dir" && pwd -P)"
   state_dir="${AGENTIC_ENGINEERING_SKILLS_STATE_DIR:-${AGENTIC_SKILLS_STATE_DIR:-$HOME/.local/share/agentic-engineering-skills}}"
   current_link="$state_dir/current"
   backup_stamp="$(date +%Y%m%d-%H%M%S)"
 
-  if [ "$verify_only" -eq 0 ]; then
+  if [ "$install_mode" = "copy" ]; then
+    if [ "$verify_only" -eq 0 ]; then
+      mkdir -p "$target_dir"
+    else
+      [ -d "$target_dir" ] || fail "Missing target directory: $target_dir"
+    fi
+  elif [ "$verify_only" -eq 0 ]; then
     mkdir -p "$state_dir"
 
     if [ -L "$current_link" ]; then
@@ -155,6 +209,8 @@ install_personal_skills() {
   repaired=0
   migrated=0
   kept=0
+  copied=0
+  updated=0
 
   for skill_dir in "$source_dir"/*; do
     [ -d "$skill_dir" ] || continue
@@ -162,6 +218,40 @@ install_personal_skills() {
 
     skill_name="$(basename "$skill_dir")"
     target="$target_dir/$skill_name"
+
+    if [ "$install_mode" = "copy" ]; then
+      if [ "$verify_only" -eq 1 ]; then
+        verify_copy_snapshot "$skill_dir" "$target" "$tool_label skill"
+        continue
+      fi
+
+      if [ -e "$target" ] || [ -L "$target" ]; then
+        if diff -qr "$skill_dir" "$target" >/dev/null 2>&1; then
+          printf 'Verified %s skill copy: %s\n' "$tool_label" "$target"
+          continue
+        fi
+
+        if [ "$keep_existing" -eq 1 ]; then
+          kept=$((kept + 1))
+          printf 'Keeping existing %s skill copy: %s\n' "$tool_label" "$target"
+          continue
+        fi
+
+        backup_dir="$target_dir/.agentic-engineering-skills-backups/$backup_stamp"
+        backup_target="$(move_to_backup "$target" "$backup_dir" "$skill_name")"
+        copy_skill_snapshot "$skill_dir" "$target"
+        updated=$((updated + 1))
+        printf 'Moved existing %s skill to backup: %s\n' "$tool_label" "$backup_target"
+        printf 'Copied %s skill: %s\n' "$tool_label" "$target"
+        continue
+      fi
+
+      copy_skill_snapshot "$skill_dir" "$target"
+      copied=$((copied + 1))
+      printf 'Copied %s skill: %s\n' "$tool_label" "$target"
+      continue
+    fi
+
     desired="$current_link/skills/engineering/$skill_name"
 
     if [ "$verify_only" -eq 1 ]; then
@@ -208,7 +298,14 @@ install_personal_skills() {
   [ "$found" -eq 1 ] || fail "No canonical skills found under $source_dir"
 
   if [ "$verify_only" -eq 1 ]; then
-    printf 'Verified %s personal skill links successfully.\n' "$tool_label"
+    if [ "$install_mode" = "copy" ]; then
+      printf 'Verified %s personal skill copies successfully.\n' "$tool_label"
+    else
+      printf 'Verified %s personal skill links successfully.\n' "$tool_label"
+    fi
+  elif [ "$install_mode" = "copy" ]; then
+    printf 'Finished %s personal skill copy install: copied=%s updated=%s kept=%s\n' \
+      "$tool_label" "$copied" "$updated" "$kept"
   else
     printf 'Finished %s personal skill install: linked=%s repaired=%s migrated=%s kept=%s\n' \
       "$tool_label" "$linked" "$repaired" "$migrated" "$kept"
