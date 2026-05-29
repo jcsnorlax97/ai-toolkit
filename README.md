@@ -140,7 +140,28 @@ Codex personal installs use the same symlink behavior as Claude Code. Pulling
 the repo updates existing installed skills because the personal entries point at
 the canonical `skills/engineering/` directories through the stable repo link.
 
-If this repo is renamed or moved, rerun either install script, or run:
+## Personal Install Scripts
+
+The install and repair scripts share the same underlying behavior. They are
+different entrypoints for different scopes:
+
+```text
+scripts/install-codex-skills.sh
+  Ensure Codex personal skills under ~/.codex/skills/ are linked and repaired.
+
+scripts/install-claude-code-skills.sh
+  Ensure Claude Code personal skills under ~/.claude/skills/ are linked and repaired.
+
+scripts/repair-personal-skill-links.sh
+  Convenience wrapper that runs both install scripts.
+```
+
+Use a specific `install-*-skills.sh` script when you only care about one tool.
+Use `repair-personal-skill-links.sh` after moving or renaming this repo, or
+when you want both Codex and Claude Code personal installs checked in one step.
+It does not have separate repair logic; it delegates to the two install scripts.
+
+If this repo is renamed or moved, rerun the relevant install script, or run:
 
 ```bash
 ./scripts/repair-personal-skill-links.sh

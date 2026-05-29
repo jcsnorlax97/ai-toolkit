@@ -75,6 +75,19 @@ If the repository is renamed or moved, rerun an install script or
 skill links continue to point through the stable repo link, so repair updates
 the repo pointer instead of rewriting every path by hand.
 
+`scripts/repair-personal-skill-links.sh` is a convenience wrapper, not a
+separate install mode. It runs both personal install scripts:
+
+```text
+scripts/install-codex-skills.sh
+scripts/install-claude-code-skills.sh
+```
+
+Each install script is idempotent for its target runtime: it creates missing
+links, repairs broken or stale symlinks, migrates older copy-based targets to a
+timestamped backup unless `--keep-existing` is passed, and updates the stable
+repo link when needed.
+
 Project-level Claude Code usage uses `.claude/skills/`. In this repo those
 entries are symlinks so local edits immediately affect the canonical files.
 
