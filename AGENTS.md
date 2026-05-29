@@ -23,6 +23,13 @@ the user where the canonical roadmap is cloned.
 Use that roadmap as the current source of truth for priorities and for deciding
 which workflows are still being grilled before becoming formal skills.
 
+Before cross-repo AI OS work, run the central freshness check from the standard
+sibling repo:
+
+```text
+../ai-ops-ecosystem-spec/scripts/check-ecosystem-repos.sh --fetch
+```
+
 ## Repository Design
 
 - Recommended repo name: `agentic-engineering-skills`.
