@@ -40,6 +40,8 @@ Methodology intake: A read-only workflow for evaluating an external methodology 
 
 External methodology source: An article, repository, paper, tool list, framework, workflow, or public discussion being considered for adoption into this repo's workflow system. Avoid: internet idea, random source
 
+Input note: A redacted inbox artifact created from an external source, such as a Gemini, ChatGPT, or Claude shared conversation, meeting transcript, video notes, article, workflow idea, or copied excerpt. It preserves only enough context for later review, methodology intake, daily work logs, or skill formulation. It is not final knowledge, not a raw transcript, and not a formal skill. Avoid: raw dump, final note, saved chat
+
 Tool-list-only source: An external methodology source that primarily lists tools, SDKs, repositories, or frameworks without enough trigger criteria, workflow steps, outputs, verification, and stop conditions to become a skill. Avoid: tool worship
 
 Intake destination: The single primary outcome assigned by methodology intake. Valid destinations are Rule, Skill, Context term, ADR, Spec, Issue, and No-op. Avoid: tag pile, mixed outcome
@@ -102,6 +104,7 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
 - An agent team execution packet should include parallelization safety before parallel workers are launched.
 - Agent handoffs should state whether durable knowledge or documentation updates are required.
 - A methodology intake assigns one intake destination and one retention status.
+- An input note can feed methodology intake, daily work logs, or later skill formulation, but it does not itself promote source material into durable knowledge.
 - A tool-list-only source may be retained for later reference without being promoted into a formal workflow artifact.
 - An external methodology source should be classified as Skill only when it defines a repeatable workflow with trigger criteria, inputs, steps, outputs, verification, stop conditions, and repo fit.
 - A no-op source does not create or update skills, specs, ADRs, issues, or glossary terms.

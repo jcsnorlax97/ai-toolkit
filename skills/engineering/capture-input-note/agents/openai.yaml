@@ -1,0 +1,4 @@
+interface:
+  display_name: "Capture Input Note"
+  short_description: "Capture external sources as redacted inbox notes."
+  default_prompt: "Capture this external source as a redacted input note for later review."
