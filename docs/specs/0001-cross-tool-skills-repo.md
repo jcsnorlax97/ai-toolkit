@@ -48,23 +48,21 @@ Tool-specific adapters point at or install from that source tree.
 ## Install Behavior
 
 Installation scripts expose canonical skill directories to personal tool
-directories. The default mode is platform-aware:
+directories. The default mode is symlink mode:
 
 ```text
-macOS/Linux/WSL: symlink mode
-Windows Git Bash/MSYS/Cygwin: copy mode
+~/.local/share/agentic-engineering-skills/current -> <this repo clone>
+~/.claude/skills/<skill-name> -> ~/.local/share/agentic-engineering-skills/current/skills/engineering/<skill-name>
+~/.codex/skills/<skill-name> -> ~/.local/share/agentic-engineering-skills/current/skills/engineering/<skill-name>
 ```
 
-Symlink mode links through a stable machine-local repo link:
+Pulling the repo updates installed skills immediately because runtime skill
+entries point at the canonical source. Rerun the installer after pulling when a
+new skill was added or when links need repair.
 
-```text
-~/.local/share/agentic-engineering-skills/current
-```
-
-In symlink mode, pulling the repo updates installed skills immediately because
-runtime skill entries point at the canonical source. In copy mode, rerun the
-installer after pulling the repo to refresh personal skill snapshots without
-manual deletion.
+Copy mode is available only as an explicit fallback through `--copy`. In copy
+mode, rerun the installer after pulling the repo to refresh personal skill
+snapshots without manual deletion.
 
 If a personal target already exists as a real directory from an older copy-based
 install and symlink mode is requested, the installer moves that directory into:
@@ -78,10 +76,10 @@ the stale copy active. Pass `--keep-existing` to leave non-symlink targets in
 place.
 
 If the repository is renamed or moved, rerun an install script or
-`scripts/repair-personal-skill-links.sh` from the new clone. In symlink mode,
-existing personal skill links continue to point through the stable repo link, so
-repair updates the repo pointer instead of rewriting every path by hand. In copy
-mode, rerunning the installer refreshes the copied snapshots.
+`scripts/repair-personal-skill-links.sh` from the new clone. Existing personal
+skill links continue to point through the stable repo link, so repair updates
+the repo pointer instead of rewriting every path by hand. In explicit copy mode,
+rerunning the installer refreshes the copied snapshots.
 
 `scripts/repair-personal-skill-links.sh` is a convenience wrapper, not a
 separate install mode. It runs both personal install scripts:
@@ -91,25 +89,24 @@ scripts/install-codex-skills.sh
 scripts/install-claude-code-skills.sh
 ```
 
-Each install script is idempotent for its target runtime. In symlink mode, it
-creates missing links, repairs broken or stale symlinks, migrates older
-copy-based targets to a timestamped backup unless `--keep-existing` is passed,
-and updates the stable repo link when needed. In copy mode, it copies canonical
-skill snapshots into the runtime skill directory, backs up changed existing
-targets before replacing them, and does not require symlink privileges.
+Each install script is idempotent for its target runtime. It creates missing
+links, repairs broken or stale symlinks, migrates older copy-based targets to a
+timestamped backup unless `--keep-existing` is passed, and updates the stable
+repo link when needed. In explicit copy mode, it copies canonical skill
+snapshots into the runtime skill directory, backs up changed existing targets
+before replacing them, and does not require symlink privileges.
 
-On Windows Git Bash/MSYS/Cygwin, default copy mode is preferred because it does
-not require Developer Mode, administrator rights, or real symlink support. Users
-who explicitly choose `--link` must enable Windows symlink creation, such as
-`MSYS=winsymlinks:nativestrict`, and Windows may require Developer Mode or an
-elevated shell. If `ln -s` does not produce a real symlink in `--link` mode, the
-installer must fail instead of treating a copied directory or placeholder as
-success.
+On Windows Git Bash/MSYS/Cygwin, symlink mode requires real Windows symlink
+support. The recommended command is
+`MSYS=winsymlinks:nativestrict ./scripts/install-claude-code-skills.sh`, and
+Windows may require Developer Mode or an elevated shell. If `ln -s` does not
+produce a real symlink, the installer must fail instead of treating a copied
+directory or placeholder as success.
 
 If an older Windows run left the stable repo pointer path as a non-symlink, the
 installer moves that path into the state directory's timestamped backup folder
-before creating the real symlink in `--link` mode. It must preserve the old path
-rather than deleting it.
+before creating the real symlink. It must preserve the old path rather than
+deleting it.
 
 Project-level Claude Code usage uses `.claude/skills/`. In this repo those
 entries are symlinks so local edits immediately affect the canonical files.

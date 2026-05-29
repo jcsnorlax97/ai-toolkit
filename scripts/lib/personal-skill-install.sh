@@ -8,12 +8,12 @@ Usage: install script [--link|--copy] [--verify-only] [--keep-existing]
 Installs personal skills from the canonical skills directory.
 
 Default mode is automatic:
-  - macOS/Linux/WSL: symlinks through ~/.local/share/agentic-engineering-skills/current
-  - Windows Git Bash/MSYS/Cygwin: copy snapshots, avoiding symlink privileges
+  - symlinks through ~/.local/share/agentic-engineering-skills/current
+  - on Windows, run from a shell that can create real symlinks
 
 Options:
   --link           Force symlink mode.
-  --copy           Force copy mode.
+  --copy           Force copy mode as an explicit fallback.
   --verify-only    Check links without changing them.
   --keep-existing  Leave non-symlink targets in place instead of moving them
                    to a backup directory and linking the canonical skill.
@@ -139,14 +139,7 @@ install_personal_skills() {
 
   case "$install_mode" in
     auto)
-      case "$(uname -s 2>/dev/null || true)" in
-        MINGW*|MSYS*|CYGWIN*)
-          install_mode=copy
-          ;;
-        *)
-          install_mode=link
-          ;;
-      esac
+      install_mode=link
       ;;
     link|copy)
       ;;

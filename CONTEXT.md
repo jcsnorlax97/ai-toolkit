@@ -18,7 +18,7 @@ Adapter: A tool-specific exposure layer that points at or installs from the cano
 
 Personal link install: A personal tool install where `~/.claude/skills/<skill-name>` or `~/.codex/skills/<skill-name>` is a symlink to the canonical skill through the stable repo link. Avoid: copied install, manual refresh
 
-Personal copy install: A personal tool install where canonical skill directories are copied into `~/.claude/skills/<skill-name>` or `~/.codex/skills/<skill-name>` as runtime snapshots. This is the default Windows Git Bash/MSYS/Cygwin mode because it avoids symlink privileges. Avoid: stale manual copy, untracked fork
+Personal copy install: A personal tool install where canonical skill directories are copied into `~/.claude/skills/<skill-name>` or `~/.codex/skills/<skill-name>` as runtime snapshots. This is an explicit fallback for environments that cannot create real symlinks. Avoid: stale manual copy, untracked fork
 
 Stable repo link: The machine-local symlink `~/.local/share/agentic-engineering-skills/current` that points to the current clone of this repository. Personal skill links point through this path so repo moves require repairing one stable link, not every installed skill. Avoid: hardcoded clone path
 
