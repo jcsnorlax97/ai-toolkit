@@ -8,6 +8,11 @@ This repo stores portable engineering skills for AI coding agents. Treat
 `skills/` as the canonical source. Treat `.claude/skills/` as the Claude Code
 project adapter.
 
+Reusable candidate skills may live here, but SkillOps lifecycle metadata does
+not. Record status, confidence, evidence, and promotion decisions in
+`../skillops/inventory/skills.yaml`. Do not create a repo-local `inventory/`
+directory for SkillOps data.
+
 ## Required Context
 
 - Read `CONTEXT.md` before creating, renaming, or substantially changing skills.
@@ -38,6 +43,7 @@ The following skills are local additions in this repository.
 - Use `/staff-level-review` for read-only findings-first engineering review across correctness, architecture, safety, tests, and operability.
 - Use `/ship-vertical-slice` when implementing a focused behavior or refactor.
 - Use `/diagnose-regression` when behavior is failing, flaky, or slower than expected.
+- Use `/client-flow-diagrams` to create or revise high-level workflow, process, or integration diagrams for client or non-technical audiences.
 
 ## Verification
 

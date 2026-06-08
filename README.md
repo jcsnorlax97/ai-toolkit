@@ -50,6 +50,22 @@ Adapters make the same skills usable in specific tools:
 
 Do not maintain duplicated skill bodies by hand.
 
+## Lifecycle Metadata
+
+Reusable skills in this repo may start as candidates. Their implementation
+still belongs under `skills/engineering/<skill-name>/`.
+
+Lifecycle status, confidence, evidence, and promotion decisions are tracked by
+SkillOps in:
+
+```text
+../skillops/inventory/skills.yaml
+```
+
+Do not create maturity folders or a repo-local `inventory/` directory here for
+SkillOps lifecycle data. If the SkillOps inventory is unavailable, leave the
+inventory update pending rather than creating a substitute.
+
 ## Current Skills
 
 ### Imported From `mattpocock/skills`

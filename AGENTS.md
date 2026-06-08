@@ -46,6 +46,9 @@ sibling repo:
 - Local companion skills are `grill-spec`, `methodology-intake`,
   `capture-input-note`, `setup-agent-team`, `staff-level-review`,
   `ship-vertical-slice`, and `diagnose-regression`.
+- Reusable candidate skills may live in `skills/engineering/`, but SkillOps
+  lifecycle metadata belongs in `../skillops/inventory/skills.yaml`. Do not
+  create a repo-local `inventory/` directory for SkillOps data.
 - Preserve `NOTICE.md` when changing or refreshing imported skills.
 - Update `docs/upstream-sources.md` before importing or refreshing external skill material.
 - Read `docs/specs/0001-cross-tool-skills-repo.md` before changing layout or install behavior.
