@@ -1,6 +1,6 @@
 ---
 name: capture-input-note
-description: Capture external sources as redacted markdown input notes in the private AI work-log inbox. Use when the user provides or references a Gemini, ChatGPT, Claude, or other AI shared conversation; Slack or Teams conversation; meeting transcript; video/audio recording; article; paper; workflow idea; copied excerpt; or source material that should be read when safely accessible and saved for later review, methodology intake, daily work logs, or skill formulation without storing a raw transcript or final knowledge note.
+description: Capture an external source as a redacted markdown input note in the private AI work-log inbox when the source requires reading, rendering, parsing, transcription planning, access-status tracking, redaction, or provenance preservation. Use for shared AI conversations, Slack or Teams conversations, meeting transcripts, recordings, articles, papers, workflow sources, or links that need source ingestion before later review or methodology intake.
 ---
 
 # Capture Input Note
@@ -8,19 +8,23 @@ description: Capture external sources as redacted markdown input notes in the pr
 ## Overview
 
 Create a safe, summarized input note from external source material and save it
-to the AI work-log vault inbox. Use this for source material outside the current
-assistant coding session.
+to the AI work-log vault inbox. This is a specialized `selected_source`
+ingestion adapter for material that needs source access or provenance work
+before review.
 
 An input note is source material for review. It is not final knowledge, not a
 raw transcript, and not a formal skill.
 
 ## Boundary
 
-- Use `capture-input-note` for external sources: shared AI conversations, chat
-  conversations, meeting transcripts, video/audio notes, articles, papers,
-  workflow ideas, copied excerpts, or links.
-- Use `capture-work-session` for the current Claude Code, Codex, or AI coding
+- Use `capture-input-note` when an external source needs reading, rendering,
+  parsing, transcription planning, access-status tracking, redaction, or
+  provenance preservation.
+- Use `capture-assistant-session` for the current Claude Code, Codex, or AI
   assistant session.
+- Use `capture-to-outbox --input-type external_source` for an already-selected
+  pasted excerpt or snippet that only needs local review staging and does not
+  need source access or provenance work.
 - Use `methodology-intake` after capture when deciding whether the source should
   become a Rule, Skill, Context term, ADR, Spec, Issue, or No-op.
 - Do not inspect the user's private main Obsidian vault.
@@ -50,17 +54,24 @@ Choose the first matching route:
 | Source | Read |
 | --- | --- |
 | Gemini, ChatGPT, Claude, or other public/shared AI conversation link | `references/shared-ai-conversations.md` |
-| Slack thread/export, Teams chat, copied chat conversation, or channel excerpt | `references/chat-conversations.md` |
+| Slack thread/export, Teams chat, copied chat conversation, or channel excerpt that needs summarization, redaction, or provenance preservation | `references/chat-conversations.md` |
 | Teams/Zoom/Meet transcript, `.vtt`, `.srt`, `.docx`, `.txt`, or meeting notes with transcript text | `references/meeting-transcripts.md` |
 | Video/audio recording with no transcript, `.mp4`, `.mov`, `.m4a`, `.mp3`, or screen recording | `references/media-without-transcript.md` |
-| Article, paper, blog post, workflow idea, repo note, or copied source excerpt | `references/articles-and-papers.md` |
+| Article, paper, blog post, workflow idea, repo note, or copied source excerpt that needs provenance or extraction work | `references/articles-and-papers.md` |
 
 If no route fits, treat the source as `other`, capture only metadata and why it
 matters, then add an open question about the missing route.
 
-## Source Types
+## Source Classification
 
-Use these `source_type` values when possible:
+Use the AI OS capture envelope:
+
+```yaml
+routing_class: selected_source
+source_type: external_source
+```
+
+Use one of these adapter-specific `source_kind` values when possible:
 
 - `gemini-conversation`
 - `ai-chat`
@@ -140,25 +151,29 @@ Use this structure:
 ```markdown
 ---
 status: inbox
+routing_class: selected_source
 source: external-input
-source_type:
+source_type: external_source
+source_kind:
 source_url:
 source_access_status:
 project:
+domain:
 scope:
 topic:
 candidate_tags:
-  - work/log
-  - work/input
+  - selected-source/candidate
+  - scope-appropriate/input
 needs_review: true
 ---
 
 # Input Note - YYYY-MM-DD - Short Topic
 
-Source type:
+Source kind:
 Source URL:
 Source access status:
 Project:
+Domain:
 Scope:
 Topic:
 Why captured:
@@ -239,9 +254,9 @@ specific source to be captured.
 
 This skill creates source material in `inbox/.../notes/`.
 
-It does not create final daily notes or promote the source into durable
+It does not create the daily capture review or promote the source into durable
 knowledge. It records enough redacted context for later review.
 
-Use `daily-work-log` for generated daily summaries. Use `methodology-intake`
-after capture when deciding whether the source should become a Rule, Skill,
-Context term, ADR, Spec, Issue, or No-op.
+Use `daily-work-log` when the source should enter a daily capture review. Use
+`methodology-intake` after capture when deciding whether the source should
+become a Rule, Skill, Context term, ADR, Spec, Issue, or No-op.

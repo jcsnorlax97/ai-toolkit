@@ -1,4 +1,4 @@
 interface:
   display_name: "Capture Input Note"
-  short_description: "Capture external sources as redacted inbox notes."
-  default_prompt: "Capture this external source as a redacted input note for later review."
+  short_description: "Ingest external sources for later review"
+  default_prompt: "Use $capture-input-note to ingest this external source as a redacted input note with access status and provenance."

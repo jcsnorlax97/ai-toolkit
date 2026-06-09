@@ -75,9 +75,9 @@ or `No-op`.
 
 ## Relationship To Capture Input Note
 
-`capture-input-note` preserves source material as a redacted work-log inbox
-note. `methodology-intake` classifies whether that source should change repo
-artifacts.
+`capture-input-note` ingests an external source as a redacted work-log inbox
+note when source access or provenance work is needed. `methodology-intake`
+classifies whether that source should change repo artifacts.
 
 Use a captured input note as the preferred input when the source is
 authenticated, private, long, noisy, likely to disappear, or needs redaction.

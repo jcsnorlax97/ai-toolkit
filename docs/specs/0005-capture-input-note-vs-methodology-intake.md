@@ -11,7 +11,8 @@ record why both currently live under `skills/engineering/`.
 
 ## Short Version
 
-`capture-input-note` preserves source material safely.
+`capture-input-note` ingests and preserves external source material safely when
+source access, extraction, redaction, or provenance work is required.
 
 `methodology-intake` decides whether source material should change repo
 artifacts.
@@ -34,11 +35,11 @@ may run without a prior input note.
 
 | Question | capture-input-note | methodology-intake |
 | --- | --- | --- |
-| Primary job | Capture and redact source material. | Classify adoption into repo artifacts. |
+| Primary job | Ingest, redact, and preserve external source material that needs source-access or provenance work. | Classify adoption into repo artifacts. |
 | Main output | One input note in the work-log inbox. | One methodology intake report. |
 | Side effect | Writes to `ai-work-logs/inbox/YYYY/MM/DD/notes/`. | Read-only by default. |
-| Source scope | AI chats, Slack/Teams, transcripts, video notes, articles, papers, workflow ideas, copied excerpts. | Methodology sources being considered for adoption. |
-| Classification | Records metadata such as `source_type`, `source_access_status`, and `scope`. | Assigns one destination and one retention status. |
+| Source scope | AI chats, Slack/Teams, transcripts, recordings, articles, papers, workflow sources, and links requiring ingestion. | Methodology sources being considered for adoption. |
+| Classification | Records `routing_class: selected_source`, `source_type: external_source`, adapter-specific `source_kind`, `source_access_status`, and `scope`. | Assigns one destination and one retention status. |
 | Does not do | Promote ideas into durable knowledge or repo changes. | Persist raw source material or create repo artifacts unless explicitly asked later. |
 
 ## When To Use Which
@@ -47,10 +48,15 @@ Use `capture-input-note` when:
 
 - the source may disappear, require auth, or need a safe local summary;
 - the source is a meeting, chat, transcript, recording, shared AI conversation,
-  article, paper, or copied excerpt;
+  article, paper, or link that requires reading, rendering, parsing,
+  transcription planning, or provenance preservation;
 - the source may contain confidential or personal content that must be redacted;
-- the source should feed a daily work log, later methodology intake, or manual
+- the source should feed a daily capture review, later methodology intake, or manual
   review.
+
+Use `capture-to-outbox --input-type external_source` instead when the user has
+already selected and pasted the exact excerpt or snippet and only needs a local
+review-stage note.
 
 Use `methodology-intake` when:
 
