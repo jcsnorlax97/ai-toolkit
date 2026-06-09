@@ -91,31 +91,55 @@ macOS normally does not need special privileges for these symlinks:
 ### Windows, Git Bash
 
 Windows usually requires Developer Mode or an elevated shell for directory
-symlinks. The known-good path is Git Bash opened as Administrator:
+symlinks. The known-good path for symlink mode is Git Bash opened as
+Administrator. Do not use PowerShell or the VS Code integrated terminal for
+symlink mode; they may resolve `bash` to WSL or use the wrong home directory.
+
+Before changing files, verify that this shell is Git Bash and that `$HOME`
+points at the Windows user profile:
+
+```bash
+bash -lc 'uname -s; echo $HOME'
+```
+
+Expected output looks like:
+
+```text
+MINGW64_NT...
+/c/Users/<WindowsUser>
+```
+
+If you see `Linux` and `/home/<user>`, stop. That is WSL, not Git Bash for the
+Windows user profile.
+
+After the preflight passes, run the installer from the repo root:
 
 ```bash
 MSYS=winsymlinks:nativestrict ./scripts/install-claude-code-skills.sh
-./scripts/install-claude-code-skills.sh --verify-only
+MSYS=winsymlinks:nativestrict ./scripts/install-claude-code-skills.sh --verify-only
 ```
 
 ### Windows, VS Code PowerShell Or `pwsh`
 
-Call Git Bash's `bash` from PowerShell:
+Do not use PowerShell, `pwsh`, or the VS Code integrated terminal for Windows
+symlink mode. Open Git Bash as Administrator and use the commands above.
+
+From PowerShell or VS Code, use copy mode only:
 
 ```powershell
-$env:MSYS = "winsymlinks:nativestrict"
-bash ./scripts/install-claude-code-skills.sh
-bash ./scripts/install-claude-code-skills.sh --verify-only
+bash ./scripts/install-claude-code-skills.sh --copy
+bash ./scripts/install-claude-code-skills.sh --copy --verify-only
 ```
 
-Confirm that PowerShell resolves `bash` to Git Bash, not WSL:
+If troubleshooting path resolution from PowerShell, confirm whether `bash`
+resolves to Git Bash or WSL before running any installer:
 
 ```powershell
 where.exe bash
 bash -lc 'uname -s; echo $HOME'
 ```
 
-Expected Git Bash output looks like:
+Git Bash output should look like:
 
 ```text
 MINGW64_NT...

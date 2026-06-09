@@ -107,7 +107,10 @@ Canonical skills live under `skills/engineering/`. Personal runtime entries in
 `~/.claude/skills/` and `~/.codex/skills/` are adapters, not the source of
 truth.
 
-For Claude Code project-local usage:
+### Project-Local Claude Code
+
+Clone the repo and verify the project-local adapters before starting Claude
+Code:
 
 ```bash
 git clone <repo-ssh-url> agentic-engineering-skills
@@ -117,6 +120,22 @@ claude
 ```
 
 Claude Code should discover project skills under `.claude/skills/`.
+
+### Windows Symlink Mode
+
+Windows symlink mode should be run from Git Bash opened as Administrator, not
+PowerShell or the VS Code integrated terminal. Before installing, verify that
+the shell is Git Bash and that `$HOME` points at the Windows user profile:
+
+```bash
+bash -lc 'uname -s; echo $HOME'
+```
+
+Expected output starts with `MINGW64_NT...` and `/c/Users/<WindowsUser>`. If it
+prints `Linux` and `/home/<user>`, use Git Bash instead, or use `--copy` as the
+Windows fallback.
+
+### Personal Runtime Install
 
 For personal Claude Code usage across all projects:
 
@@ -135,6 +154,8 @@ For both:
 ```bash
 ./scripts/repair-personal-skill-links.sh
 ```
+
+### Personal Install Verification
 
 Verify personal installs without changing files:
 
