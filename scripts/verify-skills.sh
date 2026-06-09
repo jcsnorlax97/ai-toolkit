@@ -23,14 +23,22 @@ for skill_dir in "$CANONICAL_DIR"/*; do
   skill_file="$skill_dir/SKILL.md"
   adapter_dir="$CLAUDE_SKILLS_DIR/$skill_name"
   adapter_file="$adapter_dir/SKILL.md"
+  adapter_pointer="../../skills/engineering/$skill_name"
 
   [ -f "$skill_file" ] || fail "Missing SKILL.md for canonical skill: $skill_name"
-  grep -q '^---$' "$skill_file" || fail "Missing YAML frontmatter fence in $skill_file"
+  grep -q '^---[[:space:]]*$' "$skill_file" || fail "Missing YAML frontmatter fence in $skill_file"
   grep -q '^name:[[:space:]]*'"$skill_name"'[[:space:]]*$' "$skill_file" || fail "Missing or mismatched name frontmatter in $skill_file"
   grep -q '^description:[[:space:]]*' "$skill_file" || fail "Missing description frontmatter in $skill_file"
 
   [ -e "$adapter_dir" ] || fail "Missing Claude adapter for skill: $skill_name"
-  [ -f "$adapter_file" ] || fail "Claude adapter does not resolve to SKILL.md for: $skill_name"
+  if [ -f "$adapter_file" ]; then
+    :
+  elif [ -f "$adapter_dir" ]; then
+    actual_pointer="$(tr -d '\r\n' < "$adapter_dir")"
+    [ "$actual_pointer" = "$adapter_pointer" ] || fail "Invalid Claude adapter pointer for: $skill_name"
+  else
+    fail "Claude adapter does not resolve or contain a valid pointer for: $skill_name"
+  fi
 done
 
 [ "$found" -eq 1 ] || fail "No canonical skills found under $CANONICAL_DIR"
