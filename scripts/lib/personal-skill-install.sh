@@ -46,8 +46,8 @@ HINT
 }
 
 create_symlink() {
-  link_source="$1"
-  link_target="$2"
+  local link_source="$1"
+  local link_target="$2"
 
   ln -s "$link_source" "$link_target"
 
@@ -90,13 +90,27 @@ verify_copy_snapshot() {
 }
 
 replace_symlink() {
-  link_source="$1"
-  link_target="$2"
+  local link_source="$1"
+  local link_target="$2"
+  local link_parent
+  local tmp_link
+  local old_source
+
   link_parent="$(dirname "$link_target")"
   tmp_link="$link_parent/.tmp-link.$$.$RANDOM"
+  old_source=""
 
+  [ -L "$link_target" ] || fail "Refusing to replace non-symlink: $link_target"
+  old_source="$(readlink "$link_target")"
   create_symlink "$link_source" "$tmp_link"
-  mv -f "$tmp_link" "$link_target"
+  if ! unlink "$link_target"; then
+    unlink "$tmp_link" || true
+    fail "Failed to unlink old symlink: $link_target"
+  fi
+  if ! mv "$tmp_link" "$link_target"; then
+    create_symlink "$old_source" "$link_target" || true
+    fail "Failed to install replacement symlink: $link_target"
+  fi
 }
 
 install_personal_skills() {
