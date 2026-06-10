@@ -178,3 +178,49 @@ frames were unequal heights and the frame labels were inside the borders.
 - When should the user be recommended to use draw.io vs Mermaid upfront, before
   the layout problem appears? Possible heuristic: ≥3 columns with uneven node
   counts → recommend draw.io proactively.
+
+---
+
+## 2026-06-10 — Second session (continued — edge clarity refinements)
+
+**Additional mistakes observed:**
+
+5. **Shared connection point on a node caused two edges to appear as one.**
+   C6→DB1 and DB1→C7 both used `entryX=0;entryY=0.5` / `exitX=0;exitY=0.5` — the
+   same pixel on DB1's left face. Their approach and departure segments overlapped
+   visually, making it look like a single through-edge rather than two separate
+   read/write operations on the database node.
+   — *Cause*: Default `entryY=0.5` / `exitY=0.5` assigns both edges the exact same
+   connection point. draw.io overlaps the terminal segments with no visual separation.
+   — *Fix*: Stagger `entryY` / `exitY` on the shared face (e.g., entering edge at
+   `entryY=0.3`, departing edge at `exitY=0.7` — 32 px apart on an 80 px face).
+   Update explicit waypoints in the shared routing corridor to reflect the new y-values
+   so paths through intermediate columns stay visually parallel and distinct.
+   — *Status*: Candidate pattern pending repeated validation.
+
+6. **Label proximity alone is insufficient when multiple edges share a routing corridor.**
+   After positioning "No" labels near their source diamonds with `mxPoint as="offset"`,
+   4 labels still clustered at similar x-positions in the 100 px gap. Users could not
+   reliably trace which label belonged to which line without visually following each
+   path across the spine.
+   — *Cause*: When many edges share a corridor (parallel vertical spines in the gap),
+   their labels converge in a small x-zone even if each label is near its own source.
+   A supplementary visual cue can help link a label to its line when position
+   alone is insufficient.
+   — *Fix*: Add `strokeColor=<color>;fontColor=<color>;` to each "No" edge style,
+   using a distinct color per decision (e.g., dark blue, orange, purple, teal, brown).
+   The line and its label share the same color, while clear labels, spacing, or
+   line styles preserve the association without relying on color alone.
+   — *Status*: Candidate pattern pending repeated validation.
+
+**Additional successes observed (confirmed, not yet promoted):**
+
+- **`mxPoint as="offset"` for edge label positioning.** Adding `<mxPoint x="dx" y="dy"
+  as="offset"/>` inside an edge's `mxGeometry` shifts the label by (dx, dy) pixels from
+  draw.io's auto-computed midpoint. Effective for moving labels to the first segment of
+  an L-shaped edge. *Observed once — requires per-edge calculation of the path midpoint.*
+
+- **Exact entryY/exitY to produce horizontal inter-column edges.** When source and target
+  center y-values differ, `orthogonalEdgeStyle` adds a visible jog. Computing
+  `entryY = (desired_y − node_top) / node_height` forces the entry point to match the
+  source exit y exactly, producing a clean horizontal segment. *Observed once.*
