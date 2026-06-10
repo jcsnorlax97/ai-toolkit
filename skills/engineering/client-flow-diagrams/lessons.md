@@ -102,3 +102,79 @@ They are candidate patterns — record further evidence before promoting to SKIL
   sign-off before delivery?
 - Is a comparison table (two flows side by side) always useful, or only when the
   user explicitly asks to compare them?
+
+---
+
+## 2026-06-10 — Second session (draw.io output format)
+
+**Task context:**
+Activation business flow diagrams for a client-facing ADR involving two related
+brands. Two swimlane diagrams, 4 columns each. The client identified that Mermaid
+frames were unequal heights and the frame labels were inside the borders.
+
+**Mistakes and weaknesses observed:**
+
+1. **Mermaid cannot produce equal-height swimlane frames or external frame labels.**
+   The user noticed visual inconsistency: Mermaid renders each subgraph just tall
+   enough for its content, so columns with fewer nodes are shorter than those with
+   more. Frame labels also render inside the border, not above it.
+   — *Cause*: Mermaid subgraph layout is fully automatic; no height or label-position
+   overrides exist.
+   — *Takeaway*: When the deliverable requires precise visual polish (equal column
+   heights, labels above borders), generate draw.io XML instead of Mermaid. The user
+   opens the file in app.diagrams.net and exports as SVG/PNG.
+   — *Reusable*: Yes — this is a hard Mermaid limitation.
+   — *Status*: Promoted to SKILL.md Step 3 as the output-format decision rule.
+
+2. **draw.io edge routing: overlapping lines when multiple edges share the same target.**
+   First-pass XML produced 5 "No" edges all converging on a single SF_ERR node,
+   each using the default orthogonalEdgeStyle with no waypoints. All five rendered
+   on top of each other.
+   — *Cause*: Without explicit waypoints, draw.io's auto-router assigns no spacing
+   between parallel edges going to the same target.
+   — *Takeaway*: Each "No" edge needs its own dedicated vertical spine in the
+   routing gap (staggered x: 295, 275, 255, 235, 215 — 20 px apart). Add staggered
+   entryY values on the target (0.15, 0.25, 0.35, 0.45, 0.55) so arrow-tips don't
+   pile on the same point.
+   — *Reusable*: Yes — applies whenever 3+ edges converge on one node.
+   — *Status*: Candidate pattern pending repeated validation.
+
+3. **draw.io edge routing: auto-router crossed through text-bearing shapes.**
+   Without waypoints, the router chose paths that passed through the interior of
+   shapes that contained text.
+   — *Cause*: Orthogonal auto-routing computes paths at render time and doesn't
+   always avoid shapes, especially when multiple edges compete for the same corridor.
+   — *Takeaway*: Reserve a wide routing gap (≥100 px) between the leftmost column
+   (Storefront) and the logic column (CIS). Route all "No" edges exclusively through
+   this gap with explicit waypoints. "Yes" paths exit the diamond bottom straight
+   down — no waypoints needed.
+   — *Reusable*: Yes.
+   — *Status*: Candidate pattern pending repeated validation.
+
+4. **No legend in first draft.**
+   The user asked for a legend explaining colour and shape meanings. Without it,
+   readers cannot interpret the visual encoding without prior context.
+   — *Cause*: Legend was not in the original skill workflow for this format.
+   — *Takeaway*: Always include a Legend container when colour-coded shapes are used
+   (already required by review-checklist.md, but now also required in the generate
+   step, not just the review step).
+   — *Reusable*: Yes.
+   — *Status*: Kept as a general review rule; exact legend structure remains a
+   candidate pattern.
+
+**Successes observed (confirmed, not yet promoted):**
+
+- **draw.io swimlane container style for borderless frames:**
+  `swimlane;startSize=0;fillColor=none;strokeColor=#888888;strokeWidth=2;`
+  with a separate `text` label cell above the container (y=40, container y=78).
+  Accepted without revision. *Observed once.*
+
+- **R1→SF_OK "below-content" routing pattern for long cross-column return edges:**
+  When a rightmost-column node must connect back to a leftmost-column node, and
+  the gap area is occupied by vertical spines, routing the edge at y = frame_bottom
+  + 30 (below all frame content) keeps it from crossing any spine. *Observed once.*
+
+**Open questions after this session:**
+- When should the user be recommended to use draw.io vs Mermaid upfront, before
+  the layout problem appears? Possible heuristic: ≥3 columns with uneven node
+  counts → recommend draw.io proactively.

@@ -44,18 +44,40 @@ Extract from source material:
 
 ### 3 — Produce the diagram
 
-Prefer **Mermaid `flowchart TD`** for multi-system decision flows.
+#### Choose the output format
 
-Use **swimlane subgraphs** to show which system owns each step:
+| Situation | Format |
+|-----------|--------|
+| Quick draft, developer-readable source, no layout constraints | **Mermaid `flowchart TD`** |
+| Client requires equal-height columns, or labels above frame borders | **draw.io XML** (user opens in app.diagrams.net, exports SVG/PNG) |
+
+**Mermaid routing note:** Mermaid's `curve` init setting applies uniformly to all edges — no per-edge routing control exists. The `step` option adds right-angle turns to every connection including simple verticals. Explain this if the user asks for selective right-angle routing. Mermaid also cannot enforce equal subgraph heights or place labels outside the frame border — switch to draw.io when either is needed.
+
+---
+
+#### Mermaid output
+
+Use swimlane subgraphs to show system ownership:
 ```
 subgraph SystemName["System Label"]
     ...
 end
 ```
 
-Apply **consistent visual differentiation** between node types: at minimum distinguish process steps, decision points, success outcomes, and error outcomes. The specific colour scheme, icons, step numbering, and legend format used in the first session are recorded in `lessons.md` as candidate patterns pending further validation.
+Apply consistent visual differentiation between node types: at minimum distinguish process steps, decision points, success outcomes, and error outcomes. Specific `classDef` colour values and other conventions are recorded in `lessons.md` as candidate patterns pending further validation.
 
-**Mermaid routing note:** Mermaid's init `curve` setting applies uniformly to all edges — there is no per-edge routing control. The `step` option adds right-angle turns to every connection including simple vertical ones. Explain this limitation if a user asks for selective right-angle routing.
+---
+
+#### draw.io XML output
+
+Produce a `.drawio` file when precise layout control is required. Keep frame
+heights, label placement, node styling, and edge routing visually consistent.
+Use explicit waypoints when auto-routing causes overlaps or crosses
+text-bearing shapes. Include a legend when colour or shape carries meaning.
+
+See `lessons.md` for candidate draw.io styles and routing patterns. Treat their
+exact coordinates, colours, spacing, and proactive format-selection heuristics
+as starting points until repeated use validates them.
 
 ### 4 — Add explanations below each diagram
 
