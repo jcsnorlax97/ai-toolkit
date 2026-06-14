@@ -148,6 +148,31 @@ MINGW64_NT...
 
 If you see `Linux` and `/home/<user>`, that is WSL.
 
+Git Bash may be installed even when `where.exe bash` finds nothing. The normal
+Git for Windows executable is:
+
+```powershell
+& "C:\Program Files\Git\bin\bash.exe" -lc "uname -s; echo `$HOME"
+```
+
+If the preflight is correct but link creation fails with
+`Operation not permitted`, enable Windows Developer Mode or run Git Bash as
+Administrator. Developer Mode allows a normal user shell to create symbolic
+links; an elevated Git Bash session is the fallback when Developer Mode cannot
+be enabled.
+
+After enabling Developer Mode, PowerShell can launch the Git Bash installer
+explicitly:
+
+```powershell
+$env:MSYS = "winsymlinks:nativestrict"
+& "C:\Program Files\Git\bin\bash.exe" -lc `
+  "cd /c/Users/<WindowsUser>/Documents/a-codex/agentic-engineering-skills && ./scripts/repair-personal-skill-links.sh"
+```
+
+If neither option is available, keep using copy mode and rerun the copy
+installer after each repository update.
+
 ### WSL
 
 Use WSL only when Claude Code is also running inside WSL:
