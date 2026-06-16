@@ -96,3 +96,68 @@ Required obligations:
 - Preserve the MIT copyright and permission notice.
 - Do not present imported skills as original work from this repository.
 - Keep `NOTICE.md` and this source registry updated when importing or refreshing.
+
+## multica-ai/andrej-karpathy-skills
+
+Source repository:
+
+```text
+https://github.com/multica-ai/andrej-karpathy-skills
+```
+
+Imported upstream paths:
+
+```text
+No upstream files are imported verbatim.
+```
+
+Local target paths:
+
+```text
+portable-baselines/karpathy-principles
+```
+
+License:
+
+```text
+MIT License, as stated by the upstream README.
+```
+
+License source:
+
+```text
+https://github.com/multica-ai/andrej-karpathy-skills#license
+```
+
+Copyright notice:
+
+```text
+No upstream copyright notice was identified in the README. Preserve upstream
+project attribution when discussing this adapted baseline.
+```
+
+Verification date:
+
+```text
+2026-06-16
+```
+
+Import commit recorded at initial adaptation:
+
+```text
+Not recorded. The baseline is an adapted tool-neutral rule pack, not a verbatim
+file import.
+```
+
+Verification method:
+
+- Checked the upstream GitHub README.
+- Confirmed the source describes four principles and states MIT licensing.
+- Adapted the principles into local wording and managed-block adapters.
+
+Required obligations:
+
+- Preserve source attribution in the baseline pack.
+- Do not present the original upstream Claude Code plugin or examples as
+  authored by this repository.
+- Re-check license details before any future verbatim import.

@@ -5,6 +5,10 @@ Reusable engineering workflows for AI coding agents.
 This repository stores portable skills for software engineering work. The
 design is tool-aware but keeps one canonical source for every skill.
 
+It also stores portable baselines: always-on instruction packs that can be
+applied to repo-level agent instruction files without installing machine-global
+runtime state.
+
 ## Repository Name
 
 Recommended repo name:
@@ -34,6 +38,7 @@ Rationale:
 │   ├── intake.md
 │   └── specs/
 ├── scripts/
+├── portable-baselines/
 └── skills/
     └── engineering/
 ```
@@ -49,6 +54,10 @@ Adapters make the same skills usable in specific tools:
 - Codex personal install: `~/.codex/skills/<skill-name>`
 
 Do not maintain duplicated skill bodies by hand.
+
+`portable-baselines/` is the canonical source for always-on instruction packs.
+Baselines are not skills: they do not require invocation and should be easy to
+apply, verify, update, and remove through managed marker blocks.
 
 ## Lifecycle Metadata
 
@@ -101,6 +110,48 @@ These skills were added in this repo as small companion workflows.
 
 See `docs/specs/0005-capture-input-note-vs-methodology-intake.md` for the
 boundary between source capture and methodology adoption.
+
+## Portable Baselines
+
+Portable baselines are reusable default instructions for AI coding agents. They
+are intended for repo-local managed blocks in files such as `AGENTS.md` and
+`CLAUDE.md`.
+
+Current baseline packs:
+
+- `karpathy-principles`: think before coding, simplicity first, surgical
+  changes, and goal-driven execution.
+
+Apply a baseline to a downstream repo:
+
+```powershell
+./scripts/apply-portable-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+./scripts/apply-portable-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot
+```
+
+Or call the CLI from the target repo and omit `-TargetRepo`:
+
+```powershell
+cd C:\path\to\repo
+C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 list
+C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 show -Pack karpathy-principles
+C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+```
+
+Remove it later:
+
+```powershell
+./scripts/remove-portable-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles
+C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 remove -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+```
+
+Verify pack shape and a downstream repo:
+
+```powershell
+./scripts/verify-portable-baselines.ps1
+./scripts/verify-portable-baselines.ps1 -TargetRepo C:\path\to\repo
+C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 verify -Pack karpathy-principles -Tools codex,claude,copilot
+```
 
 ## Installation
 

@@ -1,0 +1,79 @@
+param(
+    [Parameter(Position = 0)]
+    [ValidateSet("list", "show", "apply", "remove", "verify")]
+    [string] $Command = "list",
+
+    [string] $TargetRepo = (Get-Location).Path,
+
+    [string] $Pack = "karpathy-principles",
+
+    [string[]] $Tools = @("codex", "claude"),
+
+    [switch] $CreateMissing,
+
+    [switch] $DryRun
+)
+
+$ErrorActionPreference = "Stop"
+
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$repoRoot = Split-Path -Parent $scriptDir
+$baselinesRoot = Join-Path $repoRoot "portable-baselines"
+
+function Read-Utf8Text($Path) {
+    return [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8)
+}
+
+function Get-PackRoot($Name) {
+    return Join-Path $baselinesRoot $Name
+}
+
+function Read-PackJson($Name) {
+    $packPath = Join-Path (Get-PackRoot $Name) "pack.json"
+    if (-not (Test-Path -LiteralPath $packPath)) {
+        throw "Unknown portable baseline pack: $Name"
+    }
+    return (Read-Utf8Text $packPath | ConvertFrom-Json)
+}
+
+switch ($Command) {
+    "list" {
+        if (-not (Test-Path -LiteralPath $baselinesRoot)) {
+            throw "Missing portable-baselines directory: $baselinesRoot"
+        }
+
+        Get-ChildItem -LiteralPath $baselinesRoot -Directory | ForEach-Object {
+            $packPath = Join-Path $_.FullName "pack.json"
+            if (Test-Path -LiteralPath $packPath) {
+                $packInfo = Read-Utf8Text $packPath | ConvertFrom-Json
+                Write-Output "$($packInfo.name) $($packInfo.version) [$($packInfo.status)] - $($packInfo.description)"
+            }
+        }
+    }
+    "show" {
+        $packInfo = Read-PackJson $Pack
+        $baselinePath = Join-Path (Get-PackRoot $Pack) "baseline.md"
+        Write-Output "# $($packInfo.name) $($packInfo.version) [$($packInfo.status)]"
+        Write-Output ""
+        Write-Output $packInfo.description
+        Write-Output ""
+        Write-Output "Adapters:"
+        $packInfo.adapters.PSObject.Properties | ForEach-Object {
+            Write-Output "- $($_.Name): $($_.Value)"
+        }
+        Write-Output ""
+        Write-Output (Read-Utf8Text $baselinePath).Trim()
+    }
+    "apply" {
+        $applyScript = Join-Path $scriptDir "apply-portable-baseline.ps1"
+        & $applyScript -TargetRepo $TargetRepo -Pack $Pack -Tools $Tools -CreateMissing:$CreateMissing -DryRun:$DryRun
+    }
+    "remove" {
+        $removeScript = Join-Path $scriptDir "remove-portable-baseline.ps1"
+        & $removeScript -TargetRepo $TargetRepo -Pack $Pack -Tools $Tools -DryRun:$DryRun
+    }
+    "verify" {
+        $verifyScript = Join-Path $scriptDir "verify-portable-baselines.ps1"
+        & $verifyScript -TargetRepo $TargetRepo -Pack $Pack -Tools $Tools
+    }
+}

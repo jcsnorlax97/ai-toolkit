@@ -52,3 +52,14 @@ License verification details are tracked in:
 ```text
 docs/upstream-sources.md
 ```
+
+This repository also contains a locally worded portable baseline adapted from:
+
+```text
+multica-ai/andrej-karpathy-skills
+https://github.com/multica-ai/andrej-karpathy-skills
+```
+
+The local `portable-baselines/karpathy-principles` pack retains the source
+project's four-principle intent while using tool-neutral wording and repo-local
+managed-block adapters.

@@ -16,6 +16,18 @@ Canonical source: The directory that owns the maintained copy of a skill. In thi
 
 Adapter: A tool-specific exposure layer that points at or installs from the canonical source. Examples: `.claude/skills/`, `~/.claude/skills/`, `~/.codex/skills/`
 
+Portable baseline: A reusable always-on instruction pack for AI coding agents,
+applied through repo-local managed blocks in files such as `AGENTS.md` or
+`CLAUDE.md`. It changes the default agent posture without requiring skill
+discovery or invocation. Avoid: hidden global prompt, copied prompt dump
+
+Baseline pack: A named portable baseline directory containing `pack.json`,
+`baseline.md`, and one or more tool adapters. Avoid: loose snippet, note
+
+Managed baseline block: A bounded downstream insertion between
+`portable-agent-baseline` BEGIN/END markers. It can be updated or removed
+without rewriting surrounding repo-specific instructions. Avoid: unmarked paste
+
 Personal link install: A personal tool install where `~/.claude/skills/<skill-name>` or `~/.codex/skills/<skill-name>` is a symlink to the canonical skill through the stable repo link. Avoid: copied install, manual refresh
 
 Personal copy install: A personal tool install where canonical skill directories are copied into `~/.claude/skills/<skill-name>` or `~/.codex/skills/<skill-name>` as runtime snapshots. This is an explicit fallback for environments that cannot create real symlinks. Avoid: stale manual copy, untracked fork
@@ -100,6 +112,12 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
 - A workflow skill may orchestrate lower-level skills and select a team profile.
 - A skill should improve repeatability, not just verbosity.
 - A skill should be edited in its canonical source, then exposed through adapters.
+- A portable baseline should be edited in `portable-baselines/`, then applied
+  to downstream repo instruction files through managed baseline blocks.
+- A portable baseline is not a skill because it is always-on and has no trigger,
+  workflow-specific inputs, or stop condition.
+- A skill should not become a portable baseline unless its guidance is safe and
+  useful as default behavior in ordinary chats.
 - Personal link installs expose canonical skills through the stable repo link so pulling the repo updates installed skills without copying or deleting existing skill directories.
 - Personal copy installs avoid symlink privileges but require rerunning the installer after pulling repo changes.
 - Imported skills must be backed by the source registry and required license notices.

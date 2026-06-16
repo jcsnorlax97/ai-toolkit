@@ -1,0 +1,17 @@
+{
+  "name": "karpathy-principles",
+  "version": "0.1.0",
+  "status": "active",
+  "description": "Always-on engineering posture for AI coding agents: think first, keep changes simple, edit surgically, and verify goals.",
+  "source": {
+    "title": "Karpathy-Inspired Claude Code Guidelines",
+    "repository": "https://github.com/multica-ai/andrej-karpathy-skills",
+    "license": "MIT",
+    "relationship": "Adapted as a tool-neutral portable baseline, not imported as a skill body."
+  },
+  "adapters": {
+    "codex": "adapters/AGENTS.md.block",
+    "claude": "adapters/CLAUDE.md.block",
+    "copilot": "adapters/copilot-instructions.md.block"
+  }
+}

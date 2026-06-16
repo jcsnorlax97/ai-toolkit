@@ -14,6 +14,7 @@ them to multiple AI coding tools without hand-maintaining duplicate skill files.
 - Build a full plugin marketplace.
 - Replace project-specific `AGENTS.md` or `CLAUDE.md` files in downstream repos.
 - Store private memories, credentials, transcripts, or local tool state.
+- Treat always-on baselines as workflow skills.
 
 ## Design
 
@@ -35,6 +36,25 @@ Tool-specific adapters point at or install from that source tree.
 ~/.codex/skills/<skill-name>   -> ~/.local/share/agentic-engineering-skills/current/skills/engineering/<skill-name>
 ```
 
+`portable-baselines/` is the canonical source tree for always-on instruction
+packs.
+
+```text
+portable-baselines/
+└── <pack-name>/
+    ├── pack.json
+    ├── baseline.md
+    └── adapters/
+        ├── AGENTS.md.block
+        ├── CLAUDE.md.block
+        └── copilot-instructions.md.block
+```
+
+Baseline adapters are applied to downstream repo instruction files as managed
+blocks. They are not installed into personal runtime skill directories by
+default, and they must be removable by deleting or replacing only the marked
+block.
+
 ## Repository-Level Files
 
 - `README.md`: human onboarding and bootstrap commands.
@@ -44,8 +64,11 @@ Tool-specific adapters point at or install from that source tree.
 - `docs/adr/`: durable architecture decisions.
 - `docs/agents/`: issue, triage, and domain context conventions.
 - `scripts/`: deterministic installation and verification commands.
+- `portable-baselines/`: always-on baseline packs and repo-local adapters.
 
 ## Install Behavior
+
+### Skill Install Behavior
 
 Installation scripts expose canonical skill directories to personal tool
 directories. The default mode is symlink mode:
@@ -114,6 +137,24 @@ entries are symlinks so local edits immediately affect the canonical files.
 Operational commands, the scenario-by-scenario behavior matrix, and
 macOS/Windows notes live in `docs/install.md`.
 
+### Portable Baseline Apply Behavior
+
+Portable baseline scripts update repo-local instruction files such as
+`AGENTS.md` and `CLAUDE.md`. They do not write to `~/.claude`, `~/.codex`, or
+other machine-global runtime directories by default.
+
+The default downstream behavior is managed-block insertion:
+
+```text
+<!-- BEGIN portable-agent-baseline:<pack-name> vX.Y.Z -->
+...
+<!-- END portable-agent-baseline:<pack-name> -->
+```
+
+Applying a baseline should create or replace only the matching block. Removing
+a baseline should remove only the matching block. Surrounding repo-specific
+instructions remain owned by the downstream repo.
+
 ## Upstream Imports
 
 The upstream-compatible engineering skills are imported from
@@ -148,6 +189,14 @@ alone.
 - Every `SKILL.md` contains frontmatter with `name` and `description`.
 - Claude Code project adapter entries exist for every canonical skill.
 - Adapter entries resolve to a readable `SKILL.md`.
+
+`scripts/verify-portable-baselines.ps1` must check:
+
+- The requested baseline pack has `pack.json`, `baseline.md`, and required
+  adapter blocks.
+- Adapter blocks contain matching BEGIN/END managed markers.
+- When a target repo is supplied, existing target instruction files contain the
+  requested managed block.
 
 ## Security And Privacy
 
