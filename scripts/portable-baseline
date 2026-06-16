@@ -1,0 +1,266 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+BASELINES_DIR="$ROOT_DIR/portable-baselines"
+
+COMMAND="${1:-list}"
+if [[ $# -gt 0 ]]; then
+  shift
+fi
+
+PACK="karpathy-principles"
+TARGET_REPO="$(pwd -P)"
+TOOLS="codex,claude"
+DRY_RUN=0
+CREATE_MISSING=0
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  portable-baseline list
+  portable-baseline show --pack <pack>
+  portable-baseline apply --pack <pack> --tools codex,claude,copilot [--target-repo <path>] [--dry-run] [--create-missing]
+  portable-baseline remove --pack <pack> --tools codex,claude,copilot [--target-repo <path>] [--dry-run]
+  portable-baseline verify --pack <pack> --tools codex,claude,copilot [--target-repo <path>]
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --pack|-Pack)
+      PACK="$2"
+      shift 2
+      ;;
+    --target-repo|-TargetRepo)
+      TARGET_REPO="$2"
+      shift 2
+      ;;
+    --tools|-Tools)
+      TOOLS="$2"
+      shift 2
+      ;;
+    --dry-run|-DryRun)
+      DRY_RUN=1
+      shift
+      ;;
+    --create-missing|-CreateMissing)
+      CREATE_MISSING=1
+      shift
+      ;;
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+pack_root() {
+  printf '%s/%s' "$BASELINES_DIR" "$PACK"
+}
+
+require_pack() {
+  if [[ ! -f "$(pack_root)/pack.json" ]]; then
+    echo "Unknown portable baseline pack: $PACK" >&2
+    exit 1
+  fi
+}
+
+json_field() {
+  local field="$1"
+  sed -nE "s/^[[:space:]]*\"$field\"[[:space:]]*:[[:space:]]*\"([^\"]*)\".*/\1/p" "$(pack_root)/pack.json" | head -n 1
+}
+
+tool_target() {
+  case "$1" in
+    codex) printf 'AGENTS.md|AGENTS.md.block' ;;
+    claude) printf 'CLAUDE.md|CLAUDE.md.block' ;;
+    copilot) printf '.github/copilot-instructions.md|copilot-instructions.md.block' ;;
+    *)
+      echo "Unsupported tool '$1'. Supported tools: codex, claude, copilot" >&2
+      exit 1
+      ;;
+  esac
+}
+
+verify_pack_shape() {
+  require_pack
+  local required=(
+    "pack.json"
+    "baseline.md"
+    "adapters/AGENTS.md.block"
+    "adapters/CLAUDE.md.block"
+    "adapters/copilot-instructions.md.block"
+  )
+  local rel
+  for rel in "${required[@]}"; do
+    if [[ ! -f "$(pack_root)/$rel" ]]; then
+      echo "Missing portable baseline file: $rel" >&2
+      exit 1
+    fi
+  done
+  local adapter
+  for adapter in "$(pack_root)"/adapters/*.block; do
+    if ! grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$adapter"; then
+      echo "Adapter missing BEGIN marker: $adapter" >&2
+      exit 1
+    fi
+    if ! grep -q "<!-- END portable-agent-baseline:$PACK -->" "$adapter"; then
+      echo "Adapter missing END marker: $adapter" >&2
+      exit 1
+    fi
+  done
+  echo "pack ok: $PACK"
+}
+
+for_each_tool() {
+  local callback="$1"
+  local tool
+  IFS=',' read -r -a tool_list <<< "$TOOLS"
+  for tool in "${tool_list[@]}"; do
+    tool="${tool//[[:space:]]/}"
+    [[ -z "$tool" ]] && continue
+    "$callback" "$tool"
+  done
+}
+
+apply_tool() {
+  local tool="$1"
+  local mapping target_rel adapter_rel target_path adapter_path action
+  mapping="$(tool_target "$tool")"
+  target_rel="${mapping%%|*}"
+  adapter_rel="${mapping#*|}"
+  target_path="$TARGET_REPO/$target_rel"
+  adapter_path="$(pack_root)/adapters/$adapter_rel"
+
+  if [[ ! -f "$target_path" ]]; then
+    if [[ "$CREATE_MISSING" -ne 1 ]]; then
+      echo "skip missing $target_rel for $tool in $TARGET_REPO"
+      return
+    fi
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+      echo "would create $target_rel with $PACK for $tool"
+      return
+    fi
+    mkdir -p "$(dirname "$target_path")"
+    cp "$adapter_path" "$target_path"
+    printf '\n' >> "$target_path"
+    echo "created $target_rel with $PACK for $tool"
+    return
+  fi
+
+  if grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$target_path"; then
+    action="update"
+    if [[ "$DRY_RUN" -ne 1 ]]; then
+      PACK="$PACK" BLOCK_FILE="$adapter_path" perl -0pi -e 'BEGIN { $pack=$ENV{"PACK"}; $block_file=$ENV{"BLOCK_FILE"}; open my $fh, "<", $block_file or die $!; local $/; $block=<$fh>; chomp $block; } $pattern=qr/<!-- BEGIN portable-agent-baseline:\Q$pack\E v[^>]+ -->.*?<!-- END portable-agent-baseline:\Q$pack\E -->/s; s/$pattern/$block/s;' "$target_path"
+    fi
+  else
+    action="add"
+    if [[ "$DRY_RUN" -ne 1 ]]; then
+      {
+        printf '\n\n'
+        cat "$adapter_path"
+        printf '\n'
+      } >> "$target_path"
+    fi
+  fi
+
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    echo "would $action $PACK in $target_rel for $tool"
+  elif [[ "$action" == "update" ]]; then
+    echo "updated $PACK in $target_rel for $tool"
+  else
+    echo "added $PACK in $target_rel for $tool"
+  fi
+}
+
+remove_tool() {
+  local tool="$1"
+  local mapping target_rel target_path
+  mapping="$(tool_target "$tool")"
+  target_rel="${mapping%%|*}"
+  target_path="$TARGET_REPO/$target_rel"
+
+  if [[ ! -f "$target_path" ]]; then
+    echo "skip missing $target_rel for $tool in $TARGET_REPO"
+    return
+  fi
+  if ! grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$target_path"; then
+    echo "skip absent $PACK in $target_rel for $tool"
+    return
+  fi
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    echo "would remove $PACK from $target_rel for $tool"
+    return
+  fi
+
+  PACK="$PACK" perl -0pi -e 'BEGIN { $pack=$ENV{"PACK"}; } $pattern=qr/\r?\n?\r?\n?<!-- BEGIN portable-agent-baseline:\Q$pack\E v[^>]+ -->.*?<!-- END portable-agent-baseline:\Q$pack\E -->\r?\n?/s; s/$pattern/\n/s;' "$target_path"
+  echo "removed $PACK from $target_rel for $tool"
+}
+
+verify_tool() {
+  local tool="$1"
+  local mapping target_rel target_path
+  mapping="$(tool_target "$tool")"
+  target_rel="${mapping%%|*}"
+  target_path="$TARGET_REPO/$target_rel"
+
+  if [[ ! -f "$target_path" ]]; then
+    echo "skip missing $target_rel for $tool in $TARGET_REPO"
+    return
+  fi
+  if ! grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$target_path"; then
+    echo "Missing $PACK managed block in $target_rel" >&2
+    exit 1
+  fi
+  echo "target ok: $target_rel contains $PACK"
+}
+
+case "$COMMAND" in
+  list)
+    find "$BASELINES_DIR" -mindepth 1 -maxdepth 1 -type d | sort | while read -r dir; do
+      PACK="$(basename "$dir")"
+      [[ -f "$dir/pack.json" ]] || continue
+      echo "$(json_field name) $(json_field version) [$(json_field status)] - $(json_field description)"
+    done
+    ;;
+  show)
+    require_pack
+    echo "# $(json_field name) $(json_field version) [$(json_field status)]"
+    echo
+    echo "$(json_field description)"
+    echo
+    echo "Adapters:"
+    sed -nE 's/^[[:space:]]*"([^"]+)"[[:space:]]*:[[:space:]]*"([^"]+\.block)".*/- \1: \2/p' "$(pack_root)/pack.json"
+    echo
+    sed -n '1,$p' "$(pack_root)/baseline.md"
+    ;;
+  apply)
+    verify_pack_shape >/dev/null
+    TARGET_REPO="$(cd "$TARGET_REPO" && pwd -P)"
+    for_each_tool apply_tool
+    ;;
+  remove)
+    require_pack
+    TARGET_REPO="$(cd "$TARGET_REPO" && pwd -P)"
+    for_each_tool remove_tool
+    ;;
+  verify)
+    verify_pack_shape
+    TARGET_REPO="$(cd "$TARGET_REPO" && pwd -P)"
+    for_each_tool verify_tool
+    ;;
+  --help|-h|help)
+    usage
+    ;;
+  *)
+    echo "Unknown command: $COMMAND" >&2
+    usage >&2
+    exit 2
+    ;;
+esac

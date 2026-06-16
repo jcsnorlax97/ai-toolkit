@@ -69,6 +69,21 @@ Use the command for the runtime you want to expose skills to:
 `repair-personal-skill-links.sh` is only a wrapper around the two install
 scripts. It does not contain separate repair logic.
 
+Portable baseline command shims are separate from skill runtime installs:
+
+| Goal | Command | Scope |
+| --- | --- | --- |
+| Install Windows `portable-baseline` shim | `./scripts/install-portable-baseline-shim.ps1 -AddToUserPath` | User PATH and one `.cmd` wrapper |
+| Verify Windows shim | `./scripts/install-portable-baseline-shim.ps1 -VerifyOnly` | No writes |
+| Remove Windows shim | `./scripts/install-portable-baseline-shim.ps1 -Remove` | One managed `.cmd` wrapper |
+| Install macOS/Linux `portable-baseline` shim | `./scripts/install-portable-baseline-shim.sh` | One shell wrapper in `~/.local/bin` |
+| Verify macOS/Linux shim | `./scripts/install-portable-baseline-shim.sh --verify-only` | No writes |
+| Remove macOS/Linux shim | `./scripts/install-portable-baseline-shim.sh --remove` | One managed shell wrapper |
+
+The portable baseline shim does not install skills or write to
+`~/.claude/skills`, `~/.codex/skills`, or assistant runtime state. It only makes
+the repo CLI available as `portable-baseline`.
+
 The default mode is symlink mode. `--copy` is an explicit fallback, not the
 preferred path:
 
@@ -86,6 +101,19 @@ macOS normally does not need special privileges for these symlinks:
 ```bash
 ./scripts/install-claude-code-skills.sh
 ./scripts/install-claude-code-skills.sh --verify-only
+```
+
+For the portable baseline command shim:
+
+```bash
+./scripts/install-portable-baseline-shim.sh
+portable-baseline list
+```
+
+If `~/.local/bin` is not in `PATH`, add it to the shell profile:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
 ```
 
 ### Windows, Git Bash
@@ -172,6 +200,21 @@ $env:MSYS = "winsymlinks:nativestrict"
 
 If neither option is available, keep using copy mode and rerun the copy
 installer after each repository update.
+
+For the portable baseline command shim, PowerShell is the supported Windows
+installer because it creates a `.cmd` wrapper usable from both PowerShell and
+CMD:
+
+```powershell
+.\scripts\install-portable-baseline-shim.ps1 -AddToUserPath
+portable-baseline list
+```
+
+Open a new terminal after `-AddToUserPath`. Remove the shim later with:
+
+```powershell
+.\scripts\install-portable-baseline-shim.ps1 -Remove
+```
 
 ### WSL
 

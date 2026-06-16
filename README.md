@@ -138,11 +138,29 @@ C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 show -Pack k
 C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
 ```
 
+Install an optional global shim when you want to type `portable-baseline list`
+from PowerShell, CMD, or a Unix shell:
+
+```powershell
+./scripts/install-portable-baseline-shim.ps1 -AddToUserPath
+portable-baseline list
+```
+
+```bash
+./scripts/install-portable-baseline-shim.sh
+portable-baseline list
+```
+
+The shim only forwards to this repository's CLI. It does not install baseline
+packs into assistant runtimes and can be removed later.
+
 Remove it later:
 
 ```powershell
 ./scripts/remove-portable-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles
 C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 remove -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+./scripts/install-portable-baseline-shim.ps1 -Remove
+./scripts/install-portable-baseline-shim.sh --remove
 ```
 
 Verify pack shape and a downstream repo:

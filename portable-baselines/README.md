@@ -78,3 +78,36 @@ Use `scripts/portable-baseline.ps1` as the human-friendly entrypoint:
 
 When called from inside the target repo, omit `-TargetRepo`; it defaults to the
 current directory.
+
+On macOS or Linux, the native shell entrypoint is:
+
+```bash
+./scripts/portable-baseline list
+./scripts/portable-baseline show --pack karpathy-principles
+./scripts/portable-baseline apply --pack karpathy-principles --tools codex,claude,copilot --dry-run
+```
+
+## Global Shim
+
+Install a reversible command shim when you want to run `portable-baseline` from
+any repo.
+
+Windows PowerShell or CMD:
+
+```powershell
+./scripts/install-portable-baseline-shim.ps1 -AddToUserPath
+portable-baseline list
+./scripts/install-portable-baseline-shim.ps1 -Remove
+```
+
+macOS or Linux:
+
+```bash
+./scripts/install-portable-baseline-shim.sh
+portable-baseline list
+./scripts/install-portable-baseline-shim.sh --remove
+```
+
+The shim writes only one command wrapper into the selected bin directory. It
+forwards to this repo's CLI and does not copy packs or write assistant runtime
+state.
