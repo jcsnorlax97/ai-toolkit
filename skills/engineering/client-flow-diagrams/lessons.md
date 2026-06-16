@@ -145,9 +145,9 @@ frames were unequal heights and the frame labels were inside the borders.
    — *Cause*: Orthogonal auto-routing computes paths at render time and doesn't
    always avoid shapes, especially when multiple edges compete for the same corridor.
    — *Takeaway*: Reserve a wide routing gap (≥100 px) between the leftmost column
-   (Storefront) and the logic column (CIS). Route all "No" edges exclusively through
-   this gap with explicit waypoints. "Yes" paths exit the diamond bottom straight
-   down — no waypoints needed.
+   caller column and the logic column. Route all "No" edges exclusively through
+   this gap with explicit waypoints. "Yes" paths exit the diamond bottom
+   straight down — no waypoints needed.
    — *Reusable*: Yes.
    — *Status*: Candidate pattern pending repeated validation.
 
@@ -181,15 +181,113 @@ frames were unequal heights and the frame labels were inside the borders.
 
 ---
 
+## 2026-06-12 — Third session (response-path correction + v2 pattern validation)
+
+**Task context:**
+Revising related client-facing draw.io diagrams after a response-path service
+was initially modeled as a request-relay. The user created corrected v2 files
+manually in draw.io, which became validation evidence for several XML routing
+patterns.
+
+**Architecture correction — response-path services are not request-relays:**
+The caller sends the request to the processing system directly. The processing
+system returns the result through the response-path service, which transforms
+or hands the result back to the caller.
+— *Impact*: The response-path service swimlane sits between the caller and the
+  processing system, but its node belongs at the bottom of the lane on the
+  response side. Its only edges are processing system → response-path service
+  and response-path service → caller.
+— *Independent confirmation flow*: Omit the response-path service swimlane when
+  it does not participate. Do not add an unused swimlane "for consistency";
+  an unused swimlane is worse than no swimlane.
+
+**Mistakes observed:**
+
+1. **Absolute label offsets break when nodes move.**
+   First version used `x="-15" y="-244"` style absolute pixel offsets for "No"
+   edge labels. These are correct only at the exact node positions used at authoring
+   time — any node shift breaks label placement.
+   — *Fix*: Use relative label offsets such as
+   `<mxGeometry relative="1" x="-0.75" y="-17">` with
+   `<mxPoint as="offset" />`. `x` is proportional along the edge and `y` is a
+   perpendicular pixel nudge.
+   — *Critical detail*: `<mxPoint as="offset" />` is **required**. Without it,
+   draw.io ignores the relative positioning entirely.
+   — *Status*: Validated by user's v2 correction. Strong candidate for promotion.
+
+2. **Single waypoint for cross-column bends is ambiguous.**
+   Used one waypoint per bend between two non-adjacent columns. draw.io can
+   re-route the edge on reload with a single waypoint as a suggestion, not a
+   constraint.
+   — *Fix*: Use two waypoints per bend: one at the source node's y-level in the
+   inter-column gap, one at the target node's y-level in the same gap.
+   — *Status*: Validated by user's v2 correction. Candidate for promotion.
+
+3. **Return path exit at center (exitY=0.5) creates visual ambiguity.**
+   When an external-system node has both an incoming and an outgoing edge, using
+   `exitY=0.5` puts the outgoing arrow at exactly the same height as the
+   incoming. At a glance, the two arrows look like a single pass-through edge.
+   — *Fix*: Use `exitY=0.75` plus two explicit waypoints (source y-level then target
+   y-level in the gap) so the outgoing arrow exits visibly lower than the incoming.
+   — *Status*: Validated by user's v2 correction. Candidate for promotion.
+
+4. **Over-routing via a gap when a straight path is available.**
+   Used two waypoints routing through an inter-column gap for an edge whose
+   target was directly accessible from the source column center.
+   — *Fix*: Use a single waypoint at the target's y-level directly below the
+   source column center.
+   — *Principle*: Fewer waypoints → more robust. Only add waypoints where
+   auto-routing would produce a visually confusing result.
+   — *Status*: Validated by user's v2 correction. Candidate for promotion.
+
+5. **Cross-swimlane return edge: match entry side to waypoint direction, and prefer the fewest turns.**
+   A return edge first used two waypoints routing left and then up, creating
+   three segments and two turns. Switching the entry side reduced ambiguity but
+   still kept an unnecessary turn.
+   — *Best fix*: One waypoint directly below the source at the target's y-level,
+   with `entryX=1;entryY=0.5`. Path: source bottom → straight down to target
+   y-level → straight left to target right side. Single turn.
+   — *General rule*: For a long cross-swimlane return edge, use `exitX=0.5;exitY=1`
+   (bottom center of source), drop with one waypoint to the target's y-level directly
+   below the source, then enter from the right (`entryX=1;entryY=0.5`). One waypoint,
+   one turn.
+   — *Avoid*: Routing via an intermediate y that is above the target — it forces a
+   third segment going back up, adding an unnecessary turn.
+   — *Status*: Validated immediately on use.
+
+**Successes observed:**
+
+- **Colour-coded "No" edge labels with matching strokeColor/fontColor.** Using a
+  distinct color per error condition persisted correctly through the v2
+  validation. *Observed across multiple sessions.*
+
+- **Stable column x-coordinates for a precise draw.io layout.** Keeping fixed
+  column widths and gap centers made follow-up XML edits predictable. The exact
+  coordinates remain project-specific; the reusable lesson is to define a small
+  coordinate grid before drawing many edges. *Validated by v2.*
+
+- **Response-path node at bottom of swimlane.** The response-path service node
+  sits at the very bottom of its lane, aligned with success outcomes in adjacent
+  lanes. This makes the response path visually coherent: everything flows down
+  and then back left to the caller. *Validated by v2.*
+
+**Open questions after this session:**
+- When source is an auto-save draw.io file with auto-generated IDs, should we
+  normalize to semantic IDs when copying to the canonical source file? Answer
+  used: yes — semantic IDs make future XML edits much less error-prone.
+
+---
+
 ## 2026-06-10 — Second session (continued — edge clarity refinements)
 
 **Additional mistakes observed:**
 
 5. **Shared connection point on a node caused two edges to appear as one.**
-   C6→DB1 and DB1→C7 both used `entryX=0;entryY=0.5` / `exitX=0;exitY=0.5` — the
-   same pixel on DB1's left face. Their approach and departure segments overlapped
-   visually, making it look like a single through-edge rather than two separate
-   read/write operations on the database node.
+   Two edges to and from the same data-store node both used
+   `entryX=0;entryY=0.5` / `exitX=0;exitY=0.5` — the same pixel on the node's
+   left face. Their approach and departure segments overlapped visually, making
+   it look like a single through-edge rather than two separate read/write
+   operations on the data-store node.
    — *Cause*: Default `entryY=0.5` / `exitY=0.5` assigns both edges the exact same
    connection point. draw.io overlaps the terminal segments with no visual separation.
    — *Fix*: Stagger `entryY` / `exitY` on the shared face (e.g., entering edge at
