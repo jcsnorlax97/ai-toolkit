@@ -134,9 +134,12 @@ Or call the CLI from the target repo and omit `-TargetRepo`:
 ```powershell
 cd C:\path\to\repo
 C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 list
-C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 show -Pack karpathy-principles
-C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 show
+C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 apply -Tools codex,claude,copilot -DryRun
 ```
+
+When exactly one pack exists, the CLI can infer it. When more than one pack
+exists, pass `-Pack <name>` for `show`, `apply`, `remove`, and `verify`.
 
 Install an optional global shim when you want to type `portable-baseline list`
 from PowerShell, CMD, or a Unix shell:

@@ -70,21 +70,24 @@ Use `scripts/portable-baseline.ps1` as the human-friendly entrypoint:
 
 ```powershell
 ./scripts/portable-baseline.ps1 list
-./scripts/portable-baseline.ps1 show -Pack karpathy-principles
-./scripts/portable-baseline.ps1 apply -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
-./scripts/portable-baseline.ps1 remove -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
-./scripts/portable-baseline.ps1 verify -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot
+./scripts/portable-baseline.ps1 show
+./scripts/portable-baseline.ps1 apply -TargetRepo C:\path\to\repo -Tools codex,claude,copilot -DryRun
+./scripts/portable-baseline.ps1 remove -TargetRepo C:\path\to\repo -Tools codex,claude,copilot -DryRun
+./scripts/portable-baseline.ps1 verify -TargetRepo C:\path\to\repo -Tools codex,claude,copilot
 ```
 
 When called from inside the target repo, omit `-TargetRepo`; it defaults to the
 current directory.
 
+When exactly one pack exists, the CLI infers it. Once multiple packs exist,
+`show`, `apply`, `remove`, and `verify` require an explicit pack name.
+
 On macOS or Linux, the native shell entrypoint is:
 
 ```bash
 ./scripts/portable-baseline list
-./scripts/portable-baseline show --pack karpathy-principles
-./scripts/portable-baseline apply --pack karpathy-principles --tools codex,claude,copilot --dry-run
+./scripts/portable-baseline show
+./scripts/portable-baseline apply --tools codex,claude,copilot --dry-run
 ```
 
 ## Global Shim

@@ -9,7 +9,7 @@ if [[ $# -gt 0 ]]; then
   shift
 fi
 
-PACK="karpathy-principles"
+PACK=""
 TARGET_REPO="$(pwd -P)"
 TOOLS="codex,claude"
 DRY_RUN=0
@@ -19,10 +19,13 @@ usage() {
   cat <<'USAGE'
 Usage:
   portable-baseline list
-  portable-baseline show --pack <pack>
-  portable-baseline apply --pack <pack> --tools codex,claude,copilot [--target-repo <path>] [--dry-run] [--create-missing]
-  portable-baseline remove --pack <pack> --tools codex,claude,copilot [--target-repo <path>] [--dry-run]
-  portable-baseline verify --pack <pack> --tools codex,claude,copilot [--target-repo <path>]
+  portable-baseline show [--pack <pack>]
+  portable-baseline apply [--pack <pack>] --tools codex,claude,copilot [--target-repo <path>] [--dry-run] [--create-missing]
+  portable-baseline remove [--pack <pack>] --tools codex,claude,copilot [--target-repo <path>] [--dry-run]
+  portable-baseline verify [--pack <pack>] --tools codex,claude,copilot [--target-repo <path>]
+
+When exactly one pack exists, --pack may be omitted. When multiple packs exist,
+show/apply/remove/verify require --pack.
 USAGE
 }
 
@@ -64,11 +67,43 @@ pack_root() {
   printf '%s/%s' "$BASELINES_DIR" "$PACK"
 }
 
+pack_names() {
+  find "$BASELINES_DIR" -mindepth 1 -maxdepth 1 -type d | sort | while read -r dir; do
+    [[ -f "$dir/pack.json" ]] || continue
+    basename "$dir"
+  done
+}
+
 require_pack() {
   if [[ ! -f "$(pack_root)/pack.json" ]]; then
     echo "Unknown portable baseline pack: $PACK" >&2
     exit 1
   fi
+}
+
+resolve_pack() {
+  if [[ -n "$PACK" ]]; then
+    require_pack
+    return
+  fi
+
+  local names=()
+  local name
+  while IFS= read -r name; do
+    names+=("$name")
+  done < <(pack_names)
+
+  if [[ "${#names[@]}" -eq 0 ]]; then
+    echo "No portable baseline packs found in: $BASELINES_DIR" >&2
+    exit 1
+  fi
+  if [[ "${#names[@]}" -eq 1 ]]; then
+    PACK="${names[0]}"
+    return
+  fi
+
+  echo "Multiple portable baseline packs are available: ${names[*]}. Pass --pack <name>." >&2
+  exit 1
 }
 
 json_field() {
@@ -223,14 +258,13 @@ verify_tool() {
 
 case "$COMMAND" in
   list)
-    find "$BASELINES_DIR" -mindepth 1 -maxdepth 1 -type d | sort | while read -r dir; do
-      PACK="$(basename "$dir")"
-      [[ -f "$dir/pack.json" ]] || continue
+    pack_names | while read -r pack_name; do
+      PACK="$pack_name"
       echo "$(json_field name) $(json_field version) [$(json_field status)] - $(json_field description)"
     done
     ;;
   show)
-    require_pack
+    resolve_pack
     echo "# $(json_field name) $(json_field version) [$(json_field status)]"
     echo
     echo "$(json_field description)"
@@ -241,16 +275,18 @@ case "$COMMAND" in
     sed -n '1,$p' "$(pack_root)/baseline.md"
     ;;
   apply)
+    resolve_pack
     verify_pack_shape >/dev/null
     TARGET_REPO="$(cd "$TARGET_REPO" && pwd -P)"
     for_each_tool apply_tool
     ;;
   remove)
-    require_pack
+    resolve_pack
     TARGET_REPO="$(cd "$TARGET_REPO" && pwd -P)"
     for_each_tool remove_tool
     ;;
   verify)
+    resolve_pack
     verify_pack_shape
     TARGET_REPO="$(cd "$TARGET_REPO" && pwd -P)"
     for_each_tool verify_tool

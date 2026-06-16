@@ -5,7 +5,7 @@ param(
 
     [string] $TargetRepo = (Get-Location).Path,
 
-    [string] $Pack = "karpathy-principles",
+    [string] $Pack = "",
 
     [string[]] $Tools = @("codex", "claude"),
 
@@ -36,18 +36,44 @@ function Read-PackJson($Name) {
     return (Read-Utf8Text $packPath | ConvertFrom-Json)
 }
 
+function Get-PackNames {
+    if (-not (Test-Path -LiteralPath $baselinesRoot)) {
+        throw "Missing portable-baselines directory: $baselinesRoot"
+    }
+
+    return @(Get-ChildItem -LiteralPath $baselinesRoot -Directory | Where-Object {
+        Test-Path -LiteralPath (Join-Path $_.FullName "pack.json")
+    } | ForEach-Object {
+        $_.Name
+    })
+}
+
+function Resolve-PackName($Name) {
+    if ($Name) {
+        $null = Read-PackJson $Name
+        return $Name
+    }
+
+    $packNames = @(Get-PackNames)
+    if ($packNames.Count -eq 0) {
+        throw "No portable baseline packs found in: $baselinesRoot"
+    }
+    if ($packNames.Count -eq 1) {
+        return $packNames[0]
+    }
+
+    throw "Multiple portable baseline packs are available: $($packNames -join ', '). Pass -Pack <name>."
+}
+
+if ($Command -ne "list") {
+    $Pack = Resolve-PackName $Pack
+}
+
 switch ($Command) {
     "list" {
-        if (-not (Test-Path -LiteralPath $baselinesRoot)) {
-            throw "Missing portable-baselines directory: $baselinesRoot"
-        }
-
-        Get-ChildItem -LiteralPath $baselinesRoot -Directory | ForEach-Object {
-            $packPath = Join-Path $_.FullName "pack.json"
-            if (Test-Path -LiteralPath $packPath) {
-                $packInfo = Read-Utf8Text $packPath | ConvertFrom-Json
-                Write-Output "$($packInfo.name) $($packInfo.version) [$($packInfo.status)] - $($packInfo.description)"
-            }
+        Get-PackNames | ForEach-Object {
+            $packInfo = Read-PackJson $_
+            Write-Output "$($packInfo.name) $($packInfo.version) [$($packInfo.status)] - $($packInfo.description)"
         }
     }
     "show" {
