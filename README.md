@@ -119,6 +119,9 @@ are intended for repo-local managed blocks in files such as `AGENTS.md` and
 
 Current baseline packs:
 
+- `git-collaboration-hygiene` (candidate): inspect Git status, protect user
+  changes, stage explicit paths, review diffs, and avoid unsafe remote or
+  conflict handling.
 - `karpathy-principles`: think before coding, simplicity first, surgical
   changes, and goal-driven execution.
 

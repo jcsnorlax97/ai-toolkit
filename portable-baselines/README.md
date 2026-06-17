@@ -13,6 +13,7 @@ repo-specific instructions.
 
 | Pack | Status | Purpose |
 |---|---|---|
+| `git-collaboration-hygiene` | candidate | Apply default Git collaboration safety: inspect status, protect user changes, stage explicit paths, review diffs, and avoid unsafe remote or conflict handling. |
 | `karpathy-principles` | active | Apply four default engineering principles: think before coding, simplicity first, surgical changes, and goal-driven execution. |
 
 ## Pack Shape

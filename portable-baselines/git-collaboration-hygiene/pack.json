@@ -1,0 +1,17 @@
+{
+  "name": "git-collaboration-hygiene",
+  "version": "0.1.0",
+  "status": "candidate",
+  "description": "Always-on Git collaboration posture for AI coding agents: inspect status, protect user changes, stage explicit paths, review diffs, and avoid unsafe pushes or conflict handling.",
+  "source": {
+    "title": "AI OS Git Collaboration Hygiene",
+    "repository": "local",
+    "license": "repo-local",
+    "relationship": "Authored as a portable baseline pack from repeated AI OS collaboration and multi-agent git hygiene requirements."
+  },
+  "adapters": {
+    "codex": "adapters/AGENTS.md.block",
+    "claude": "adapters/CLAUDE.md.block",
+    "copilot": "adapters/copilot-instructions.md.block"
+  }
+}
