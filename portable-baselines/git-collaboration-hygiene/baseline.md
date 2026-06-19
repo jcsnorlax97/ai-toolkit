@@ -1,6 +1,6 @@
 # Git Collaboration Hygiene Baseline
 
-Status: candidate
+Status: active
 Version: 0.1.0
 
 This is a tool-neutral always-on baseline for AI coding agents working in Git
