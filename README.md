@@ -205,6 +205,11 @@ Verify pack shape and a downstream repo:
 C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 verify -Pack karpathy-principles -Tools codex,claude,copilot
 ```
 
+Target verification reads the managed block marker in each instruction file and
+compares the installed version with the source pack version. Matching targets
+report the installed version; stale targets fail with both installed and source
+versions so operators know which repos need `apply` rerun.
+
 ## Installation
 
 Canonical skills live under `skills/engineering/`. Personal runtime entries in

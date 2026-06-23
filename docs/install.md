@@ -84,6 +84,11 @@ The portable baseline shim does not install skills or write to
 `~/.claude/skills`, `~/.codex/skills`, or assistant runtime state. It only makes
 the repo CLI available as `portable-baseline`.
 
+Portable baseline verification reports the installed managed-block version for
+each target instruction file. If a repo has an older managed block than the
+source pack, verification fails with both versions so the operator can rerun
+`apply` deliberately.
+
 The default mode is symlink mode. `--copy` is an explicit fallback, not the
 preferred path:
 

@@ -16,6 +16,26 @@ if (-not (Test-Path -LiteralPath $packRoot)) {
     throw "Unknown portable baseline pack: $Pack"
 }
 
+$packJsonPath = Join-Path $packRoot "pack.json"
+$packInfo = ([System.IO.File]::ReadAllText($packJsonPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json)
+$packVersion = $packInfo.version
+
+function Normalize-Tools($ToolValues) {
+    $normalized = @()
+    foreach ($toolValue in $ToolValues) {
+        foreach ($tool in ($toolValue -split ",")) {
+            $trimmed = $tool.Trim()
+            if ($trimmed) {
+                $normalized += $trimmed
+            }
+        }
+    }
+
+    return $normalized
+}
+
+$Tools = Normalize-Tools $Tools
+
 $required = @(
     "pack.json",
     "baseline.md",
@@ -56,7 +76,8 @@ if ($TargetRepo) {
         claude = "CLAUDE.md"
         copilot = ".github\copilot-instructions.md"
     }
-    $pattern = "<!-- BEGIN portable-agent-baseline:$([regex]::Escape($Pack)) v[^>]+ -->.*?<!-- END portable-agent-baseline:$([regex]::Escape($Pack)) -->"
+    $beginPattern = "<!-- BEGIN portable-agent-baseline:$([regex]::Escape($Pack)) v(?<version>[^ >]+) -->"
+    $blockPattern = "$beginPattern.*?<!-- END portable-agent-baseline:$([regex]::Escape($Pack)) -->"
 
     foreach ($tool in $Tools) {
         if (-not $toolMap.ContainsKey($tool)) {
@@ -71,9 +92,16 @@ if ($TargetRepo) {
         }
 
         $text = [System.IO.File]::ReadAllText($targetPath, [System.Text.Encoding]::UTF8)
-        if (-not [regex]::IsMatch($text, $pattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)) {
+        $match = [regex]::Match($text, $blockPattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)
+        if (-not $match.Success) {
             throw "Missing $Pack managed block in $targetRel"
         }
-        Write-Output "target ok: $targetRel contains $Pack"
+
+        $installedVersion = $match.Groups["version"].Value
+        if ($installedVersion -ne $packVersion) {
+            throw "Stale $Pack managed block in ${targetRel}: installed v$installedVersion, source v$packVersion"
+        }
+
+        Write-Output "target ok: $targetRel contains $Pack v$installedVersion"
     }
 }
