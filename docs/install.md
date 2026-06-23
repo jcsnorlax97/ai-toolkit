@@ -216,6 +216,31 @@ Open a new terminal after `-AddToUserPath`. Remove the shim later with:
 .\scripts\install-portable-baseline-shim.ps1 -Remove
 ```
 
+The Windows `.cmd` shim forwards arguments through CMD. If you pass
+`-Tools codex,claude,copilot` through the shim, the PowerShell CLI can receive
+that as one unsupported tool string. For multiple tools in one command, call
+the `.ps1` script directly:
+
+```powershell
+.\scripts\portable-baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+```
+
+When using the global `portable-baseline` shim, prefer one tool per command:
+
+```powershell
+portable-baseline apply -Pack karpathy-principles -Tools codex -DryRun
+portable-baseline apply -Pack karpathy-principles -Tools claude -DryRun
+portable-baseline apply -Pack karpathy-principles -Tools copilot -DryRun
+```
+
+Portable baseline placement is intentionally conservative. The installer
+updates an existing managed block in place; when a block is missing, it appends
+the block to the target instruction file. Top-vs-bottom placement should not be
+treated as a reliable model weighting control. Use explicit instruction text
+for priority and conflict behavior. If a team intentionally wants the portable
+baseline near the top, move the managed block there once; later updates preserve
+the block's location.
+
 ### WSL
 
 Use WSL only when Claude Code is also running inside WSL:

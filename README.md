@@ -160,6 +160,32 @@ portable-baseline list
 The shim only forwards to this repository's CLI. It does not install baseline
 packs into assistant runtimes and can be removed later.
 
+Windows shim argument note: the `.cmd` shim forwards arguments through CMD, so
+comma-separated PowerShell arrays may arrive as one string. Use the direct
+`.ps1` CLI for multiple tools in one command:
+
+```powershell
+C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+```
+
+When using the `portable-baseline` shim, prefer one tool per command:
+
+```powershell
+portable-baseline apply -Pack karpathy-principles -Tools codex -DryRun
+portable-baseline apply -Pack karpathy-principles -Tools claude -DryRun
+portable-baseline apply -Pack karpathy-principles -Tools copilot -DryRun
+```
+
+Baseline placement in instruction files: the installer updates an existing
+managed baseline block in place. If the block is missing, it appends the block
+to the end of the target instruction file; if the target file is created with
+`-CreateMissing`, the block is the whole file. Do not rely on top-vs-bottom
+placement as a precise model weighting mechanism. Put durable priority and
+conflict rules in explicit wording. In general, keep repo-local instructions
+easy to read first and let portable baselines act as broad fallback habits; if a
+team wants a baseline near the top, move the managed block deliberately and
+future updates will preserve that location.
+
 Remove it later:
 
 ```powershell
