@@ -13,7 +13,7 @@ repo-specific instructions.
 
 | Pack | Status | Purpose |
 |---|---|---|
-| `existing-repo-orientation` | active | Apply default startup habits for existing repositories: read local instructions, inspect context, discover workflows, respect boundaries, and verify with repo-native checks. |
+| `repo-context-grounding` | active | Apply default startup habits for existing repositories: read local instructions, inspect context, discover workflows, respect boundaries, and verify with repo-native checks. |
 | `git-collaboration-hygiene` | active | Apply default Git collaboration safety: inspect status, protect user changes, stage explicit paths, review diffs, and avoid unsafe remote or conflict handling. |
 | `karpathy-principles` | active | Apply four default engineering principles: think before coding, simplicity first, surgical changes, and goal-driven execution. |
 

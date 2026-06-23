@@ -1,5 +1,5 @@
-<!-- BEGIN portable-agent-baseline:existing-repo-orientation v0.1.0 -->
-## Portable Agent Baseline: Existing Repo Orientation
+<!-- BEGIN portable-agent-baseline:repo-context-grounding v0.1.0 -->
+## Portable Agent Baseline: Repo Context Grounding
 
 - Start from local instructions: read repo-level agent instructions, README, and linked docs that define setup, boundaries, ownership, or workflow.
 - Inspect current state: check the active branch, working tree, and relevant recent changes before edits, pulls, commits, rebases, or pushes.
@@ -12,4 +12,4 @@
 Apply this baseline as a startup habit for existing repositories, but never use
 it to override explicit user instructions, safety rules, privacy boundaries, or
 stricter repo-local instructions.
-<!-- END portable-agent-baseline:existing-repo-orientation -->
+<!-- END portable-agent-baseline:repo-context-grounding -->

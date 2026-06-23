@@ -119,7 +119,7 @@ are intended for repo-local managed blocks in files such as `AGENTS.md` and
 
 Current baseline packs:
 
-- `existing-repo-orientation`: read local instructions, inspect context,
+- `repo-context-grounding`: read local instructions, inspect context,
   discover workflows, respect boundaries, follow local patterns, and verify
   with repo-native checks when entering an existing repository.
 - `git-collaboration-hygiene`: inspect Git status, protect user

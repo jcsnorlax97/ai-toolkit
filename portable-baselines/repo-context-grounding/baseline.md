@@ -1,5 +1,6 @@
-<!-- BEGIN portable-agent-baseline:existing-repo-orientation v0.1.0 -->
-## Portable Agent Baseline: Existing Repo Orientation
+# Repo Context Grounding
+
+Before meaningful work in an existing repository:
 
 - Start from local instructions: read repo-level agent instructions, README, and linked docs that define setup, boundaries, ownership, or workflow.
 - Inspect current state: check the active branch, working tree, and relevant recent changes before edits, pulls, commits, rebases, or pushes.
@@ -9,7 +10,6 @@
 - Ask after checking available context: do not ask the user to restate repo background until local instructions and visible project context have been inspected.
 - Verify at the right level: run the smallest meaningful repo-native check first, then broaden verification when changes touch shared behavior or public interfaces.
 
-Apply this baseline as a startup habit for existing repositories, but never use
-it to override explicit user instructions, safety rules, privacy boundaries, or
-stricter repo-local instructions.
-<!-- END portable-agent-baseline:existing-repo-orientation -->
+This baseline is a startup and context-grounding habit. It does not replace
+repo-specific instructions, project-specific setup docs, or triggered workflow
+skills.
