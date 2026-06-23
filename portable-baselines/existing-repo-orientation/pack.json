@@ -1,0 +1,17 @@
+{
+  "name": "existing-repo-orientation",
+  "version": "0.1.0",
+  "status": "active",
+  "description": "Always-on startup posture for AI coding agents entering an existing repository: read local instructions, inspect context, discover workflows, respect boundaries, and verify with repo-native checks.",
+  "source": {
+    "title": "AI OS Existing Repo Orientation",
+    "repository": "local",
+    "license": "repo-local",
+    "relationship": "Authored as a portable baseline pack from repeated AI OS startup, repo-orientation, and context-reconstruction friction."
+  },
+  "adapters": {
+    "codex": "adapters/AGENTS.md.block",
+    "claude": "adapters/CLAUDE.md.block",
+    "copilot": "adapters/copilot-instructions.md.block"
+  }
+}
