@@ -161,14 +161,16 @@ The shim only forwards to this repository's CLI. It does not install baseline
 packs into assistant runtimes and can be removed later.
 
 Windows shim argument note: the `.cmd` shim forwards arguments through CMD, so
-comma-separated PowerShell arrays may arrive as one string. Use the direct
-`.ps1` CLI for multiple tools in one command:
+comma-separated PowerShell arrays may arrive as one string. The CLI normalizes
+comma-separated tool lists, so both the direct `.ps1` CLI and the
+`portable-baseline` shim support multiple tools in one command:
 
 ```powershell
 C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+portable-baseline apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
 ```
 
-When using the `portable-baseline` shim, prefer one tool per command:
+For narrow changes, one tool per command is also valid:
 
 ```powershell
 portable-baseline apply -Pack karpathy-principles -Tools codex -DryRun

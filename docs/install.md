@@ -216,16 +216,17 @@ Open a new terminal after `-AddToUserPath`. Remove the shim later with:
 .\scripts\install-portable-baseline-shim.ps1 -Remove
 ```
 
-The Windows `.cmd` shim forwards arguments through CMD. If you pass
-`-Tools codex,claude,copilot` through the shim, the PowerShell CLI can receive
-that as one unsupported tool string. For multiple tools in one command, call
-the `.ps1` script directly:
+The Windows `.cmd` shim forwards arguments through CMD, so comma-separated
+PowerShell arrays may arrive as one string. The CLI normalizes comma-separated
+tool lists, so both the direct `.ps1` script and the global
+`portable-baseline` shim support multiple tools in one command:
 
 ```powershell
 .\scripts\portable-baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+portable-baseline apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
 ```
 
-When using the global `portable-baseline` shim, prefer one tool per command:
+For narrow changes, one tool per command is also valid:
 
 ```powershell
 portable-baseline apply -Pack karpathy-principles -Tools codex -DryRun

@@ -65,8 +65,23 @@ function Resolve-PackName($Name) {
     throw "Multiple portable baseline packs are available: $($packNames -join ', '). Pass -Pack <name>."
 }
 
+function Normalize-Tools($ToolValues) {
+    $normalized = @()
+    foreach ($toolValue in $ToolValues) {
+        foreach ($tool in ($toolValue -split ",")) {
+            $trimmed = $tool.Trim()
+            if ($trimmed) {
+                $normalized += $trimmed
+            }
+        }
+    }
+
+    return $normalized
+}
+
 if ($Command -ne "list") {
     $Pack = Resolve-PackName $Pack
+    $Tools = Normalize-Tools $Tools
 }
 
 switch ($Command) {
