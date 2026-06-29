@@ -34,6 +34,18 @@ portable-baselines/<pack-name>/
 Add adapters only when the target runtime has a stable project-level
 instruction surface.
 
+## Adapter Contract
+
+Each `.block` adapter is the complete runtime behavior contract for that
+target instruction surface. Keep it minimal, but include every rule, exception,
+priority note, and term definition the agent needs to make the same decisions
+without reading `baseline.md`.
+
+Use `baseline.md` for the fuller human-maintained source: rationale,
+provenance, examples, non-goals, and revision context. Do not rely on an agent
+to discover or read `baseline.md` at runtime unless the adapter explicitly
+instructs it to do so.
+
 ## Managed Block Rule
 
 Adapters must be bounded by clear markers:
