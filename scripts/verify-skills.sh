@@ -10,10 +10,16 @@ fail() {
   exit 1
 }
 
+warn() {
+  printf 'WARN: %s\n' "$1" >&2
+}
+
 [ -d "$CANONICAL_DIR" ] || fail "Missing canonical skills directory: $CANONICAL_DIR"
 [ -d "$CLAUDE_SKILLS_DIR" ] || fail "Missing Claude skills adapter directory: $CLAUDE_SKILLS_DIR"
 
 found=0
+metadata_warnings=0
+metadata_verbose="${VERIFY_SKILL_METADATA_VERBOSE:-0}"
 
 for skill_dir in "$CANONICAL_DIR"/*; do
   [ -d "$skill_dir" ] || continue
@@ -30,6 +36,20 @@ for skill_dir in "$CANONICAL_DIR"/*; do
   grep -q '^name:[[:space:]]*'"$skill_name"'[[:space:]]*$' "$skill_file" || fail "Missing or mismatched name frontmatter in $skill_file"
   grep -q '^description:[[:space:]]*' "$skill_file" || fail "Missing description frontmatter in $skill_file"
 
+  missing_metadata=""
+  for field in status problem when-not-to-use maintainer; do
+    if ! grep -q "^$field:[[:space:]]*" "$skill_file"; then
+      missing_metadata="${missing_metadata}${missing_metadata:+, }$field"
+    fi
+  done
+
+  if [ -n "$missing_metadata" ]; then
+    metadata_warnings=$((metadata_warnings + 1))
+    if [ "$metadata_verbose" = "1" ]; then
+      warn "Recommended metadata missing in $skill_file: $missing_metadata"
+    fi
+  fi
+
   [ -e "$adapter_dir" ] || fail "Missing Claude adapter for skill: $skill_name"
   if [ -f "$adapter_file" ]; then
     :
@@ -42,5 +62,9 @@ for skill_dir in "$CANONICAL_DIR"/*; do
 done
 
 [ "$found" -eq 1 ] || fail "No canonical skills found under $CANONICAL_DIR"
+
+if [ "$metadata_warnings" -gt 0 ]; then
+  printf 'Metadata recommendations missing for %s skill(s); runtime verification still passed. Set VERIFY_SKILL_METADATA_VERBOSE=1 for details.\n' "$metadata_warnings" >&2
+fi
 
 printf 'Verified skills and adapters successfully.\n'

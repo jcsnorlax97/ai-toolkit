@@ -59,6 +59,12 @@ Do not maintain duplicated skill bodies by hand.
 Baselines are not skills: they do not require invocation and should be easy to
 apply, verify, update, and remove through managed marker blocks.
 
+Future reusable agent workflow definitions should live under
+`agent-workflows/` when introduced, not inside one skill or baseline pack.
+Use that tree for tool-neutral workflow specs, role catalogs, team profiles,
+execution-packet templates, and handoff contracts. A skill may expose or launch
+a workflow, but the reusable workflow definition should remain its own source.
+
 ## Lifecycle Metadata
 
 Reusable skills in this repo may start as candidates. Their implementation
@@ -127,6 +133,11 @@ Current baseline packs:
   conflict handling.
 - `karpathy-principles`: think before coding, simplicity first, surgical
   changes, and goal-driven execution.
+- `oop-extension-safety`: guard OOP extension points with complete template
+  methods, primitive hook parameters, concrete injected-type mocks, and class
+  level delegate declarations.
+- `code-doc-sync`: scan adjacent architecture docs after behavior changes and
+  show concrete runtime types in flow diagrams.
 
 Apply a baseline to a downstream repo:
 
@@ -289,6 +300,11 @@ After editing skills or adapters, run:
 
 Keep each `SKILL.md` concise. Move long references, examples, or scripts into
 supporting files inside the skill directory.
+
+Keep maintenance metadata in `SKILL.md` frontmatter rather than companion
+metadata files. `name` and `description` are required runtime fields; new local
+skills should also include `status`, `problem`, `when-not-to-use`, and
+`maintainer` when known.
 
 Unprocessed notes and article captures are tracked in `docs/intake.md` and may
 live under ignored scratch paths such as `.scratch/captures/`.

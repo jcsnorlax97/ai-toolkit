@@ -14,6 +14,8 @@ Workflow skill: A skill that orchestrates multiple lower-level skills, gates, ar
 
 Canonical source: The directory that owns the maintained copy of a skill. In this repo, canonical skills live under `skills/engineering/`. Avoid: duplicate source, copied truth
 
+Skill metadata: Frontmatter inside `SKILL.md` that records AI trigger text and human maintenance fields such as status, problem, when-not-to-use, and maintainer. Avoid: companion metadata file, maturity folder
+
 Adapter: A tool-specific exposure layer that points at or installs from the canonical source. Examples: `.claude/skills/`, `~/.claude/skills/`, `~/.codex/skills/`
 
 Portable baseline: A reusable always-on instruction pack for AI coding agents,
@@ -37,6 +39,8 @@ Stable repo link: The machine-local symlink `~/.local/share/agentic-engineering-
 Source registry: A repository document that records each external skill source, imported paths, license, copyright notice, verification date, and obligations. In this repo, the source registry is `docs/upstream-sources.md`. Avoid: informal attribution
 
 Agent team workflow: A repeatable workflow for decomposing a larger goal into bounded agent roles, context packets, handoffs, and acceptance checks. Avoid: agent swarm, autonomous team
+
+Agent workflow pack: A future tool-neutral source tree under `agent-workflows/<workflow-name>/` that owns reusable agent workflow specs, role catalogs, team profiles, execution-packet templates, and handoff contracts. Avoid: hidden skill body, runtime-specific subagent config
 
 Team profile: A reusable selection of agent roles, responsibilities, and context boundaries for a class of work. Avoid: fixed roster, department
 
@@ -112,6 +116,8 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
 - A workflow skill may orchestrate lower-level skills and select a team profile.
 - A skill should improve repeatability, not just verbosity.
 - A skill should be edited in its canonical source, then exposed through adapters.
+- Skill metadata should live in `SKILL.md` frontmatter so each skill has one
+  maintained interface instead of a paired companion metadata file.
 - A portable baseline should be edited in `portable-baselines/`, then applied
   to downstream repo instruction files through managed baseline blocks.
 - A portable baseline is not a skill because it is always-on and has no trigger,
@@ -123,6 +129,9 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
 - Imported skills must be backed by the source registry and required license notices.
 - An agent team workflow may define agent roles, but a subagent runtime is tool-specific.
 - A team profile defines who should work; a workflow defines when and why they work.
+- An agent workflow pack should own reusable multi-agent workflow definitions
+  when the workflow must be shared across tools or coordinators; a skill may
+  adapt or invoke that workflow, but should not hide the reusable definition.
 - Staff-level review is the canonical review checkpoint term; external `staff-review` skills are optional dependencies until their source and license are verified.
 - An agent team workflow may use ad hoc workers when a task needs delegation without a reusable role.
 - An agent team workflow should be used when work is multi-domain, parallelizable, and context-heavy.

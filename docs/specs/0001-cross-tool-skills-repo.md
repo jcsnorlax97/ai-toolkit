@@ -18,7 +18,7 @@ them to multiple AI coding tools without hand-maintaining duplicate skill files.
 
 ## Design
 
-`skills/` is the canonical source tree.
+`skills/` is the canonical source tree for invoked workflow skills.
 
 ```text
 skills/
@@ -26,6 +26,17 @@ skills/
     └── <skill-name>/
         └── SKILL.md
 ```
+
+Keep one directory per skill. A skill may own supporting references, scripts,
+agents, examples, or tests next to its `SKILL.md`; do not flatten skills into
+single files when that would scatter the implementation of the skill's
+interface.
+
+Skill metadata belongs in `SKILL.md` frontmatter, not a companion metadata
+file. Required runtime fields are `name` and `description`. New local skills
+should also include `status`, `problem`, `when-not-to-use`, and `maintainer`
+when the information is known. Existing imported skills may be reconciled
+gradually so source imports do not become noisy metadata churn.
 
 Tool-specific adapters point at or install from that source tree.
 
@@ -55,6 +66,25 @@ blocks. They are not installed into personal runtime skill directories by
 default, and they must be removable by deleting or replacing only the marked
 block.
 
+Future reusable agent/workflow definitions belong in their own canonical source
+tree, not inside `skills/` or `portable-baselines/`.
+
+```text
+agent-workflows/
+└── <workflow-name>/
+    ├── workflow.md
+    ├── roles/
+    ├── profiles/
+    └── templates/
+```
+
+Use `agent-workflows/` for tool-neutral multi-agent workflow specs, reusable
+role catalogs, team profiles, execution-packet templates, and handoff
+contracts. A workflow may later expose a skill adapter such as
+`skills/engineering/setup-agent-team/`, but the durable workflow definition
+should not be hidden inside one invoked skill when it is meant to be reused by
+multiple tools or coordinators.
+
 ## Repository-Level Files
 
 - `README.md`: human onboarding and bootstrap commands.
@@ -65,6 +95,8 @@ block.
 - `docs/agents/`: issue, triage, and domain context conventions.
 - `scripts/`: deterministic installation and verification commands.
 - `portable-baselines/`: always-on baseline packs and repo-local adapters.
+- `agent-workflows/`: future tool-neutral agent workflow packs, roles,
+  profiles, execution-packet templates, and handoff contracts.
 
 ## Install Behavior
 
@@ -187,6 +219,8 @@ alone.
 
 - Every canonical skill has a `SKILL.md`.
 - Every `SKILL.md` contains frontmatter with `name` and `description`.
+- Every `SKILL.md` contributes to a non-failing summary report for missing
+  recommended metadata fields while existing imported skills are reconciled.
 - Claude Code project adapter entries exist for every canonical skill.
 - Adapter entries resolve to a readable `SKILL.md`.
 
