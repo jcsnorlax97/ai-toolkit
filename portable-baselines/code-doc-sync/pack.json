@@ -1,0 +1,14 @@
+{
+  "name": "code-doc-sync",
+  "version": "0.1.0",
+  "status": "active",
+  "description": "Always-on doc hygiene for AI coding agents: scan for adjacent architecture docs before closing any behavior-changing task, and show concrete runtime types in flow diagrams rather than abstract declaration sites.",
+  "origin": {
+    "note": "Distilled from Rogers/Fido carrier integration work where two bug fixes were merged without updating flow trees or architecture docs, and where a flow tree showed an abstract declaration site instead of the concrete runtime type. See CarrierIntegrationServer commits 613daf50 and 2a7152ea."
+  },
+  "adapters": {
+    "codex": "adapters/AGENTS.md.block",
+    "claude": "adapters/CLAUDE.md.block",
+    "copilot": "adapters/copilot-instructions.md.block"
+  }
+}
