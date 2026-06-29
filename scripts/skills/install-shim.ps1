@@ -14,7 +14,8 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $scriptsRoot = Split-Path -Parent $scriptDir
 $cliPath = Join-Path $scriptsRoot "skills.ps1"
 $shimPath = Join-Path $InstallDir "skills.cmd"
-$marker = "agentic-engineering-skills skills shim"
+$marker = "ai-agent-library skills shim"
+$acceptedMarkers = @($marker, "agentic-engineering-skills skills shim")
 
 function Path-ContainsInstallDir {
     $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
@@ -32,7 +33,8 @@ function Test-Shim {
     }
 
     $content = [System.IO.File]::ReadAllText($shimPath, [System.Text.Encoding]::UTF8)
-    if ($content -notlike "*$marker*" -or $content -notlike "*$cliPath*") {
+    $hasAcceptedMarker = ($acceptedMarkers | Where-Object { $content -like "*$_*" }).Count -gt 0
+    if (-not $hasAcceptedMarker -or $content -notlike "*$cliPath*") {
         throw "Shim exists but does not point at this repo: $shimPath"
     }
 
@@ -50,7 +52,8 @@ if ($Remove) {
     }
 
     $content = [System.IO.File]::ReadAllText($shimPath, [System.Text.Encoding]::UTF8)
-    if ($content -notlike "*$marker*" -or $content -notlike "*$cliPath*") {
+    $hasAcceptedMarker = ($acceptedMarkers | Where-Object { $content -like "*$_*" }).Count -gt 0
+    if (-not $hasAcceptedMarker -or $content -notlike "*$cliPath*") {
         throw "Refusing to remove non-matching shim: $shimPath"
     }
 

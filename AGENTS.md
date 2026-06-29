@@ -43,17 +43,19 @@ sibling repo:
 
 ## Repository Design
 
-- Recommended repo name: `agentic-engineering-skills`.
+- Recommended repo name: `ai-agent-library`.
 - `skills/` is the canonical source for reusable skills.
 - `baselines/` is the canonical source for always-on agent baseline packs.
+- `workflows/`, `agents/`, and `templates/` are planned source trees for
+  reusable workflow definitions, role packs, and supporting templates.
 - `.claude/skills/` is the Claude Code project adapter.
-- `scripts/install-codex-skills.sh` exposes canonical skills in `~/.codex/skills/`.
-- `scripts/install-claude-code-skills.sh` exposes canonical skills in `~/.claude/skills/`.
+- `scripts/skills.ps1` is the public skill CLI.
+- `scripts/baseline.ps1` is the public baseline CLI.
 - Personal installs use symlinks by default through
-  `~/.local/share/agentic-engineering-skills/current`. On Windows, use Git Bash
+  `~/.local/share/ai-agent-library/current`. On Windows, use Git Bash
   with real symlink support, such as elevated Git Bash plus
   `MSYS=winsymlinks:nativestrict`. `--copy` is only an explicit fallback.
-  After moving or renaming the repo, run `scripts/repair-personal-skill-links.sh`.
+  After moving or renaming the repo, run `scripts/skills/repair-personal-links.sh`.
 - The upstream engineering skills are imported from `mattpocock/skills`; do not present them as original work from this repo.
 - Local companion skills are `grill-spec`, `methodology-intake`,
   `capture-input-note`, `setup-agent-team`, `staff-level-review`,
@@ -63,7 +65,9 @@ sibling repo:
   create a repo-local `inventory/` directory for SkillOps data.
 - Preserve `NOTICE.md` when changing or refreshing imported skills.
 - Update `docs/upstream-sources.md` before importing or refreshing external skill material.
-- Read `docs/specs/0001-cross-tool-skills-repo.md` before changing layout or install behavior.
+- Read `docs/reference/repo-layout.md` and
+  `docs/specs/0001-cross-tool-skills-repo.md` before changing layout or install
+  behavior.
 - Read `docs/specs/0005-capture-input-note-vs-methodology-intake.md` before
   changing either source-capture or methodology-adoption behavior.
 
@@ -83,6 +87,8 @@ sibling repo:
 - `docs/agents/issue-tracker.md`: where work items live and how to create them.
 - `docs/agents/triage-labels.md`: canonical triage states.
 - `docs/agents/domain.md`: where agents should read domain context from.
+- `docs/how-to/`: current operational guides.
+- `docs/reference/`: current repo contracts and compatibility notes.
 - `docs/intake.md`: repo-level queue of unprocessed notes and captures to grill later.
 - `skills/`: repo-local skills that define reusable workflows.
 - `baselines/`: repo-local always-on baseline packs with managed-block adapters.

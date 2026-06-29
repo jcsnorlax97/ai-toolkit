@@ -15,8 +15,9 @@ Apply this baseline before ordinary implementation habits, but never use it to o
 
 ## Project Purpose
 
-This repo stores portable engineering skills for AI coding agents. Treat
-`skills/` as the canonical source. Treat `.claude/skills/` as the Claude Code
+This repo stores reusable AI agent assets: skills, baselines, workflow
+definitions, agent role packs, and supporting templates. Treat `skills/` as the
+canonical source for invoked skills. Treat `.claude/skills/` as the Claude Code
 project adapter.
 
 Treat `baselines/` as the canonical source for always-on baseline
@@ -30,7 +31,7 @@ directory for SkillOps data.
 ## Required Context
 
 - Read `CONTEXT.md` before creating, renaming, or substantially changing skills.
-- Read `docs/specs/0001-cross-tool-skills-repo.md` before changing repository layout or install behavior.
+- Read `docs/reference/repo-layout.md` and `docs/specs/0001-cross-tool-skills-repo.md` before changing repository layout or install behavior.
 - Use `docs/adr/0000-template.md` for decisions that are hard to reverse and need future context.
 
 ## Skills
@@ -64,13 +65,13 @@ The following skills are local additions in this repository.
 Run this after skill or layout changes:
 
 ```bash
-./scripts/verify-skills.sh
+./scripts/skills/verify.sh
 ```
 
 Run this after portable baseline changes:
 
 ```powershell
-./scripts/verify-baselines.ps1
+./scripts/baseline.ps1 verify
 ```
 
 ## Safety

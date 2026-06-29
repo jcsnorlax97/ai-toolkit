@@ -6,8 +6,9 @@ Accepted
 
 ## Goal
 
-Create a repository that can store reusable engineering skills once and expose
-them to multiple AI coding tools without hand-maintaining duplicate skill files.
+Create a repository that can store reusable AI agent assets once and expose
+skills to multiple AI coding tools without hand-maintaining duplicate skill
+files.
 
 ## Non-Goals
 
@@ -42,9 +43,9 @@ Tool-specific adapters point at or install from that source tree.
 
 ```text
 .claude/skills/<skill-name> -> ../../skills/engineering/<skill-name>
-~/.local/share/agentic-engineering-skills/current -> <this repo clone>
-~/.claude/skills/<skill-name>  -> ~/.local/share/agentic-engineering-skills/current/skills/engineering/<skill-name>
-~/.codex/skills/<skill-name>   -> ~/.local/share/agentic-engineering-skills/current/skills/engineering/<skill-name>
+~/.local/share/ai-agent-library/current -> <this repo clone>
+~/.claude/skills/<skill-name>  -> ~/.local/share/ai-agent-library/current/skills/engineering/<skill-name>
+~/.codex/skills/<skill-name>   -> ~/.local/share/ai-agent-library/current/skills/engineering/<skill-name>
 ```
 
 `baselines/` is the canonical source tree for always-on instruction
@@ -106,9 +107,9 @@ Installation scripts expose canonical skill directories to personal tool
 directories. The default mode is symlink mode:
 
 ```text
-~/.local/share/agentic-engineering-skills/current -> <this repo clone>
-~/.claude/skills/<skill-name> -> ~/.local/share/agentic-engineering-skills/current/skills/engineering/<skill-name>
-~/.codex/skills/<skill-name> -> ~/.local/share/agentic-engineering-skills/current/skills/engineering/<skill-name>
+~/.local/share/ai-agent-library/current -> <this repo clone>
+~/.claude/skills/<skill-name> -> ~/.local/share/ai-agent-library/current/skills/engineering/<skill-name>
+~/.codex/skills/<skill-name> -> ~/.local/share/ai-agent-library/current/skills/engineering/<skill-name>
 ```
 
 Pulling the repo updates installed skills immediately because runtime skill
@@ -123,7 +124,7 @@ If a personal target already exists as a real directory from an older copy-based
 install and symlink mode is requested, the installer moves that directory into:
 
 ```text
-<tool-skills-dir>/.agentic-engineering-skills-backups/<timestamp>/<skill-name>
+<tool-skills-dir>/.ai-agent-library-backups/<timestamp>/<skill-name>
 ```
 
 It then creates the symlink. This preserves local customizations without keeping
@@ -168,7 +169,7 @@ Project-level Claude Code usage uses `.claude/skills/`. In this repo those
 entries are symlinks so local edits immediately affect the canonical files.
 
 Operational commands, the scenario-by-scenario behavior matrix, and
-macOS/Windows notes live in `docs/install.md`.
+macOS/Windows notes live in `docs/how-to/install.md`.
 
 ### Portable Baseline Apply Behavior
 
@@ -258,5 +259,5 @@ When adding a new skill:
 3. Run `./scripts/skills.ps1 verify`.
 4. Run `./scripts/skills.ps1 verify -Target claude -Scope personal` after
    personal symlink install or repair, or add `-Copy` after copy-mode install.
-5. Update `README.md` and `docs/install.md` only if the skill changes the
+5. Update `README.md` and `docs/how-to/install.md` only if the skill changes the
    public catalog or bootstrap story.

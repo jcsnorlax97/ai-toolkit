@@ -21,26 +21,26 @@ Runtime skill directories are adapters:
 The preferred personal install mode is symlink mode:
 
 ```text
-~/.local/share/agentic-engineering-skills/current
+~/.local/share/ai-agent-library/current
   -> <this repo clone>
 
 ~/.claude/skills/<skill-name>
-  -> ~/.local/share/agentic-engineering-skills/current/skills/engineering/<skill-name>
+  -> ~/.local/share/ai-agent-library/current/skills/engineering/<skill-name>
 
 ~/.codex/skills/<skill-name>
-  -> ~/.local/share/agentic-engineering-skills/current/skills/engineering/<skill-name>
+  -> ~/.local/share/ai-agent-library/current/skills/engineering/<skill-name>
 ```
 
-Only `~/.local/share/agentic-engineering-skills/current` is the repo-level
+Only `~/.local/share/ai-agent-library/current` is the repo-level
 symlink. Paths under it, such as
-`~/.local/share/agentic-engineering-skills/current/skills/engineering/diagnose`,
+`~/.local/share/ai-agent-library/current/skills/engineering/diagnose`,
 resolve through `current` into the real repo directory. `ls -ld` on those deeper
 paths may look like an ordinary directory and may not show `->`.
 
 In other words, `current` is the pointer:
 
 ```text
-~/.local/share/agentic-engineering-skills/current -> <this repo clone>
+~/.local/share/ai-agent-library/current -> <this repo clone>
 ```
 
 `current/skills/engineering/<skill-name>` is not a second symlink created by the
@@ -222,7 +222,7 @@ explicitly:
 ```powershell
 $env:MSYS = "winsymlinks:nativestrict"
 & "C:\Program Files\Git\bin\bash.exe" -lc `
-  "cd /c/Users/<WindowsUser>/Documents/a-codex/agentic-engineering-skills && ./scripts/skills/repair-personal-links.sh"
+  "cd /c/Users/<WindowsUser>/Documents/a-codex/ai-agent-library && ./scripts/skills/repair-personal-links.sh"
 ```
 
 If neither option is available, keep using copy mode and rerun the copy
@@ -293,9 +293,9 @@ Installer verification:
 Manual Git Bash verification:
 
 ```bash
-ls -ld ~/.local/share/agentic-engineering-skills/current
+ls -ld ~/.local/share/ai-agent-library/current
 ls -ld ~/.claude/skills/diagnose
-readlink ~/.local/share/agentic-engineering-skills/current
+readlink ~/.local/share/ai-agent-library/current
 readlink ~/.claude/skills/diagnose
 realpath ~/.claude/skills/diagnose
 test -L ~/.claude/skills/diagnose
@@ -315,17 +315,17 @@ Default symlink mode is deterministic:
 
 | Scenario | Behavior |
 | --- | --- |
-| Fresh machine, no stable repo link | Create `~/.local/share/agentic-engineering-skills/current -> <this repo>`. |
+| Fresh machine, no stable repo link | Create `~/.local/share/ai-agent-library/current -> <this repo>`. |
 | Fresh machine, no runtime skill target | Create `~/.claude/skills/<skill-name>` or `~/.codex/skills/<skill-name>` as a symlink through `current`. |
 | New skill added under `skills/engineering/` | Rerun the relevant installer; it creates the missing runtime symlink. |
 | Runtime skill symlink already correct | Leave it as-is and report it as verified. |
 | Runtime skill symlink points elsewhere, is stale, or is broken | Replace it with the expected symlink through `current`. |
-| Runtime skill exists as a real directory or copied install | Move it to `.agentic-engineering-skills-backups/<timestamp>/<skill-name>`, then create the symlink. |
+| Runtime skill exists as a real directory or copied install | Move it to `.ai-agent-library-backups/<timestamp>/<skill-name>`, then create the symlink. |
 | Runtime skill exists as a real directory and `--keep-existing` is passed | Leave it untouched and do not create the symlink for that skill. |
 | Stable `current` symlink points at this repo | Leave it as-is. |
 | Stable `current` symlink points at an old repo path | Replace it to point at the current clone. |
 | Stable `current` symlink is broken | Replace it to point at the current clone. |
-| Stable `current` path exists but is not a symlink | Move it to `.agentic-engineering-skills-backups/<timestamp>/current`, then create the real symlink. |
+| Stable `current` path exists but is not a symlink | Move it to `.ai-agent-library-backups/<timestamp>/current`, then create the real symlink. |
 | Repo is moved or renamed | Run `scripts/skills/repair-personal-links.sh` from the new clone. |
 | Repo content changes after `git pull` | Existing linked skills see changes immediately; rerun installer only for new skills or repair. |
 | `--verify-only` | Check current state and fail if any expected symlink is missing, stale, or broken; do not mutate files. |
@@ -345,6 +345,6 @@ Copy mode behavior differs from symlink mode:
 | --- | --- |
 | Fresh machine, no runtime skill target | Copy `skills/engineering/<skill-name>/` into the runtime skills directory. |
 | Runtime skill copy matches canonical source | Leave it as-is and report it as verified. |
-| Runtime skill copy differs from canonical source | Move it to `.agentic-engineering-skills-backups/<timestamp>/<skill-name>`, then copy the canonical source. |
+| Runtime skill copy differs from canonical source | Move it to `.ai-agent-library-backups/<timestamp>/<skill-name>`, then copy the canonical source. |
 | Repo content changes after `git pull` | Rerun the installer to refresh copied snapshots. |
 | Stable `current` symlink | Not used in copy mode. |

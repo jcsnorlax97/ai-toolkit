@@ -210,7 +210,7 @@ switch ($Command) {
 
         & (Get-BashPath) (Convert-ToBashPath $verifyScript)
         if ($LASTEXITCODE -ne 0) {
-            throw "verify-skills.sh failed with exit code $LASTEXITCODE"
+            throw "scripts/skills/verify.sh failed with exit code $LASTEXITCODE"
         }
 
         $verifyInstall = $PSBoundParameters.ContainsKey("Target") -or $PSBoundParameters.ContainsKey("Scope")

@@ -14,7 +14,8 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $scriptsRoot = Split-Path -Parent $scriptDir
 $cliPath = Join-Path $scriptsRoot "baseline.ps1"
 $shimPath = Join-Path $InstallDir "baseline.cmd"
-$marker = "agentic-engineering-skills baseline shim"
+$marker = "ai-agent-library baseline shim"
+$acceptedMarkers = @($marker, "agentic-engineering-skills baseline shim")
 $legacyShims = @(
     @{ Path = (Join-Path $InstallDir "p-baseline.cmd"); Marker = "agentic-engineering-skills p-baseline shim" },
     @{ Path = (Join-Path $InstallDir "portable-baseline.cmd"); Marker = "agentic-engineering-skills portable-baseline shim" }
@@ -34,7 +35,8 @@ function Test-Shim {
         throw "Missing shim: $shimPath"
     }
     $content = [System.IO.File]::ReadAllText($shimPath, [System.Text.Encoding]::UTF8)
-    if ($content -notlike "*$marker*" -or $content -notlike "*$cliPath*") {
+    $hasAcceptedMarker = ($acceptedMarkers | Where-Object { $content -like "*$_*" }).Count -gt 0
+    if (-not $hasAcceptedMarker -or $content -notlike "*$cliPath*") {
         throw "Shim exists but does not point at this repo: $shimPath"
     }
     if (-not (Path-ContainsInstallDir)) {
@@ -65,7 +67,8 @@ if ($Remove) {
         exit 0
     }
     $content = [System.IO.File]::ReadAllText($shimPath, [System.Text.Encoding]::UTF8)
-    if ($content -notlike "*$marker*" -or $content -notlike "*$cliPath*") {
+    $hasAcceptedMarker = ($acceptedMarkers | Where-Object { $content -like "*$_*" }).Count -gt 0
+    if (-not $hasAcceptedMarker -or $content -notlike "*$cliPath*") {
         throw "Refusing to remove non-matching shim: $shimPath"
     }
     if ($VerifyOnly) {

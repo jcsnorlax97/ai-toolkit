@@ -6,7 +6,8 @@ CLI_PATH="$ROOT_DIR/scripts/baseline"
 INSTALL_DIR="${BASELINE_BIN_DIR:-${PORTABLE_BASELINE_BIN_DIR:-$HOME/.local/bin}}"
 VERIFY_ONLY=0
 REMOVE=0
-MARKER="agentic-engineering-skills baseline shim"
+MARKER="ai-agent-library baseline shim"
+LEGACY_MARKER="agentic-engineering-skills baseline shim"
 LEGACY_SHIMS=(
   "p-baseline|agentic-engineering-skills p-baseline shim"
   "portable-baseline|agentic-engineering-skills portable-baseline shim"
@@ -61,7 +62,7 @@ verify_shim() {
     echo "Missing shim: $SHIM_PATH" >&2
     exit 1
   fi
-  if ! grep -q "$MARKER" "$SHIM_PATH" || ! grep -q "$CLI_PATH" "$SHIM_PATH"; then
+  if { ! grep -q "$MARKER" "$SHIM_PATH" && ! grep -q "$LEGACY_MARKER" "$SHIM_PATH"; } || ! grep -q "$CLI_PATH" "$SHIM_PATH"; then
     echo "Shim exists but does not point at this repo: $SHIM_PATH" >&2
     exit 1
   fi
@@ -93,7 +94,7 @@ if [[ "$REMOVE" -eq 1 ]]; then
     echo "skip missing shim: $SHIM_PATH"
     exit 0
   fi
-  if ! grep -q "$MARKER" "$SHIM_PATH" || ! grep -q "$CLI_PATH" "$SHIM_PATH"; then
+  if { ! grep -q "$MARKER" "$SHIM_PATH" && ! grep -q "$LEGACY_MARKER" "$SHIM_PATH"; } || ! grep -q "$CLI_PATH" "$SHIM_PATH"; then
     echo "Refusing to remove non-matching shim: $SHIM_PATH" >&2
     exit 1
   fi
