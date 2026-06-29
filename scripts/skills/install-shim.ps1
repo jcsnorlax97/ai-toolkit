@@ -11,7 +11,8 @@ param(
 $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$cliPath = Join-Path $scriptDir "skills.ps1"
+$scriptsRoot = Split-Path -Parent $scriptDir
+$cliPath = Join-Path $scriptsRoot "skills.ps1"
 $shimPath = Join-Path $InstallDir "skills.cmd"
 $marker = "agentic-engineering-skills skills shim"
 

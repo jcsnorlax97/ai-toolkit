@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("list", "show", "install", "verify")]
+    [ValidateSet("list", "show", "install", "verify", "shim")]
     [string] $Command = "list",
 
     [Parameter(Position = 1)]
@@ -18,7 +18,11 @@ param(
 
     [switch] $Link,
 
-    [switch] $KeepExisting
+    [switch] $KeepExisting,
+
+    [string] $InstallDir = "",
+
+    [switch] $AddToUserPath
 )
 
 $ErrorActionPreference = "Stop"
@@ -130,10 +134,10 @@ function Get-Targets {
 function Install-PersonalTarget($TargetName, $VerifyOnly) {
     switch ($TargetName) {
         "codex" {
-            Invoke-SkillInstallScript "install-codex-skills.sh" $VerifyOnly
+            Invoke-SkillInstallScript "skills/install-codex.sh" $VerifyOnly
         }
         "claude" {
-            Invoke-SkillInstallScript "install-claude-code-skills.sh" $VerifyOnly
+            Invoke-SkillInstallScript "skills/install-claude-code.sh" $VerifyOnly
         }
         "copilot" {
             if ($Target -eq "all") {
@@ -199,7 +203,7 @@ switch ($Command) {
         }
     }
     "verify" {
-        $verifyScript = Join-Path $scriptDir "verify-skills.sh"
+        $verifyScript = Join-Path $scriptDir "skills/verify.sh"
         if (-not (Test-Path -LiteralPath $verifyScript)) {
             throw "Missing verify script: $verifyScript"
         }
@@ -219,5 +223,28 @@ switch ($Command) {
                 }
             }
         }
+    }
+    "shim" {
+        $shimAction = if ($Name) { $Name } else { "install" }
+        if (@("install", "verify", "remove") -notcontains $shimAction) {
+            throw "Unknown shim action: $shimAction. Use install, verify, or remove."
+        }
+
+        $shimScript = Join-Path $scriptDir "skills\install-shim.ps1"
+        $shimArgs = @{}
+        if ($InstallDir) {
+            $shimArgs.InstallDir = $InstallDir
+        }
+        if ($AddToUserPath) {
+            $shimArgs.AddToUserPath = $true
+        }
+        if ($shimAction -eq "verify") {
+            $shimArgs.VerifyOnly = $true
+        }
+        if ($shimAction -eq "remove") {
+            $shimArgs.Remove = $true
+        }
+
+        & $shimScript @shimArgs
     }
 }

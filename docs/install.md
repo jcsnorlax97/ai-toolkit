@@ -75,27 +75,26 @@ today. Copilot is accepted as a target name, but this repo does not yet define a
 Copilot skills runtime contract; use baselines for Copilot instruction blocks
 until that exists.
 
-The older `install-claude-code-skills.sh`, `install-codex-skills.sh`,
-`repair-personal-skill-links.sh`, and `verify-personal-skill-links.sh` commands
-remain as compatibility wrappers around the organized `scripts/skills/`
-implementation.
+Legacy command names live under `scripts/compat/` as compatibility wrappers.
+New docs should point at `scripts/skills.ps1` or the organized
+`scripts/skills/` implementation directly.
 
 Command shims are separate from runtime installs:
 
 | Goal | Command | Scope |
 | --- | --- | --- |
-| Install Windows `baseline` shim | `./scripts/install-baseline-shim.ps1 -AddToUserPath` | User PATH and one `.cmd` wrapper |
-| Verify Windows shim | `./scripts/install-baseline-shim.ps1 -VerifyOnly` | No writes |
-| Remove Windows shim | `./scripts/install-baseline-shim.ps1 -Remove` | One managed `.cmd` wrapper |
-| Install Windows `skills` shim | `./scripts/install-skills-shim.ps1 -AddToUserPath` | User PATH and one `.cmd` wrapper |
-| Verify Windows `skills` shim | `./scripts/install-skills-shim.ps1 -VerifyOnly` | No writes |
-| Remove Windows `skills` shim | `./scripts/install-skills-shim.ps1 -Remove` | One managed `.cmd` wrapper |
-| Install macOS/Linux `baseline` shim | `./scripts/install-baseline-shim.sh` | One shell wrapper in `~/.local/bin` |
-| Verify macOS/Linux shim | `./scripts/install-baseline-shim.sh --verify-only` | No writes |
-| Remove macOS/Linux shim | `./scripts/install-baseline-shim.sh --remove` | One managed shell wrapper |
-| Install macOS/Linux `skills` shim | `./scripts/install-skills-shim.sh` | One shell wrapper in `~/.local/bin` |
-| Verify macOS/Linux `skills` shim | `./scripts/install-skills-shim.sh --verify-only` | No writes |
-| Remove macOS/Linux `skills` shim | `./scripts/install-skills-shim.sh --remove` | One managed shell wrapper |
+| Install Windows `baseline` shim | `./scripts/baseline.ps1 shim install -AddToUserPath` | User PATH and one `.cmd` wrapper |
+| Verify Windows shim | `./scripts/baseline.ps1 shim verify` | No writes |
+| Remove Windows shim | `./scripts/baseline.ps1 shim remove` | One managed `.cmd` wrapper |
+| Install Windows `skills` shim | `./scripts/skills.ps1 shim install -AddToUserPath` | User PATH and one `.cmd` wrapper |
+| Verify Windows `skills` shim | `./scripts/skills.ps1 shim verify` | No writes |
+| Remove Windows `skills` shim | `./scripts/skills.ps1 shim remove` | One managed `.cmd` wrapper |
+| Install macOS/Linux `baseline` shim | `./scripts/baselines/install-shim.sh` | One shell wrapper in `~/.local/bin` |
+| Verify macOS/Linux shim | `./scripts/baselines/install-shim.sh --verify-only` | No writes |
+| Remove macOS/Linux shim | `./scripts/baselines/install-shim.sh --remove` | One managed shell wrapper |
+| Install macOS/Linux `skills` shim | `./scripts/skills/install-shim.sh` | One shell wrapper in `~/.local/bin` |
+| Verify macOS/Linux `skills` shim | `./scripts/skills/install-shim.sh --verify-only` | No writes |
+| Remove macOS/Linux `skills` shim | `./scripts/skills/install-shim.sh --remove` | One managed shell wrapper |
 
 The `baseline` and `skills` shims do not install skills or write to
 `~/.claude/skills`, `~/.codex/skills`, or assistant runtime state. They only
@@ -110,14 +109,14 @@ source pack, verification fails with both versions so the operator can rerun
 the next `baseline apply` migrates them to the current `baseline` marker.
 
 The default installer mode is symlink mode. Use `-Copy` from `skills.ps1`, or
-`--copy` from the compatibility shell scripts, as an explicit fallback:
+`--copy` from the organized shell scripts, as an explicit fallback:
 
 ```powershell
 ./scripts/skills.ps1 install -Target claude -Scope personal -Copy
 ```
 
 ```bash
-./scripts/install-claude-code-skills.sh --link
+./scripts/skills/install-claude-code.sh --link
 ```
 
 ## Platform Commands
@@ -127,14 +126,14 @@ The default installer mode is symlink mode. Use `-Copy` from `skills.ps1`, or
 macOS normally does not need special privileges for these symlinks:
 
 ```bash
-./scripts/install-claude-code-skills.sh
-./scripts/install-claude-code-skills.sh --verify-only
+./scripts/skills/install-claude-code.sh
+./scripts/skills/install-claude-code.sh --verify-only
 ```
 
 For the portable baseline command shim:
 
 ```bash
-./scripts/install-baseline-shim.sh
+./scripts/baselines/install-shim.sh
 baseline list
 ```
 
@@ -171,8 +170,8 @@ Windows user profile.
 After the preflight passes, run the installer from the repo root:
 
 ```bash
-MSYS=winsymlinks:nativestrict ./scripts/install-claude-code-skills.sh
-MSYS=winsymlinks:nativestrict ./scripts/install-claude-code-skills.sh --verify-only
+MSYS=winsymlinks:nativestrict ./scripts/skills/install-claude-code.sh
+MSYS=winsymlinks:nativestrict ./scripts/skills/install-claude-code.sh --verify-only
 ```
 
 ### Windows, VS Code PowerShell Or `pwsh`
@@ -223,7 +222,7 @@ explicitly:
 ```powershell
 $env:MSYS = "winsymlinks:nativestrict"
 & "C:\Program Files\Git\bin\bash.exe" -lc `
-  "cd /c/Users/<WindowsUser>/Documents/a-codex/agentic-engineering-skills && ./scripts/repair-personal-skill-links.sh"
+  "cd /c/Users/<WindowsUser>/Documents/a-codex/agentic-engineering-skills && ./scripts/skills/repair-personal-links.sh"
 ```
 
 If neither option is available, keep using copy mode and rerun the copy
@@ -234,14 +233,14 @@ installer because it creates a `.cmd` wrapper usable from both PowerShell and
 CMD:
 
 ```powershell
-.\scripts\install-baseline-shim.ps1 -AddToUserPath
+.\scripts\baseline.ps1 shim install -AddToUserPath
 baseline list
 ```
 
 Open a new terminal after `-AddToUserPath`. Remove the shim later with:
 
 ```powershell
-.\scripts\install-baseline-shim.ps1 -Remove
+.\scripts\baseline.ps1 shim remove
 ```
 
 The Windows `.cmd` shim forwards arguments through CMD, so comma-separated
@@ -275,8 +274,8 @@ the block's location.
 Use WSL only when Claude Code is also running inside WSL:
 
 ```bash
-./scripts/install-claude-code-skills.sh
-./scripts/install-claude-code-skills.sh --verify-only
+./scripts/skills/install-claude-code.sh
+./scripts/skills/install-claude-code.sh --verify-only
 ```
 
 If Claude Code is the Windows app, do not use WSL's default
@@ -288,7 +287,7 @@ Claude Code profile.
 Installer verification:
 
 ```bash
-./scripts/install-claude-code-skills.sh --verify-only
+./scripts/skills/install-claude-code.sh --verify-only
 ```
 
 Manual Git Bash verification:
@@ -327,7 +326,7 @@ Default symlink mode is deterministic:
 | Stable `current` symlink points at an old repo path | Replace it to point at the current clone. |
 | Stable `current` symlink is broken | Replace it to point at the current clone. |
 | Stable `current` path exists but is not a symlink | Move it to `.agentic-engineering-skills-backups/<timestamp>/current`, then create the real symlink. |
-| Repo is moved or renamed | Run `scripts/repair-personal-skill-links.sh` from the new clone. |
+| Repo is moved or renamed | Run `scripts/skills/repair-personal-links.sh` from the new clone. |
 | Repo content changes after `git pull` | Existing linked skills see changes immediately; rerun installer only for new skills or repair. |
 | `--verify-only` | Check current state and fail if any expected symlink is missing, stale, or broken; do not mutate files. |
 
@@ -336,8 +335,8 @@ Default symlink mode is deterministic:
 Use copy mode only if a machine cannot create real symlinks:
 
 ```bash
-./scripts/install-claude-code-skills.sh --copy
-./scripts/install-claude-code-skills.sh --copy --verify-only
+./scripts/skills/install-claude-code.sh --copy
+./scripts/skills/install-claude-code.sh --copy --verify-only
 ```
 
 Copy mode behavior differs from symlink mode:

@@ -1,5 +1,6 @@
 $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$impl = Join-Path $scriptDir "baselines\verify.ps1"
+$scriptsRoot = Split-Path -Parent $scriptDir
+$impl = Join-Path $scriptsRoot "baselines\apply.ps1"
 & $impl @args

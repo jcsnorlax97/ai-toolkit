@@ -1,7 +1,10 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("list", "show", "apply", "remove", "verify")]
+    [ValidateSet("list", "show", "apply", "remove", "verify", "shim")]
     [string] $Command = "list",
+
+    [Parameter(Position = 1)]
+    [string] $ShimAction = "install",
 
     [string] $TargetRepo = (Get-Location).Path,
 
@@ -11,7 +14,11 @@ param(
 
     [switch] $CreateMissing,
 
-    [switch] $DryRun
+    [switch] $DryRun,
+
+    [string] $InstallDir = "",
+
+    [switch] $AddToUserPath
 )
 
 $ErrorActionPreference = "Stop"
@@ -79,7 +86,7 @@ function Normalize-Tools($ToolValues) {
     return $normalized
 }
 
-if ($Command -ne "list") {
+if (@("show", "apply", "remove", "verify") -contains $Command) {
     $Pack = Resolve-PackName $Pack
     $Tools = Normalize-Tools $Tools
 }
@@ -116,5 +123,27 @@ switch ($Command) {
     "verify" {
         $verifyScript = Join-Path $scriptDir "baselines\verify.ps1"
         & $verifyScript -TargetRepo $TargetRepo -Pack $Pack -Tools $Tools
+    }
+    "shim" {
+        if (@("install", "verify", "remove") -notcontains $ShimAction) {
+            throw "Unknown shim action: $ShimAction. Use install, verify, or remove."
+        }
+
+        $shimScript = Join-Path $scriptDir "baselines\install-shim.ps1"
+        $shimArgs = @{}
+        if ($InstallDir) {
+            $shimArgs.InstallDir = $InstallDir
+        }
+        if ($AddToUserPath) {
+            $shimArgs.AddToUserPath = $true
+        }
+        if ($ShimAction -eq "verify") {
+            $shimArgs.VerifyOnly = $true
+        }
+        if ($ShimAction -eq "remove") {
+            $shimArgs.Remove = $true
+        }
+
+        & $shimScript @shimArgs
     }
 }

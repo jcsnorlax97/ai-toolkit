@@ -11,7 +11,8 @@ param(
 $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$cliPath = Join-Path $scriptDir "baseline.ps1"
+$scriptsRoot = Split-Path -Parent $scriptDir
+$cliPath = Join-Path $scriptsRoot "baseline.ps1"
 $shimPath = Join-Path $InstallDir "baseline.cmd"
 $marker = "agentic-engineering-skills baseline shim"
 $legacyShims = @(

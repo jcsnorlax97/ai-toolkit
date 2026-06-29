@@ -131,14 +131,14 @@ the stale copy active. Pass `--keep-existing` to leave non-symlink targets in
 place.
 
 If the repository is renamed or moved, rerun `scripts/skills.ps1 install` or
-`scripts/repair-personal-skill-links.sh` from the new clone. Existing personal
+`scripts/skills/repair-personal-links.sh` from the new clone. Existing personal
 skill links continue to point through the stable repo link, so repair updates
 the repo pointer instead of rewriting every path by hand. In explicit copy mode,
 rerunning the installer refreshes the copied snapshots.
 
-`scripts/skills.ps1` is the public skill CLI. `scripts/repair-personal-skill-links.sh`
-is a compatibility wrapper, not a separate install mode. It runs both personal
-install implementations:
+`scripts/skills.ps1` is the public skill CLI. Legacy command names live under
+`scripts/compat/` as compatibility wrappers, not separate install modes. The
+repair implementation runs both personal install implementations:
 
 ```text
 scripts/skills/install-codex.sh
@@ -154,7 +154,7 @@ before replacing them, and does not require symlink privileges.
 
 On Windows Git Bash/MSYS/Cygwin, symlink mode requires real Windows symlink
 support. The recommended command is
-`MSYS=winsymlinks:nativestrict ./scripts/install-claude-code-skills.sh`, and
+`MSYS=winsymlinks:nativestrict ./scripts/skills/install-claude-code.sh`, and
 Windows may require Developer Mode or an elevated shell. If `ln -s` does not
 produce a real symlink, the installer must fail instead of treating a copied
 directory or placeholder as success.
@@ -222,8 +222,8 @@ alone.
 
 ## Verification Requirements
 
-`scripts/skills.ps1 verify` and its compatibility wrapper
-`scripts/verify-skills.sh` must check:
+`scripts/skills.ps1 verify`, implemented by `scripts/skills/verify.sh`, must
+check:
 
 - Every canonical skill has a `SKILL.md`.
 - Every `SKILL.md` contains frontmatter with `name` and `description`.
@@ -232,8 +232,8 @@ alone.
 - Claude Code project adapter entries exist for every canonical skill.
 - Adapter entries resolve to a readable `SKILL.md`.
 
-`scripts/baseline.ps1 verify` and its compatibility wrapper
-`scripts/verify-baselines.ps1` must check:
+`scripts/baseline.ps1 verify`, implemented by `scripts/baselines/verify.ps1`,
+must check:
 
 - The requested baseline pack has `pack.json`, `baseline.md`, and required
   adapter blocks.

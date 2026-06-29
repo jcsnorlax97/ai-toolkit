@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 CLI_PATH="$ROOT_DIR/scripts/skills.ps1"
 INSTALL_DIR="${SKILLS_BIN_DIR:-$HOME/.local/bin}"
 VERIFY_ONLY=0
@@ -11,9 +11,9 @@ MARKER="agentic-engineering-skills skills shim"
 usage() {
   cat <<'USAGE'
 Usage:
-  ./scripts/install-skills-shim.sh [--install-dir <dir>]
-  ./scripts/install-skills-shim.sh --verify-only [--install-dir <dir>]
-  ./scripts/install-skills-shim.sh --remove [--install-dir <dir>]
+  ./scripts/skills/install-shim.sh [--install-dir <dir>]
+  ./scripts/skills/install-shim.sh --verify-only [--install-dir <dir>]
+  ./scripts/skills/install-shim.sh --remove [--install-dir <dir>]
 USAGE
 }
 

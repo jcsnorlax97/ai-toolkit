@@ -39,6 +39,7 @@ Rationale:
 │   └── specs/
 ├── scripts/
 │   ├── baselines/
+│   ├── compat/
 │   ├── skills/
 │   └── lib/
 ├── baselines/
@@ -165,12 +166,12 @@ Install an optional global shim when you want to type `baseline list`
 from PowerShell, CMD, or a Unix shell:
 
 ```powershell
-./scripts/install-baseline-shim.ps1 -AddToUserPath
+./scripts/baseline.ps1 shim install -AddToUserPath
 baseline list
 ```
 
 ```bash
-./scripts/install-baseline-shim.sh
+./scripts/baselines/install-shim.sh
 baseline list
 ```
 
@@ -212,8 +213,8 @@ Remove it later:
 ```powershell
 ./scripts/baseline.ps1 remove -TargetRepo C:\path\to\repo -Pack karpathy-principles
 C:\path\to\agentic-engineering-skills\scripts\baseline.ps1 remove -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
-./scripts/install-baseline-shim.ps1 -Remove
-./scripts/install-baseline-shim.sh --remove
+./scripts/baseline.ps1 shim remove
+./scripts/baselines/install-shim.sh --remove
 ```
 
 Verify pack shape and a downstream repo:
@@ -251,12 +252,12 @@ Install the optional Windows shim when you want to type `skills list` from a
 normal shell:
 
 ```powershell
-./scripts/install-skills-shim.ps1 -AddToUserPath
+./scripts/skills.ps1 shim install -AddToUserPath
 skills list
 ```
 
 ```bash
-./scripts/install-skills-shim.sh
+./scripts/skills/install-shim.sh
 skills list
 ```
 

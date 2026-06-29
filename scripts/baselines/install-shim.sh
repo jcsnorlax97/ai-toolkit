@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 CLI_PATH="$ROOT_DIR/scripts/baseline"
 INSTALL_DIR="${BASELINE_BIN_DIR:-${PORTABLE_BASELINE_BIN_DIR:-$HOME/.local/bin}}"
 VERIFY_ONLY=0
@@ -15,9 +15,9 @@ LEGACY_SHIMS=(
 usage() {
   cat <<'USAGE'
 Usage:
-  ./scripts/install-baseline-shim.sh [--install-dir <dir>]
-  ./scripts/install-baseline-shim.sh --verify-only [--install-dir <dir>]
-  ./scripts/install-baseline-shim.sh --remove [--install-dir <dir>]
+  ./scripts/baselines/install-shim.sh [--install-dir <dir>]
+  ./scripts/baselines/install-shim.sh --verify-only [--install-dir <dir>]
+  ./scripts/baselines/install-shim.sh --remove [--install-dir <dir>]
 USAGE
 }
 
