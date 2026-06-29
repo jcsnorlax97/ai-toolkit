@@ -224,7 +224,7 @@ alone.
 - Claude Code project adapter entries exist for every canonical skill.
 - Adapter entries resolve to a readable `SKILL.md`.
 
-`scripts/verify-portable-baselines.ps1` must check:
+`scripts/verify-baselines.ps1` must check:
 
 - The requested baseline pack has `pack.json`, `baseline.md`, and required
   adapter blocks.

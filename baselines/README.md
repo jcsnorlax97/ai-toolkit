@@ -82,14 +82,14 @@ copy of the baseline text.
 
 ## CLI
 
-Use `scripts/portable-baseline.ps1` as the human-friendly entrypoint:
+Use `scripts/baseline.ps1` as the human-friendly entrypoint:
 
 ```powershell
-./scripts/portable-baseline.ps1 list
-./scripts/portable-baseline.ps1 show
-./scripts/portable-baseline.ps1 apply -TargetRepo C:\path\to\repo -Tools codex,claude,copilot -DryRun
-./scripts/portable-baseline.ps1 remove -TargetRepo C:\path\to\repo -Tools codex,claude,copilot -DryRun
-./scripts/portable-baseline.ps1 verify -TargetRepo C:\path\to\repo -Tools codex,claude,copilot
+./scripts/baseline.ps1 list
+./scripts/baseline.ps1 show
+./scripts/baseline.ps1 apply -TargetRepo C:\path\to\repo -Tools codex,claude,copilot -DryRun
+./scripts/baseline.ps1 remove -TargetRepo C:\path\to\repo -Tools codex,claude,copilot -DryRun
+./scripts/baseline.ps1 verify -TargetRepo C:\path\to\repo -Tools codex,claude,copilot
 ```
 
 When called from inside the target repo, omit `-TargetRepo`; it defaults to the
@@ -101,32 +101,33 @@ When exactly one pack exists, the CLI infers it. Once multiple packs exist,
 On macOS or Linux, the native shell entrypoint is:
 
 ```bash
-./scripts/portable-baseline list
-./scripts/portable-baseline show
-./scripts/portable-baseline apply --tools codex,claude,copilot --dry-run
+./scripts/baseline list
+./scripts/baseline show
+./scripts/baseline apply --tools codex,claude,copilot --dry-run
 ```
 
 ## Global Shim
 
-Install a reversible command shim when you want to run `p-baseline` from
+Install a reversible command shim when you want to run `baseline` from
 any repo.
 
 Windows PowerShell or CMD:
 
 ```powershell
-./scripts/install-portable-baseline-shim.ps1 -AddToUserPath
-p-baseline list
-./scripts/install-portable-baseline-shim.ps1 -Remove
+./scripts/install-baseline-shim.ps1 -AddToUserPath
+baseline list
+./scripts/install-baseline-shim.ps1 -Remove
 ```
 
 macOS or Linux:
 
 ```bash
-./scripts/install-portable-baseline-shim.sh
-p-baseline list
-./scripts/install-portable-baseline-shim.sh --remove
+./scripts/install-baseline-shim.sh
+baseline list
+./scripts/install-baseline-shim.sh --remove
 ```
 
 The shim writes only one command wrapper into the selected bin directory. It
 forwards to this repo's CLI and does not copy packs or write assistant runtime
-state.
+state. Installing it also removes older matching `p-baseline` or
+`portable-baseline` shims from the same install directory.

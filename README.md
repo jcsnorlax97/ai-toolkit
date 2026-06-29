@@ -142,54 +142,56 @@ Current baseline packs:
 Apply a baseline to a downstream repo:
 
 ```powershell
-./scripts/apply-portable-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
-./scripts/apply-portable-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot
+./scripts/apply-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+./scripts/apply-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot
 ```
 
 Or call the CLI from the target repo and omit `-TargetRepo`:
 
 ```powershell
 cd C:\path\to\repo
-C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 list
-C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 show
-C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 apply -Tools codex,claude,copilot -DryRun
+C:\path\to\agentic-engineering-skills\scripts\baseline.ps1 list
+C:\path\to\agentic-engineering-skills\scripts\baseline.ps1 show
+C:\path\to\agentic-engineering-skills\scripts\baseline.ps1 apply -Tools codex,claude,copilot -DryRun
 ```
 
 When exactly one pack exists, the CLI can infer it. When more than one pack
 exists, pass `-Pack <name>` for `show`, `apply`, `remove`, and `verify`.
 
-Install an optional global shim when you want to type `p-baseline list`
+Install an optional global shim when you want to type `baseline list`
 from PowerShell, CMD, or a Unix shell:
 
 ```powershell
-./scripts/install-portable-baseline-shim.ps1 -AddToUserPath
-p-baseline list
+./scripts/install-baseline-shim.ps1 -AddToUserPath
+baseline list
 ```
 
 ```bash
-./scripts/install-portable-baseline-shim.sh
-p-baseline list
+./scripts/install-baseline-shim.sh
+baseline list
 ```
 
 The shim only forwards to this repository's CLI. It does not install baseline
-packs into assistant runtimes and can be removed later.
+packs into assistant runtimes and can be removed later. Installing the
+`baseline` shim also removes older matching `p-baseline` or `portable-baseline`
+shims from the same install directory.
 
 Windows shim argument note: the `.cmd` shim forwards arguments through CMD, so
 comma-separated PowerShell arrays may arrive as one string. The CLI normalizes
 comma-separated tool lists, so both the direct `.ps1` CLI and the
-`p-baseline` shim support multiple tools in one command:
+`baseline` shim support multiple tools in one command:
 
 ```powershell
-C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
-p-baseline apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+C:\path\to\agentic-engineering-skills\scripts\baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+baseline apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
 ```
 
 For narrow changes, one tool per command is also valid:
 
 ```powershell
-p-baseline apply -Pack karpathy-principles -Tools codex -DryRun
-p-baseline apply -Pack karpathy-principles -Tools claude -DryRun
-p-baseline apply -Pack karpathy-principles -Tools copilot -DryRun
+baseline apply -Pack karpathy-principles -Tools codex -DryRun
+baseline apply -Pack karpathy-principles -Tools claude -DryRun
+baseline apply -Pack karpathy-principles -Tools copilot -DryRun
 ```
 
 Baseline placement in instruction files: the installer updates an existing
@@ -205,18 +207,18 @@ future updates will preserve that location.
 Remove it later:
 
 ```powershell
-./scripts/remove-portable-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles
-C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 remove -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
-./scripts/install-portable-baseline-shim.ps1 -Remove
-./scripts/install-portable-baseline-shim.sh --remove
+./scripts/remove-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles
+C:\path\to\agentic-engineering-skills\scripts\baseline.ps1 remove -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+./scripts/install-baseline-shim.ps1 -Remove
+./scripts/install-baseline-shim.sh --remove
 ```
 
 Verify pack shape and a downstream repo:
 
 ```powershell
-./scripts/verify-portable-baselines.ps1
-./scripts/verify-portable-baselines.ps1 -TargetRepo C:\path\to\repo
-C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 verify -Pack karpathy-principles -Tools codex,claude,copilot
+./scripts/verify-baselines.ps1
+./scripts/verify-baselines.ps1 -TargetRepo C:\path\to\repo
+C:\path\to\agentic-engineering-skills\scripts\baseline.ps1 verify -Pack karpathy-principles -Tools codex,claude,copilot
 ```
 
 Target verification reads the managed block marker in each instruction file and

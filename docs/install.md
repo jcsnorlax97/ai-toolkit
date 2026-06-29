@@ -73,16 +73,17 @@ Portable baseline command shims are separate from skill runtime installs:
 
 | Goal | Command | Scope |
 | --- | --- | --- |
-| Install Windows `p-baseline` shim | `./scripts/install-portable-baseline-shim.ps1 -AddToUserPath` | User PATH and one `.cmd` wrapper |
-| Verify Windows shim | `./scripts/install-portable-baseline-shim.ps1 -VerifyOnly` | No writes |
-| Remove Windows shim | `./scripts/install-portable-baseline-shim.ps1 -Remove` | One managed `.cmd` wrapper |
-| Install macOS/Linux `p-baseline` shim | `./scripts/install-portable-baseline-shim.sh` | One shell wrapper in `~/.local/bin` |
-| Verify macOS/Linux shim | `./scripts/install-portable-baseline-shim.sh --verify-only` | No writes |
-| Remove macOS/Linux shim | `./scripts/install-portable-baseline-shim.sh --remove` | One managed shell wrapper |
+| Install Windows `baseline` shim | `./scripts/install-baseline-shim.ps1 -AddToUserPath` | User PATH and one `.cmd` wrapper |
+| Verify Windows shim | `./scripts/install-baseline-shim.ps1 -VerifyOnly` | No writes |
+| Remove Windows shim | `./scripts/install-baseline-shim.ps1 -Remove` | One managed `.cmd` wrapper |
+| Install macOS/Linux `baseline` shim | `./scripts/install-baseline-shim.sh` | One shell wrapper in `~/.local/bin` |
+| Verify macOS/Linux shim | `./scripts/install-baseline-shim.sh --verify-only` | No writes |
+| Remove macOS/Linux shim | `./scripts/install-baseline-shim.sh --remove` | One managed shell wrapper |
 
 The portable baseline shim does not install skills or write to
 `~/.claude/skills`, `~/.codex/skills`, or assistant runtime state. It only makes
-the repo CLI available as `p-baseline`.
+the repo CLI available as `baseline`. Installing it also removes older matching
+`p-baseline` or `portable-baseline` shims from the same install directory.
 
 Portable baseline verification reports the installed managed-block version for
 each target instruction file. If a repo has an older managed block than the
@@ -111,8 +112,8 @@ macOS normally does not need special privileges for these symlinks:
 For the portable baseline command shim:
 
 ```bash
-./scripts/install-portable-baseline-shim.sh
-p-baseline list
+./scripts/install-baseline-shim.sh
+baseline list
 ```
 
 If `~/.local/bin` is not in `PATH`, add it to the shell profile:
@@ -211,32 +212,32 @@ installer because it creates a `.cmd` wrapper usable from both PowerShell and
 CMD:
 
 ```powershell
-.\scripts\install-portable-baseline-shim.ps1 -AddToUserPath
-p-baseline list
+.\scripts\install-baseline-shim.ps1 -AddToUserPath
+baseline list
 ```
 
 Open a new terminal after `-AddToUserPath`. Remove the shim later with:
 
 ```powershell
-.\scripts\install-portable-baseline-shim.ps1 -Remove
+.\scripts\install-baseline-shim.ps1 -Remove
 ```
 
 The Windows `.cmd` shim forwards arguments through CMD, so comma-separated
 PowerShell arrays may arrive as one string. The CLI normalizes comma-separated
 tool lists, so both the direct `.ps1` script and the global
-`p-baseline` shim support multiple tools in one command:
+`baseline` shim support multiple tools in one command:
 
 ```powershell
-.\scripts\portable-baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
-p-baseline apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+.\scripts\baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+baseline apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
 ```
 
 For narrow changes, one tool per command is also valid:
 
 ```powershell
-p-baseline apply -Pack karpathy-principles -Tools codex -DryRun
-p-baseline apply -Pack karpathy-principles -Tools claude -DryRun
-p-baseline apply -Pack karpathy-principles -Tools copilot -DryRun
+baseline apply -Pack karpathy-principles -Tools codex -DryRun
+baseline apply -Pack karpathy-principles -Tools claude -DryRun
+baseline apply -Pack karpathy-principles -Tools copilot -DryRun
 ```
 
 Portable baseline placement is intentionally conservative. The installer

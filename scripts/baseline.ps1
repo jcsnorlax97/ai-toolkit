@@ -106,15 +106,15 @@ switch ($Command) {
         Write-Output (Read-Utf8Text $baselinePath).Trim()
     }
     "apply" {
-        $applyScript = Join-Path $scriptDir "apply-portable-baseline.ps1"
+        $applyScript = Join-Path $scriptDir "apply-baseline.ps1"
         & $applyScript -TargetRepo $TargetRepo -Pack $Pack -Tools $Tools -CreateMissing:$CreateMissing -DryRun:$DryRun
     }
     "remove" {
-        $removeScript = Join-Path $scriptDir "remove-portable-baseline.ps1"
+        $removeScript = Join-Path $scriptDir "remove-baseline.ps1"
         & $removeScript -TargetRepo $TargetRepo -Pack $Pack -Tools $Tools -DryRun:$DryRun
     }
     "verify" {
-        $verifyScript = Join-Path $scriptDir "verify-portable-baselines.ps1"
+        $verifyScript = Join-Path $scriptDir "verify-baselines.ps1"
         & $verifyScript -TargetRepo $TargetRepo -Pack $Pack -Tools $Tools
     }
 }

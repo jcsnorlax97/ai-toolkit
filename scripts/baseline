@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 BASELINES_DIR="$ROOT_DIR/baselines"
-COMMAND_NAME="${P_BASELINE_COMMAND_NAME:-portable-baseline}"
+COMMAND_NAME="${BASELINE_COMMAND_NAME:-baseline}"
 
 COMMAND="${1:-list}"
 if [[ $# -gt 0 ]]; then

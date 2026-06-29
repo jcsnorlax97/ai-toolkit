@@ -11,9 +11,13 @@ param(
 $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$cliPath = Join-Path $scriptDir "portable-baseline.ps1"
-$shimPath = Join-Path $InstallDir "p-baseline.cmd"
-$marker = "agentic-engineering-skills p-baseline shim"
+$cliPath = Join-Path $scriptDir "baseline.ps1"
+$shimPath = Join-Path $InstallDir "baseline.cmd"
+$marker = "agentic-engineering-skills baseline shim"
+$legacyShims = @(
+    @{ Path = (Join-Path $InstallDir "p-baseline.cmd"); Marker = "agentic-engineering-skills p-baseline shim" },
+    @{ Path = (Join-Path $InstallDir "portable-baseline.cmd"); Marker = "agentic-engineering-skills portable-baseline shim" }
+)
 
 function Path-ContainsInstallDir {
     $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
@@ -36,6 +40,22 @@ function Test-Shim {
         throw "Install dir is not in the user PATH: $InstallDir"
     }
     Write-Output "shim ok: $shimPath"
+}
+
+function Remove-LegacyShims {
+    foreach ($legacy in $legacyShims) {
+        $legacyPath = $legacy.Path
+        if (-not (Test-Path -LiteralPath $legacyPath)) {
+            continue
+        }
+        $content = [System.IO.File]::ReadAllText($legacyPath, [System.Text.Encoding]::UTF8)
+        if ($content -like "*$($legacy.Marker)*") {
+            [System.IO.File]::Delete($legacyPath)
+            Write-Output "removed legacy shim: $legacyPath"
+        } else {
+            Write-Output "kept non-matching legacy shim: $legacyPath"
+        }
+    }
 }
 
 if ($Remove) {
@@ -74,6 +94,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "$cliPath" %*
 $encoding = [System.Text.UTF8Encoding]::new($false)
 [System.IO.File]::WriteAllText($shimPath, $shim, $encoding)
 Write-Output "installed shim: $shimPath"
+Remove-LegacyShims
 
 if ($AddToUserPath) {
     $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
@@ -81,7 +102,7 @@ if ($AddToUserPath) {
         $nextPath = if ($userPath) { "$userPath;$InstallDir" } else { $InstallDir }
         [Environment]::SetEnvironmentVariable("Path", $nextPath, "User")
         Write-Output "added to user PATH: $InstallDir"
-        Write-Output "open a new terminal before running: p-baseline list"
+        Write-Output "open a new terminal before running: baseline list"
     } else {
         Write-Output "PATH already contains: $InstallDir"
     }

@@ -2,18 +2,22 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
-CLI_PATH="$ROOT_DIR/scripts/portable-baseline"
-INSTALL_DIR="${P_BASELINE_BIN_DIR:-${PORTABLE_BASELINE_BIN_DIR:-$HOME/.local/bin}}"
+CLI_PATH="$ROOT_DIR/scripts/baseline"
+INSTALL_DIR="${BASELINE_BIN_DIR:-${PORTABLE_BASELINE_BIN_DIR:-$HOME/.local/bin}}"
 VERIFY_ONLY=0
 REMOVE=0
-MARKER="agentic-engineering-skills p-baseline shim"
+MARKER="agentic-engineering-skills baseline shim"
+LEGACY_SHIMS=(
+  "p-baseline|agentic-engineering-skills p-baseline shim"
+  "portable-baseline|agentic-engineering-skills portable-baseline shim"
+)
 
 usage() {
   cat <<'USAGE'
 Usage:
-  ./scripts/install-portable-baseline-shim.sh [--install-dir <dir>]
-  ./scripts/install-portable-baseline-shim.sh --verify-only [--install-dir <dir>]
-  ./scripts/install-portable-baseline-shim.sh --remove [--install-dir <dir>]
+  ./scripts/install-baseline-shim.sh [--install-dir <dir>]
+  ./scripts/install-baseline-shim.sh --verify-only [--install-dir <dir>]
+  ./scripts/install-baseline-shim.sh --remove [--install-dir <dir>]
 USAGE
 }
 
@@ -43,7 +47,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-SHIM_PATH="$INSTALL_DIR/p-baseline"
+SHIM_PATH="$INSTALL_DIR/baseline"
 
 path_contains_install_dir() {
   case ":$PATH:" in
@@ -66,6 +70,22 @@ verify_shim() {
     exit 1
   fi
   echo "shim ok: $SHIM_PATH"
+}
+
+remove_legacy_shims() {
+  local entry name legacy_marker legacy_path
+  for entry in "${LEGACY_SHIMS[@]}"; do
+    name="${entry%%|*}"
+    legacy_marker="${entry#*|}"
+    legacy_path="$INSTALL_DIR/$name"
+    [[ -f "$legacy_path" ]] || continue
+    if grep -q "$legacy_marker" "$legacy_path"; then
+      rm "$legacy_path"
+      echo "removed legacy shim: $legacy_path"
+    else
+      echo "kept non-matching legacy shim: $legacy_path"
+    fi
+  done
 }
 
 if [[ "$REMOVE" -eq 1 ]]; then
@@ -95,11 +115,12 @@ mkdir -p "$INSTALL_DIR"
 cat > "$SHIM_PATH" <<SHIM
 #!/usr/bin/env bash
 # $MARKER
-P_BASELINE_COMMAND_NAME=p-baseline exec "$CLI_PATH" "\$@"
+BASELINE_COMMAND_NAME=baseline exec "$CLI_PATH" "\$@"
 SHIM
 chmod +x "$SHIM_PATH"
 
 echo "installed shim: $SHIM_PATH"
+remove_legacy_shims
 if path_contains_install_dir; then
   echo "PATH already contains: $INSTALL_DIR"
 else

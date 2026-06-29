@@ -70,7 +70,7 @@ Run this after skill or layout changes:
 Run this after portable baseline changes:
 
 ```powershell
-./scripts/verify-portable-baselines.ps1
+./scripts/verify-baselines.ps1
 ```
 
 ## Safety
