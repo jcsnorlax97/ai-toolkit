@@ -114,7 +114,7 @@ No upstream files are imported verbatim.
 Local target paths:
 
 ```text
-portable-baselines/karpathy-principles
+baselines/karpathy-principles
 ```
 
 License:

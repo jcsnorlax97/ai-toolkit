@@ -19,7 +19,7 @@ This repo stores portable engineering skills for AI coding agents. Treat
 `skills/` as the canonical source. Treat `.claude/skills/` as the Claude Code
 project adapter.
 
-Treat `portable-baselines/` as the canonical source for always-on baseline
+Treat `baselines/` as the canonical source for always-on baseline
 packs that can be applied to repo instruction files through managed blocks.
 
 Reusable candidate skills may live here, but SkillOps lifecycle metadata does

@@ -40,7 +40,7 @@ Source registry: A repository document that records each external skill source, 
 
 Agent team workflow: A repeatable workflow for decomposing a larger goal into bounded agent roles, context packets, handoffs, and acceptance checks. Avoid: agent swarm, autonomous team
 
-Agent workflow pack: A future tool-neutral source tree under `agent-workflows/<workflow-name>/` that owns reusable agent workflow specs, role catalogs, team profiles, execution-packet templates, and handoff contracts. Avoid: hidden skill body, runtime-specific subagent config
+Agent workflow pack: A future tool-neutral source tree under `workflows/<workflow-name>/` that owns reusable agent workflow specs, role catalogs, team profiles, execution-packet templates, and handoff contracts. Avoid: hidden skill body, runtime-specific subagent config
 
 Team profile: A reusable selection of agent roles, responsibilities, and context boundaries for a class of work. Avoid: fixed roster, department
 
@@ -118,7 +118,7 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
 - A skill should be edited in its canonical source, then exposed through adapters.
 - Skill metadata should live in `SKILL.md` frontmatter so each skill has one
   maintained interface instead of a paired companion metadata file.
-- A portable baseline should be edited in `portable-baselines/`, then applied
+- A portable baseline should be edited in `baselines/`, then applied
   to downstream repo instruction files through managed baseline blocks.
 - A portable baseline is not a skill because it is always-on and has no trigger,
   workflow-specific inputs, or stop condition.

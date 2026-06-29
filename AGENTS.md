@@ -45,7 +45,7 @@ sibling repo:
 
 - Recommended repo name: `agentic-engineering-skills`.
 - `skills/` is the canonical source for reusable skills.
-- `portable-baselines/` is the canonical source for always-on agent baseline packs.
+- `baselines/` is the canonical source for always-on agent baseline packs.
 - `.claude/skills/` is the Claude Code project adapter.
 - `scripts/install-codex-skills.sh` exposes canonical skills in `~/.codex/skills/`.
 - `scripts/install-claude-code-skills.sh` exposes canonical skills in `~/.claude/skills/`.
@@ -85,7 +85,7 @@ sibling repo:
 - `docs/agents/domain.md`: where agents should read domain context from.
 - `docs/intake.md`: repo-level queue of unprocessed notes and captures to grill later.
 - `skills/`: repo-local skills that define reusable workflows.
-- `portable-baselines/`: repo-local always-on baseline packs with managed-block adapters.
+- `baselines/`: repo-local always-on baseline packs with managed-block adapters.
 - `.claude/skills/`: Claude Code adapter for project-local skill discovery.
 - `scripts/`: deterministic install and verification commands.
 

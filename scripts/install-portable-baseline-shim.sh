@@ -3,10 +3,10 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 CLI_PATH="$ROOT_DIR/scripts/portable-baseline"
-INSTALL_DIR="${PORTABLE_BASELINE_BIN_DIR:-$HOME/.local/bin}"
+INSTALL_DIR="${P_BASELINE_BIN_DIR:-${PORTABLE_BASELINE_BIN_DIR:-$HOME/.local/bin}}"
 VERIFY_ONLY=0
 REMOVE=0
-MARKER="agentic-engineering-skills portable-baseline shim"
+MARKER="agentic-engineering-skills p-baseline shim"
 
 usage() {
   cat <<'USAGE'
@@ -43,7 +43,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-SHIM_PATH="$INSTALL_DIR/portable-baseline"
+SHIM_PATH="$INSTALL_DIR/p-baseline"
 
 path_contains_install_dir() {
   case ":$PATH:" in
@@ -95,7 +95,7 @@ mkdir -p "$INSTALL_DIR"
 cat > "$SHIM_PATH" <<SHIM
 #!/usr/bin/env bash
 # $MARKER
-exec "$CLI_PATH" "\$@"
+P_BASELINE_COMMAND_NAME=p-baseline exec "$CLI_PATH" "\$@"
 SHIM
 chmod +x "$SHIM_PATH"
 

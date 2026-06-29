@@ -47,11 +47,11 @@ Tool-specific adapters point at or install from that source tree.
 ~/.codex/skills/<skill-name>   -> ~/.local/share/agentic-engineering-skills/current/skills/engineering/<skill-name>
 ```
 
-`portable-baselines/` is the canonical source tree for always-on instruction
+`baselines/` is the canonical source tree for always-on instruction
 packs.
 
 ```text
-portable-baselines/
+baselines/
 └── <pack-name>/
     ├── pack.json
     ├── baseline.md
@@ -67,10 +67,10 @@ default, and they must be removable by deleting or replacing only the marked
 block.
 
 Future reusable agent/workflow definitions belong in their own canonical source
-tree, not inside `skills/` or `portable-baselines/`.
+tree, not inside `skills/` or `baselines/`.
 
 ```text
-agent-workflows/
+workflows/
 └── <workflow-name>/
     ├── workflow.md
     ├── roles/
@@ -78,7 +78,7 @@ agent-workflows/
     └── templates/
 ```
 
-Use `agent-workflows/` for tool-neutral multi-agent workflow specs, reusable
+Use `workflows/` for tool-neutral multi-agent workflow specs, reusable
 role catalogs, team profiles, execution-packet templates, and handoff
 contracts. A workflow may later expose a skill adapter such as
 `skills/engineering/setup-agent-team/`, but the durable workflow definition
@@ -94,8 +94,8 @@ multiple tools or coordinators.
 - `docs/adr/`: durable architecture decisions.
 - `docs/agents/`: issue, triage, and domain context conventions.
 - `scripts/`: deterministic installation and verification commands.
-- `portable-baselines/`: always-on baseline packs and repo-local adapters.
-- `agent-workflows/`: future tool-neutral agent workflow packs, roles,
+- `baselines/`: always-on baseline packs and repo-local adapters.
+- `workflows/`: future tool-neutral agent workflow packs, roles,
   profiles, execution-packet templates, and handoff contracts.
 
 ## Install Behavior

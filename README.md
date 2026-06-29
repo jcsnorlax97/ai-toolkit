@@ -38,7 +38,7 @@ Rationale:
 │   ├── intake.md
 │   └── specs/
 ├── scripts/
-├── portable-baselines/
+├── baselines/
 └── skills/
     └── engineering/
 ```
@@ -55,12 +55,12 @@ Adapters make the same skills usable in specific tools:
 
 Do not maintain duplicated skill bodies by hand.
 
-`portable-baselines/` is the canonical source for always-on instruction packs.
+`baselines/` is the canonical source for always-on instruction packs.
 Baselines are not skills: they do not require invocation and should be easy to
 apply, verify, update, and remove through managed marker blocks.
 
 Future reusable agent workflow definitions should live under
-`agent-workflows/` when introduced, not inside one skill or baseline pack.
+`workflows/` when introduced, not inside one skill or baseline pack.
 Use that tree for tool-neutral workflow specs, role catalogs, team profiles,
 execution-packet templates, and handoff contracts. A skill may expose or launch
 a workflow, but the reusable workflow definition should remain its own source.
@@ -158,17 +158,17 @@ C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 apply -Tools
 When exactly one pack exists, the CLI can infer it. When more than one pack
 exists, pass `-Pack <name>` for `show`, `apply`, `remove`, and `verify`.
 
-Install an optional global shim when you want to type `portable-baseline list`
+Install an optional global shim when you want to type `p-baseline list`
 from PowerShell, CMD, or a Unix shell:
 
 ```powershell
 ./scripts/install-portable-baseline-shim.ps1 -AddToUserPath
-portable-baseline list
+p-baseline list
 ```
 
 ```bash
 ./scripts/install-portable-baseline-shim.sh
-portable-baseline list
+p-baseline list
 ```
 
 The shim only forwards to this repository's CLI. It does not install baseline
@@ -177,19 +177,19 @@ packs into assistant runtimes and can be removed later.
 Windows shim argument note: the `.cmd` shim forwards arguments through CMD, so
 comma-separated PowerShell arrays may arrive as one string. The CLI normalizes
 comma-separated tool lists, so both the direct `.ps1` CLI and the
-`portable-baseline` shim support multiple tools in one command:
+`p-baseline` shim support multiple tools in one command:
 
 ```powershell
 C:\path\to\agentic-engineering-skills\scripts\portable-baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
-portable-baseline apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+p-baseline apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
 ```
 
 For narrow changes, one tool per command is also valid:
 
 ```powershell
-portable-baseline apply -Pack karpathy-principles -Tools codex -DryRun
-portable-baseline apply -Pack karpathy-principles -Tools claude -DryRun
-portable-baseline apply -Pack karpathy-principles -Tools copilot -DryRun
+p-baseline apply -Pack karpathy-principles -Tools codex -DryRun
+p-baseline apply -Pack karpathy-principles -Tools claude -DryRun
+p-baseline apply -Pack karpathy-principles -Tools copilot -DryRun
 ```
 
 Baseline placement in instruction files: the installer updates an existing

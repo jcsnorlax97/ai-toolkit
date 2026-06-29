@@ -18,7 +18,7 @@ $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Split-Path -Parent $scriptDir
-$baselinesRoot = Join-Path $repoRoot "portable-baselines"
+$baselinesRoot = Join-Path $repoRoot "baselines"
 
 function Read-Utf8Text($Path) {
     return [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8)
@@ -38,7 +38,7 @@ function Read-PackJson($Name) {
 
 function Get-PackNames {
     if (-not (Test-Path -LiteralPath $baselinesRoot)) {
-        throw "Missing portable-baselines directory: $baselinesRoot"
+        throw "Missing baselines directory: $baselinesRoot"
     }
 
     return @(Get-ChildItem -LiteralPath $baselinesRoot -Directory | Where-Object {

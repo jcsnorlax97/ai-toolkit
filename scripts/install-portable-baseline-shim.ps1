@@ -12,8 +12,8 @@ $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $cliPath = Join-Path $scriptDir "portable-baseline.ps1"
-$shimPath = Join-Path $InstallDir "portable-baseline.cmd"
-$marker = "agentic-engineering-skills portable-baseline shim"
+$shimPath = Join-Path $InstallDir "p-baseline.cmd"
+$marker = "agentic-engineering-skills p-baseline shim"
 
 function Path-ContainsInstallDir {
     $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
@@ -81,7 +81,7 @@ if ($AddToUserPath) {
         $nextPath = if ($userPath) { "$userPath;$InstallDir" } else { $InstallDir }
         [Environment]::SetEnvironmentVariable("Path", $nextPath, "User")
         Write-Output "added to user PATH: $InstallDir"
-        Write-Output "open a new terminal before running: portable-baseline list"
+        Write-Output "open a new terminal before running: p-baseline list"
     } else {
         Write-Output "PATH already contains: $InstallDir"
     }

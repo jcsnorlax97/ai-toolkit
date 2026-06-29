@@ -14,7 +14,7 @@ $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Split-Path -Parent $scriptDir
-$packRoot = Join-Path $repoRoot "portable-baselines\$Pack"
+$packRoot = Join-Path $repoRoot "baselines\$Pack"
 
 if (-not (Test-Path -LiteralPath $packRoot)) {
     throw "Unknown portable baseline pack: $Pack"

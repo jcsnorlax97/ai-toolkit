@@ -24,7 +24,7 @@ repo-specific instructions.
 Each pack should contain:
 
 ```text
-portable-baselines/<pack-name>/
+baselines/<pack-name>/
   pack.json
   baseline.md
   adapters/
@@ -108,14 +108,14 @@ On macOS or Linux, the native shell entrypoint is:
 
 ## Global Shim
 
-Install a reversible command shim when you want to run `portable-baseline` from
+Install a reversible command shim when you want to run `p-baseline` from
 any repo.
 
 Windows PowerShell or CMD:
 
 ```powershell
 ./scripts/install-portable-baseline-shim.ps1 -AddToUserPath
-portable-baseline list
+p-baseline list
 ./scripts/install-portable-baseline-shim.ps1 -Remove
 ```
 
@@ -123,7 +123,7 @@ macOS or Linux:
 
 ```bash
 ./scripts/install-portable-baseline-shim.sh
-portable-baseline list
+p-baseline list
 ./scripts/install-portable-baseline-shim.sh --remove
 ```
 

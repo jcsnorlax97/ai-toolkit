@@ -2,7 +2,8 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
-BASELINES_DIR="$ROOT_DIR/portable-baselines"
+BASELINES_DIR="$ROOT_DIR/baselines"
+COMMAND_NAME="${P_BASELINE_COMMAND_NAME:-portable-baseline}"
 
 COMMAND="${1:-list}"
 if [[ $# -gt 0 ]]; then
@@ -16,13 +17,13 @@ DRY_RUN=0
 CREATE_MISSING=0
 
 usage() {
-  cat <<'USAGE'
+  cat <<USAGE
 Usage:
-  portable-baseline list
-  portable-baseline show [--pack <pack>]
-  portable-baseline apply [--pack <pack>] --tools codex,claude,copilot [--target-repo <path>] [--dry-run] [--create-missing]
-  portable-baseline remove [--pack <pack>] --tools codex,claude,copilot [--target-repo <path>] [--dry-run]
-  portable-baseline verify [--pack <pack>] --tools codex,claude,copilot [--target-repo <path>]
+  $COMMAND_NAME list
+  $COMMAND_NAME show [--pack <pack>]
+  $COMMAND_NAME apply [--pack <pack>] --tools codex,claude,copilot [--target-repo <path>] [--dry-run] [--create-missing]
+  $COMMAND_NAME remove [--pack <pack>] --tools codex,claude,copilot [--target-repo <path>] [--dry-run]
+  $COMMAND_NAME verify [--pack <pack>] --tools codex,claude,copilot [--target-repo <path>]
 
 When exactly one pack exists, --pack may be omitted. When multiple packs exist,
 show/apply/remove/verify require --pack.
