@@ -130,18 +130,19 @@ It then creates the symlink. This preserves local customizations without keeping
 the stale copy active. Pass `--keep-existing` to leave non-symlink targets in
 place.
 
-If the repository is renamed or moved, rerun an install script or
+If the repository is renamed or moved, rerun `scripts/skills.ps1 install` or
 `scripts/repair-personal-skill-links.sh` from the new clone. Existing personal
 skill links continue to point through the stable repo link, so repair updates
 the repo pointer instead of rewriting every path by hand. In explicit copy mode,
 rerunning the installer refreshes the copied snapshots.
 
-`scripts/repair-personal-skill-links.sh` is a convenience wrapper, not a
-separate install mode. It runs both personal install scripts:
+`scripts/skills.ps1` is the public skill CLI. `scripts/repair-personal-skill-links.sh`
+is a compatibility wrapper, not a separate install mode. It runs both personal
+install implementations:
 
 ```text
-scripts/install-codex-skills.sh
-scripts/install-claude-code-skills.sh
+scripts/skills/install-codex.sh
+scripts/skills/install-claude-code.sh
 ```
 
 Each install script is idempotent for its target runtime. It creates missing
@@ -221,6 +222,7 @@ alone.
 
 ## Verification Requirements
 
+`scripts/skills.ps1 verify` and its compatibility wrapper
 `scripts/verify-skills.sh` must check:
 
 - Every canonical skill has a `SKILL.md`.
@@ -230,6 +232,7 @@ alone.
 - Claude Code project adapter entries exist for every canonical skill.
 - Adapter entries resolve to a readable `SKILL.md`.
 
+`scripts/baseline.ps1 verify` and its compatibility wrapper
 `scripts/verify-baselines.ps1` must check:
 
 - The requested baseline pack has `pack.json`, `baseline.md`, and required
@@ -252,7 +255,8 @@ When adding a new skill:
 
 1. Create `skills/engineering/<skill-name>/SKILL.md`.
 2. Add or refresh `.claude/skills/<skill-name>`.
-3. Run `./scripts/verify-skills.sh`.
-4. Run `./scripts/verify-personal-skill-links.sh` after personal install or repair.
+3. Run `./scripts/skills.ps1 verify`.
+4. Run `./scripts/skills.ps1 verify -Target claude -Scope personal` after
+   personal symlink install or repair, or add `-Copy` after copy-mode install.
 5. Update `README.md` and `docs/install.md` only if the skill changes the
    public catalog or bootstrap story.

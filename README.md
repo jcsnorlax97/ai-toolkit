@@ -38,6 +38,9 @@ Rationale:
 │   ├── intake.md
 │   └── specs/
 ├── scripts/
+│   ├── baselines/
+│   ├── skills/
+│   └── lib/
 ├── baselines/
 └── skills/
     └── engineering/
@@ -142,8 +145,8 @@ Current baseline packs:
 Apply a baseline to a downstream repo:
 
 ```powershell
-./scripts/apply-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
-./scripts/apply-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot
+./scripts/baseline.ps1 apply -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+./scripts/baseline.ps1 apply -TargetRepo C:\path\to\repo -Pack karpathy-principles -Tools codex,claude,copilot
 ```
 
 Or call the CLI from the target repo and omit `-TargetRepo`:
@@ -207,7 +210,7 @@ future updates will preserve that location.
 Remove it later:
 
 ```powershell
-./scripts/remove-baseline.ps1 -TargetRepo C:\path\to\repo -Pack karpathy-principles
+./scripts/baseline.ps1 remove -TargetRepo C:\path\to\repo -Pack karpathy-principles
 C:\path\to\agentic-engineering-skills\scripts\baseline.ps1 remove -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
 ./scripts/install-baseline-shim.ps1 -Remove
 ./scripts/install-baseline-shim.sh --remove
@@ -216,8 +219,8 @@ C:\path\to\agentic-engineering-skills\scripts\baseline.ps1 remove -Pack karpathy
 Verify pack shape and a downstream repo:
 
 ```powershell
-./scripts/verify-baselines.ps1
-./scripts/verify-baselines.ps1 -TargetRepo C:\path\to\repo
+./scripts/baseline.ps1 verify
+./scripts/baseline.ps1 verify -TargetRepo C:\path\to\repo
 C:\path\to\agentic-engineering-skills\scripts\baseline.ps1 verify -Pack karpathy-principles -Tools codex,claude,copilot
 ```
 
@@ -234,6 +237,35 @@ Canonical skills live under `skills/engineering/`. Personal runtime entries in
 `~/.claude/skills/` and `~/.codex/skills/` are adapters, not the source of
 truth.
 
+Use the skill CLI to inspect and install skill adapters:
+
+```powershell
+./scripts/skills.ps1 list
+./scripts/skills.ps1 show diagnose
+./scripts/skills.ps1 install -Target codex -Scope personal -Copy
+./scripts/skills.ps1 install -Target claude -Scope personal -Copy
+./scripts/skills.ps1 verify
+```
+
+Install the optional Windows shim when you want to type `skills list` from a
+normal shell:
+
+```powershell
+./scripts/install-skills-shim.ps1 -AddToUserPath
+skills list
+```
+
+```bash
+./scripts/install-skills-shim.sh
+skills list
+```
+
+`-Target` selects the assistant surface: `codex`, `claude`, `copilot`, or
+`all`. `-Scope` selects where the adapter would live: `personal` or `project`.
+Codex and Claude personal installs are supported today. Copilot is accepted as
+a target name, but this repo does not yet define a Copilot skills runtime
+contract; use baselines for Copilot instruction blocks until that exists.
+
 ### Project-Local Claude Code
 
 Clone the repo and verify the project-local adapters before starting Claude
@@ -242,7 +274,7 @@ Code:
 ```bash
 git clone <repo-ssh-url> agentic-engineering-skills
 cd agentic-engineering-skills
-./scripts/verify-skills.sh
+./scripts/skills.ps1 verify -Target claude -Scope project
 claude
 ```
 
@@ -266,28 +298,29 @@ Windows fallback.
 
 For personal Claude Code usage across all projects:
 
-```bash
-./scripts/install-claude-code-skills.sh
+```powershell
+./scripts/skills.ps1 install -Target claude -Scope personal -Copy
 ```
 
 For personal Codex usage:
 
-```bash
-./scripts/install-codex-skills.sh
+```powershell
+./scripts/skills.ps1 install -Target codex -Scope personal -Copy
 ```
 
 For both:
 
-```bash
-./scripts/repair-personal-skill-links.sh
+```powershell
+./scripts/skills.ps1 install -Target all -Scope personal -Copy
 ```
 
 ### Personal Install Verification
 
 Verify personal installs without changing files:
 
-```bash
-./scripts/verify-personal-skill-links.sh
+```powershell
+./scripts/skills.ps1 verify -Target claude -Scope personal -Copy
+./scripts/skills.ps1 verify -Target codex -Scope personal -Copy
 ```
 
 See [Personal Skill Installation](docs/install.md) for the deterministic
@@ -298,8 +331,8 @@ files appear inside symlinked runtime skill folders.
 
 After editing skills or adapters, run:
 
-```bash
-./scripts/verify-skills.sh
+```powershell
+./scripts/skills.ps1 verify
 ```
 
 Keep each `SKILL.md` concise. Move long references, examples, or scripts into

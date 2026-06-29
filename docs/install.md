@@ -57,32 +57,50 @@ directory.
 
 ## Commands
 
-Use the command for the runtime you want to expose skills to:
+Use the `skills` CLI for the assistant target you want to expose skills to:
 
 | Goal | Command | Scope |
 | --- | --- | --- |
-| Install or repair Claude Code personal skills | `./scripts/install-claude-code-skills.sh` | `~/.claude/skills/` |
-| Install or repair Codex personal skills | `./scripts/install-codex-skills.sh` | `~/.codex/skills/` |
-| Install or repair both runtimes | `./scripts/repair-personal-skill-links.sh` | Claude Code and Codex |
-| Verify both runtimes without changing files | `./scripts/verify-personal-skill-links.sh` | Claude Code and Codex |
+| List canonical skills | `./scripts/skills.ps1 list` | Source repo |
+| Show one skill | `./scripts/skills.ps1 show diagnose` | Source repo |
+| Verify source skills and adapters | `./scripts/skills.ps1 verify` | Source repo |
+| Install or repair Claude Code personal skills from PowerShell | `./scripts/skills.ps1 install -Target claude -Scope personal -Copy` | `~/.claude/skills/` |
+| Install or repair Codex personal skills from PowerShell | `./scripts/skills.ps1 install -Target codex -Scope personal -Copy` | `~/.codex/skills/` |
+| Install or repair supported personal targets from PowerShell | `./scripts/skills.ps1 install -Target all -Scope personal -Copy` | Claude Code and Codex |
+| Verify one copied personal target without changing files | `./scripts/skills.ps1 verify -Target claude -Scope personal -Copy` | Selected runtime |
 
-`repair-personal-skill-links.sh` is only a wrapper around the two install
-scripts. It does not contain separate repair logic.
+`-Target` accepts `codex`, `claude`, `copilot`, or `all`. `-Scope` accepts
+`personal` or `project`. Codex and Claude personal installs are supported
+today. Copilot is accepted as a target name, but this repo does not yet define a
+Copilot skills runtime contract; use baselines for Copilot instruction blocks
+until that exists.
 
-Portable baseline command shims are separate from skill runtime installs:
+The older `install-claude-code-skills.sh`, `install-codex-skills.sh`,
+`repair-personal-skill-links.sh`, and `verify-personal-skill-links.sh` commands
+remain as compatibility wrappers around the organized `scripts/skills/`
+implementation.
+
+Command shims are separate from runtime installs:
 
 | Goal | Command | Scope |
 | --- | --- | --- |
 | Install Windows `baseline` shim | `./scripts/install-baseline-shim.ps1 -AddToUserPath` | User PATH and one `.cmd` wrapper |
 | Verify Windows shim | `./scripts/install-baseline-shim.ps1 -VerifyOnly` | No writes |
 | Remove Windows shim | `./scripts/install-baseline-shim.ps1 -Remove` | One managed `.cmd` wrapper |
+| Install Windows `skills` shim | `./scripts/install-skills-shim.ps1 -AddToUserPath` | User PATH and one `.cmd` wrapper |
+| Verify Windows `skills` shim | `./scripts/install-skills-shim.ps1 -VerifyOnly` | No writes |
+| Remove Windows `skills` shim | `./scripts/install-skills-shim.ps1 -Remove` | One managed `.cmd` wrapper |
 | Install macOS/Linux `baseline` shim | `./scripts/install-baseline-shim.sh` | One shell wrapper in `~/.local/bin` |
 | Verify macOS/Linux shim | `./scripts/install-baseline-shim.sh --verify-only` | No writes |
 | Remove macOS/Linux shim | `./scripts/install-baseline-shim.sh --remove` | One managed shell wrapper |
+| Install macOS/Linux `skills` shim | `./scripts/install-skills-shim.sh` | One shell wrapper in `~/.local/bin` |
+| Verify macOS/Linux `skills` shim | `./scripts/install-skills-shim.sh --verify-only` | No writes |
+| Remove macOS/Linux `skills` shim | `./scripts/install-skills-shim.sh --remove` | One managed shell wrapper |
 
-The portable baseline shim does not install skills or write to
-`~/.claude/skills`, `~/.codex/skills`, or assistant runtime state. It only makes
-the repo CLI available as `baseline`. Installing it also removes older matching
+The `baseline` and `skills` shims do not install skills or write to
+`~/.claude/skills`, `~/.codex/skills`, or assistant runtime state. They only
+make the repo CLIs available as `baseline` and `skills`. Installing the
+`baseline` shim also removes older matching
 `p-baseline` or `portable-baseline` shims from the same install directory.
 
 Portable baseline verification reports the installed managed-block version for
@@ -91,12 +109,15 @@ source pack, verification fails with both versions so the operator can rerun
 `apply` deliberately. Legacy `portable-agent-baseline` markers still verify;
 the next `baseline apply` migrates them to the current `baseline` marker.
 
-The default mode is symlink mode. `--copy` is an explicit fallback, not the
-preferred path:
+The default installer mode is symlink mode. Use `-Copy` from `skills.ps1`, or
+`--copy` from the compatibility shell scripts, as an explicit fallback:
+
+```powershell
+./scripts/skills.ps1 install -Target claude -Scope personal -Copy
+```
 
 ```bash
 ./scripts/install-claude-code-skills.sh --link
-./scripts/install-claude-code-skills.sh --copy
 ```
 
 ## Platform Commands
@@ -162,8 +183,8 @@ symlink mode. Open Git Bash as Administrator and use the commands above.
 From PowerShell or VS Code, use copy mode only:
 
 ```powershell
-bash ./scripts/install-claude-code-skills.sh --copy
-bash ./scripts/install-claude-code-skills.sh --copy --verify-only
+./scripts/skills.ps1 install -Target claude -Scope personal -Copy
+./scripts/skills.ps1 verify -Target claude -Scope personal -Copy
 ```
 
 If troubleshooting path resolution from PowerShell, confirm whether `bash`
