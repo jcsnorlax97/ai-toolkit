@@ -142,11 +142,11 @@ verify_pack_shape() {
   done
   local adapter
   for adapter in "$(pack_root)"/adapters/*.block; do
-    if ! grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$adapter"; then
+    if ! grep -q "<!-- BEGIN baseline:$PACK v" "$adapter"; then
       echo "Adapter missing BEGIN marker: $adapter" >&2
       exit 1
     fi
-    if ! grep -q "<!-- END portable-agent-baseline:$PACK -->" "$adapter"; then
+    if ! grep -q "<!-- END baseline:$PACK -->" "$adapter"; then
       echo "Adapter missing END marker: $adapter" >&2
       exit 1
     fi
@@ -190,10 +190,23 @@ apply_tool() {
     return
   fi
 
-  if grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$target_path"; then
+  local has_new=0
+  local has_legacy=0
+  grep -q "<!-- BEGIN baseline:$PACK v" "$target_path" && has_new=1
+  grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$target_path" && has_legacy=1
+
+  if [[ "$has_new" -eq 1 && "$has_legacy" -eq 1 ]]; then
+    echo "Both baseline and legacy portable-agent-baseline blocks exist for $PACK in $target_rel; resolve the duplicate manually." >&2
+    exit 1
+  fi
+
+  if [[ "$has_new" -eq 1 || "$has_legacy" -eq 1 ]]; then
     action="update"
+    [[ "$has_legacy" -eq 1 ]] && action="migrate"
     if [[ "$DRY_RUN" -ne 1 ]]; then
-      PACK="$PACK" BLOCK_FILE="$adapter_path" perl -0pi -e 'BEGIN { $pack=$ENV{"PACK"}; $block_file=$ENV{"BLOCK_FILE"}; open my $fh, "<", $block_file or die $!; local $/; $block=<$fh>; chomp $block; } $pattern=qr/<!-- BEGIN portable-agent-baseline:\Q$pack\E v[^>]+ -->.*?<!-- END portable-agent-baseline:\Q$pack\E -->/s; s/$pattern/$block/s;' "$target_path"
+      local marker="baseline"
+      [[ "$has_legacy" -eq 1 ]] && marker="portable-agent-baseline"
+      PACK="$PACK" MARKER="$marker" BLOCK_FILE="$adapter_path" perl -0pi -e 'BEGIN { $pack=$ENV{"PACK"}; $marker=$ENV{"MARKER"}; $block_file=$ENV{"BLOCK_FILE"}; open my $fh, "<", $block_file or die $!; local $/; $block=<$fh>; chomp $block; } $pattern=qr/<!-- BEGIN \Q$marker\E:\Q$pack\E v[^>]+ -->.*?<!-- END \Q$marker\E:\Q$pack\E -->/s; s/$pattern/$block/s;' "$target_path"
     fi
   else
     action="add"
@@ -208,6 +221,8 @@ apply_tool() {
 
   if [[ "$DRY_RUN" -eq 1 ]]; then
     echo "would $action $PACK in $target_rel for $tool"
+  elif [[ "$action" == "migrate" ]]; then
+    echo "migrated $PACK in $target_rel for $tool"
   elif [[ "$action" == "update" ]]; then
     echo "updated $PACK in $target_rel for $tool"
   else
@@ -226,7 +241,17 @@ remove_tool() {
     echo "skip missing $target_rel for $tool in $TARGET_REPO"
     return
   fi
-  if ! grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$target_path"; then
+  local has_new=0
+  local has_legacy=0
+  grep -q "<!-- BEGIN baseline:$PACK v" "$target_path" && has_new=1
+  grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$target_path" && has_legacy=1
+
+  if [[ "$has_new" -eq 1 && "$has_legacy" -eq 1 ]]; then
+    echo "Both baseline and legacy portable-agent-baseline blocks exist for $PACK in $target_rel; resolve the duplicate manually." >&2
+    exit 1
+  fi
+
+  if [[ "$has_new" -ne 1 && "$has_legacy" -ne 1 ]]; then
     echo "skip absent $PACK in $target_rel for $tool"
     return
   fi
@@ -235,7 +260,9 @@ remove_tool() {
     return
   fi
 
-  PACK="$PACK" perl -0pi -e 'BEGIN { $pack=$ENV{"PACK"}; } $pattern=qr/\r?\n?\r?\n?<!-- BEGIN portable-agent-baseline:\Q$pack\E v[^>]+ -->.*?<!-- END portable-agent-baseline:\Q$pack\E -->\r?\n?/s; s/$pattern/\n/s;' "$target_path"
+  local marker="baseline"
+  [[ "$has_legacy" -eq 1 ]] && marker="portable-agent-baseline"
+  PACK="$PACK" MARKER="$marker" perl -0pi -e 'BEGIN { $pack=$ENV{"PACK"}; $marker=$ENV{"MARKER"}; } $pattern=qr/\r?\n?\r?\n?<!-- BEGIN \Q$marker\E:\Q$pack\E v[^>]+ -->.*?<!-- END \Q$marker\E:\Q$pack\E -->\r?\n?/s; s/$pattern/\n/s;' "$target_path"
   echo "removed $PACK from $target_rel for $tool"
 }
 
@@ -250,11 +277,25 @@ verify_tool() {
     echo "skip missing $target_rel for $tool in $TARGET_REPO"
     return
   fi
-  if ! grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$target_path"; then
+  local has_new=0
+  local has_legacy=0
+  grep -q "<!-- BEGIN baseline:$PACK v" "$target_path" && has_new=1
+  grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$target_path" && has_legacy=1
+
+  if [[ "$has_new" -eq 1 && "$has_legacy" -eq 1 ]]; then
+    echo "Both baseline and legacy portable-agent-baseline blocks exist for $PACK in $target_rel" >&2
+    exit 1
+  fi
+
+  if [[ "$has_new" -ne 1 && "$has_legacy" -ne 1 ]]; then
     echo "Missing $PACK managed block in $target_rel" >&2
     exit 1
   fi
-  echo "target ok: $target_rel contains $PACK"
+  if [[ "$has_legacy" -eq 1 ]]; then
+    echo "target ok: $target_rel contains legacy $PACK marker (run apply to migrate)"
+  else
+    echo "target ok: $target_rel contains $PACK"
+  fi
 }
 
 case "$COMMAND" in

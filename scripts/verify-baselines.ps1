@@ -59,10 +59,10 @@ $adapterFiles = @(
 
 foreach ($adapter in $adapterFiles) {
     $text = [System.IO.File]::ReadAllText($adapter, [System.Text.Encoding]::UTF8)
-    if ($text -notmatch "<!-- BEGIN portable-agent-baseline:$([regex]::Escape($Pack)) v[^>]+ -->") {
+    if ($text -notmatch "<!-- BEGIN baseline:$([regex]::Escape($Pack)) v[^>]+ -->") {
         throw "Adapter missing BEGIN marker: $adapter"
     }
-    if ($text -notmatch "<!-- END portable-agent-baseline:$([regex]::Escape($Pack)) -->") {
+    if ($text -notmatch "<!-- END baseline:$([regex]::Escape($Pack)) -->") {
         throw "Adapter missing END marker: $adapter"
     }
 }
@@ -76,8 +76,10 @@ if ($TargetRepo) {
         claude = "CLAUDE.md"
         copilot = ".github\copilot-instructions.md"
     }
-    $beginPattern = "<!-- BEGIN portable-agent-baseline:$([regex]::Escape($Pack)) v(?<version>[^ >]+) -->"
-    $blockPattern = "$beginPattern.*?<!-- END portable-agent-baseline:$([regex]::Escape($Pack)) -->"
+    $newBeginPattern = "<!-- BEGIN baseline:$([regex]::Escape($Pack)) v(?<version>[^ >]+) -->"
+    $newBlockPattern = "$newBeginPattern.*?<!-- END baseline:$([regex]::Escape($Pack)) -->"
+    $legacyBeginPattern = "<!-- BEGIN portable-agent-baseline:$([regex]::Escape($Pack)) v(?<version>[^ >]+) -->"
+    $legacyBlockPattern = "$legacyBeginPattern.*?<!-- END portable-agent-baseline:$([regex]::Escape($Pack)) -->"
 
     foreach ($tool in $Tools) {
         if (-not $toolMap.ContainsKey($tool)) {
@@ -92,16 +94,22 @@ if ($TargetRepo) {
         }
 
         $text = [System.IO.File]::ReadAllText($targetPath, [System.Text.Encoding]::UTF8)
-        $match = [regex]::Match($text, $blockPattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)
-        if (-not $match.Success) {
+        $newMatch = [regex]::Match($text, $newBlockPattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)
+        $legacyMatch = [regex]::Match($text, $legacyBlockPattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)
+        if ($newMatch.Success -and $legacyMatch.Success) {
+            throw "Both baseline and legacy portable-agent-baseline blocks exist for $Pack in $targetRel"
+        }
+        if (-not ($newMatch.Success -or $legacyMatch.Success)) {
             throw "Missing $Pack managed block in $targetRel"
         }
 
+        $match = if ($newMatch.Success) { $newMatch } else { $legacyMatch }
         $installedVersion = $match.Groups["version"].Value
         if ($installedVersion -ne $packVersion) {
             throw "Stale $Pack managed block in ${targetRel}: installed v$installedVersion, source v$packVersion"
         }
 
-        Write-Output "target ok: $targetRel contains $Pack v$installedVersion"
+        $markerStatus = if ($legacyMatch.Success) { "legacy marker; run apply to migrate" } else { "marker ok" }
+        Write-Output "target ok: $targetRel contains $Pack v$installedVersion ($markerStatus)"
     }
 }

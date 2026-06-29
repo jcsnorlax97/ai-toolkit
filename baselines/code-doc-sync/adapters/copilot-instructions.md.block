@@ -1,4 +1,4 @@
-<!-- BEGIN portable-agent-baseline:code-doc-sync v0.1.0 -->
+<!-- BEGIN baseline:code-doc-sync v0.1.0 -->
 ## Portable Agent Baseline: Code-Doc Sync
 
 - Scan before closing: before marking any task complete that changes a public API, method signature, class relationship, or runtime control flow, scan for adjacent architecture docs, flow trees, developer references, or progress logs that describe the changed behavior — read each candidate and decide explicitly whether it needs updating; skipping the scan is not acceptable even for bug fixes.
@@ -7,4 +7,4 @@
 These principles are folder-name-agnostic. If the repo specifies where documentation lives (in CLAUDE.md, README, or a project-specific section), read that first. If no documentation is found, these principles fire on nothing — that is acceptable.
 
 Apply this baseline before ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
-<!-- END portable-agent-baseline:code-doc-sync -->
+<!-- END baseline:code-doc-sync -->

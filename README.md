@@ -224,7 +224,9 @@ C:\path\to\agentic-engineering-skills\scripts\baseline.ps1 verify -Pack karpathy
 Target verification reads the managed block marker in each instruction file and
 compares the installed version with the source pack version. Matching targets
 report the installed version; stale targets fail with both installed and source
-versions so operators know which repos need `apply` rerun.
+versions so operators know which repos need `apply` rerun. Legacy
+`portable-agent-baseline` blocks are accepted for backward compatibility; the
+next `baseline apply` migrates them in place to the current `baseline` marker.
 
 ## Installation
 

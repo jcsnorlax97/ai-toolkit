@@ -88,7 +88,8 @@ the repo CLI available as `baseline`. Installing it also removes older matching
 Portable baseline verification reports the installed managed-block version for
 each target instruction file. If a repo has an older managed block than the
 source pack, verification fails with both versions so the operator can rerun
-`apply` deliberately.
+`apply` deliberately. Legacy `portable-agent-baseline` markers still verify;
+the next `baseline apply` migrates them to the current `baseline` marker.
 
 The default mode is symlink mode. `--copy` is an explicit fallback, not the
 preferred path:

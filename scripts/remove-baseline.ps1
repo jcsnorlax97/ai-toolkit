@@ -27,7 +27,14 @@ function Write-Utf8Text($Path, $Text) {
 
 $resolvedTarget = (Resolve-Path -LiteralPath $TargetRepo).Path
 $packName = [regex]::Escape($Pack)
-$pattern = "\r?\n?\r?\n?<!-- BEGIN portable-agent-baseline:$packName v[^>]+ -->.*?<!-- END portable-agent-baseline:$packName -->\r?\n?"
+
+function Get-BlockPattern($Marker, $EscapedPackName) {
+    $escapedMarker = [regex]::Escape($Marker)
+    return "\r?\n?\r?\n?<!-- BEGIN ${escapedMarker}:$EscapedPackName v[^>]+ -->.*?<!-- END ${escapedMarker}:$EscapedPackName -->\r?\n?"
+}
+
+$newPattern = Get-BlockPattern "baseline" $packName
+$legacyPattern = Get-BlockPattern "portable-agent-baseline" $packName
 
 foreach ($tool in $Tools) {
     if (-not $toolMap.ContainsKey($tool)) {
@@ -43,11 +50,19 @@ foreach ($tool in $Tools) {
     }
 
     $current = Read-Utf8Text $targetPath
-    if (-not [regex]::IsMatch($current, $pattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)) {
+    $hasNewBlock = [regex]::IsMatch($current, $newPattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    $hasLegacyBlock = [regex]::IsMatch($current, $legacyPattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)
+
+    if ($hasNewBlock -and $hasLegacyBlock) {
+        throw "Both baseline and legacy portable-agent-baseline blocks exist for $Pack in $targetRel; resolve the duplicate manually."
+    }
+
+    if (-not ($hasNewBlock -or $hasLegacyBlock)) {
         Write-Output "skip absent $Pack in $targetRel for $tool"
         continue
     }
 
+    $pattern = if ($hasNewBlock) { $newPattern } else { $legacyPattern }
     $next = [regex]::Replace($current, $pattern, [Environment]::NewLine, [System.Text.RegularExpressions.RegexOptions]::Singleline).TrimEnd() + [Environment]::NewLine
 
     if ($DryRun) {

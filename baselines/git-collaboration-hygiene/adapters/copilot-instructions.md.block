@@ -1,4 +1,4 @@
-<!-- BEGIN portable-agent-baseline:git-collaboration-hygiene v0.1.0 -->
+<!-- BEGIN baseline:git-collaboration-hygiene v0.1.0 -->
 ## Portable Agent Baseline: Git Collaboration Hygiene
 
 - Inspect repository state before changing or committing: check the active branch and working tree when Git is available, especially before edits, staging, commits, pulls, merges, rebases, or pushes.
@@ -8,4 +8,4 @@
 - Treat failures and conflicts as evidence: read CI, test, merge, and conflict output before changing code; do not blindly resolve conflicts.
 
 Apply this baseline before ordinary Git habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
-<!-- END portable-agent-baseline:git-collaboration-hygiene -->
+<!-- END baseline:git-collaboration-hygiene -->

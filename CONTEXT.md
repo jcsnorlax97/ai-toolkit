@@ -26,9 +26,9 @@ discovery or invocation. Avoid: hidden global prompt, copied prompt dump
 Baseline pack: A named portable baseline directory containing `pack.json`,
 `baseline.md`, and one or more tool adapters. Avoid: loose snippet, note
 
-Managed baseline block: A bounded downstream insertion between
-`portable-agent-baseline` BEGIN/END markers. It can be updated or removed
-without rewriting surrounding repo-specific instructions. Avoid: unmarked paste
+Managed baseline block: A bounded downstream insertion between `baseline`
+BEGIN/END markers. Legacy `portable-agent-baseline` markers are accepted for
+backward compatibility and are migrated by the next apply. Avoid: unmarked paste
 
 Personal link install: A personal tool install where `~/.claude/skills/<skill-name>` or `~/.codex/skills/<skill-name>` is a symlink to the canonical skill through the stable repo link. Avoid: copied install, manual refresh
 

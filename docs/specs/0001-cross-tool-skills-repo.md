@@ -178,14 +178,20 @@ other machine-global runtime directories by default.
 The default downstream behavior is managed-block insertion:
 
 ```text
-<!-- BEGIN portable-agent-baseline:<pack-name> vX.Y.Z -->
+<!-- BEGIN baseline:<pack-name> vX.Y.Z -->
 ...
-<!-- END portable-agent-baseline:<pack-name> -->
+<!-- END baseline:<pack-name> -->
 ```
 
 Applying a baseline should create or replace only the matching block. Removing
 a baseline should remove only the matching block. Surrounding repo-specific
 instructions remain owned by the downstream repo.
+
+For backward compatibility, apply, remove, and verify must also detect legacy
+`portable-agent-baseline:<pack-name>` blocks. If a target contains only the
+legacy marker, apply replaces it in place with the current `baseline:<pack-name>`
+block. If both marker namespaces exist for the same pack in one target file,
+the command must stop and report a duplicate instead of guessing.
 
 ## Upstream Imports
 

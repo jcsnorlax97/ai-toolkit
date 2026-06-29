@@ -53,14 +53,19 @@ instructs it to do so.
 Adapters must be bounded by clear markers:
 
 ```markdown
-<!-- BEGIN portable-agent-baseline:<pack-name> vX.Y.Z -->
+<!-- BEGIN baseline:<pack-name> vX.Y.Z -->
 ...
-<!-- END portable-agent-baseline:<pack-name> -->
+<!-- END baseline:<pack-name> -->
 ```
 
 Downstream repos may remove a baseline by deleting only the marked block. Future
 installer scripts should replace only the matching marked block and should not
 rewrite surrounding repo instructions.
+
+Legacy downstream blocks using `portable-agent-baseline:<pack-name>` remain
+valid for verification and removal. Running `baseline apply` on a target with a
+legacy block replaces it in place with the current `baseline:<pack-name>`
+marker instead of appending a duplicate block.
 
 ## Baseline Versus Skill
 

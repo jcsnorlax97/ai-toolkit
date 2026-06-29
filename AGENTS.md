@@ -6,7 +6,7 @@
 - Prefer concise, direct engineering communication.
 - If the repo is missing context, inspect first and create the minimum viable scaffolding before coding.
 
-<!-- BEGIN portable-agent-baseline:karpathy-principles v0.1.0 -->
+<!-- BEGIN baseline:karpathy-principles v0.1.0 -->
 ## Portable Agent Baseline: Karpathy Principles
 
 - Think before coding: state assumptions, surface ambiguity, and ask when the safe interpretation is unclear.
@@ -15,7 +15,7 @@
 - Goal-driven execution: turn open-ended work into success criteria and verify the result with tests, scripts, inspection, or another concrete check.
 
 Apply this baseline before ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
-<!-- END portable-agent-baseline:karpathy-principles -->
+<!-- END baseline:karpathy-principles -->
 
 ## Personal AI OS Roadmap
 
