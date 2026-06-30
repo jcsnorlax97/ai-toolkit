@@ -26,6 +26,7 @@ $ErrorActionPreference = "Stop"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Split-Path -Parent $scriptDir
 $baselinesRoot = Join-Path $repoRoot "baselines"
+$targetRepoWasProvided = $PSBoundParameters.ContainsKey("TargetRepo")
 
 function Read-Utf8Text($Path) {
     return [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8)
@@ -109,6 +110,9 @@ function Normalize-Tools($ToolValues) {
 }
 
 if (@("show", "apply", "remove", "verify") -contains $Command) {
+    if ($Command -eq "verify" -and -not $Pack) {
+        $Pack = "all"
+    }
     $Packs = Resolve-PackNames $Pack
     $Tools = Normalize-Tools $Tools
 }
@@ -152,7 +156,17 @@ switch ($Command) {
     "verify" {
         $verifyScript = Join-Path $scriptDir "baselines\verify.ps1"
         foreach ($packName in $Packs) {
-            & $verifyScript -TargetRepo $TargetRepo -Pack $packName -Tools $Tools
+            $verifyArgs = @{
+                Pack = $packName
+                Tools = $Tools
+            }
+            $currentDir = (Resolve-Path -LiteralPath (Get-Location).Path).Path
+            $resolvedRepoRoot = (Resolve-Path -LiteralPath $repoRoot).Path
+            if ($targetRepoWasProvided -or ($currentDir -ne $resolvedRepoRoot)) {
+                $verifyArgs.TargetRepo = $TargetRepo
+            }
+
+            & $verifyScript @verifyArgs
         }
     }
     "shim" {
