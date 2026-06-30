@@ -55,10 +55,14 @@ function Get-PackNames {
     })
 }
 
-function Resolve-PackName($Name) {
+function Resolve-PackNames($Name) {
     if ($Name) {
+        if ($Name -eq "all") {
+            return @(Get-PackNames)
+        }
+
         $null = Read-PackJson $Name
-        return $Name
+        return @($Name)
     }
 
     $packNames = @(Get-PackNames)
@@ -66,18 +70,36 @@ function Resolve-PackName($Name) {
         throw "No portable baseline packs found in: $baselinesRoot"
     }
     if ($packNames.Count -eq 1) {
-        return $packNames[0]
+        return @($packNames[0])
     }
 
     throw "Multiple portable baseline packs are available: $($packNames -join ', '). Pass -Pack <name>."
 }
 
 function Normalize-Tools($ToolValues) {
+    $allTools = @("codex", "claude", "copilot")
     $normalized = @()
     foreach ($toolValue in $ToolValues) {
         foreach ($tool in ($toolValue -split ",")) {
             $trimmed = $tool.Trim()
-            if ($trimmed) {
+            if (-not $trimmed) {
+                continue
+            }
+
+            if ($trimmed -eq "all") {
+                foreach ($toolName in $allTools) {
+                    if ($normalized -notcontains $toolName) {
+                        $normalized += $toolName
+                    }
+                }
+                continue
+            }
+
+            if ($allTools -notcontains $trimmed) {
+                throw "Unsupported tool '$trimmed'. Supported tools: $($allTools -join ', '), all"
+            }
+
+            if ($normalized -notcontains $trimmed) {
                 $normalized += $trimmed
             }
         }
@@ -87,7 +109,7 @@ function Normalize-Tools($ToolValues) {
 }
 
 if (@("show", "apply", "remove", "verify") -contains $Command) {
-    $Pack = Resolve-PackName $Pack
+    $Packs = Resolve-PackNames $Pack
     $Tools = Normalize-Tools $Tools
 }
 
@@ -99,30 +121,39 @@ switch ($Command) {
         }
     }
     "show" {
-        $packInfo = Read-PackJson $Pack
-        $baselinePath = Join-Path (Get-PackRoot $Pack) "baseline.md"
-        Write-Output "# $($packInfo.name) $($packInfo.version) [$($packInfo.status)]"
-        Write-Output ""
-        Write-Output $packInfo.description
-        Write-Output ""
-        Write-Output "Adapters:"
-        $packInfo.adapters.PSObject.Properties | ForEach-Object {
-            Write-Output "- $($_.Name): $($_.Value)"
+        foreach ($packName in $Packs) {
+            $packInfo = Read-PackJson $packName
+            $baselinePath = Join-Path (Get-PackRoot $packName) "baseline.md"
+            Write-Output "# $($packInfo.name) $($packInfo.version) [$($packInfo.status)]"
+            Write-Output ""
+            Write-Output $packInfo.description
+            Write-Output ""
+            Write-Output "Adapters:"
+            $packInfo.adapters.PSObject.Properties | ForEach-Object {
+                Write-Output "- $($_.Name): $($_.Value)"
+            }
+            Write-Output ""
+            Write-Output (Read-Utf8Text $baselinePath).Trim()
+            Write-Output ""
         }
-        Write-Output ""
-        Write-Output (Read-Utf8Text $baselinePath).Trim()
     }
     "apply" {
         $applyScript = Join-Path $scriptDir "baselines\apply.ps1"
-        & $applyScript -TargetRepo $TargetRepo -Pack $Pack -Tools $Tools -CreateMissing:$CreateMissing -DryRun:$DryRun
+        foreach ($packName in $Packs) {
+            & $applyScript -TargetRepo $TargetRepo -Pack $packName -Tools $Tools -CreateMissing:$CreateMissing -DryRun:$DryRun
+        }
     }
     "remove" {
         $removeScript = Join-Path $scriptDir "baselines\remove.ps1"
-        & $removeScript -TargetRepo $TargetRepo -Pack $Pack -Tools $Tools -DryRun:$DryRun
+        foreach ($packName in $Packs) {
+            & $removeScript -TargetRepo $TargetRepo -Pack $packName -Tools $Tools -DryRun:$DryRun
+        }
     }
     "verify" {
         $verifyScript = Join-Path $scriptDir "baselines\verify.ps1"
-        & $verifyScript -TargetRepo $TargetRepo -Pack $Pack -Tools $Tools
+        foreach ($packName in $Packs) {
+            & $verifyScript -TargetRepo $TargetRepo -Pack $packName -Tools $Tools
+        }
     }
     "shim" {
         if (@("install", "verify", "remove") -notcontains $ShimAction) {
