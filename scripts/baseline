@@ -12,6 +12,7 @@ fi
 
 PACK=""
 TARGET_REPO="$(pwd -P)"
+TARGET_REPO_PROVIDED=0
 TOOLS="codex,claude"
 DRY_RUN=0
 CREATE_MISSING=0
@@ -20,13 +21,13 @@ usage() {
   cat <<USAGE
 Usage:
   $COMMAND_NAME list
-  $COMMAND_NAME show [--pack <pack>]
-  $COMMAND_NAME apply [--pack <pack>] --tools codex,claude,copilot [--target-repo <path>] [--dry-run] [--create-missing]
-  $COMMAND_NAME remove [--pack <pack>] --tools codex,claude,copilot [--target-repo <path>] [--dry-run]
-  $COMMAND_NAME verify [--pack <pack>] --tools codex,claude,copilot [--target-repo <path>]
+  $COMMAND_NAME show [--pack <pack>|all]
+  $COMMAND_NAME apply --pack <pack>|all --tools codex,claude,copilot|all [--target-repo <path>] [--dry-run] [--create-missing]
+  $COMMAND_NAME remove --pack <pack>|all --tools codex,claude,copilot|all [--target-repo <path>] [--dry-run]
+  $COMMAND_NAME verify [--pack <pack>|all] [--tools codex,claude,copilot|all] [--target-repo <path>]
 
-When exactly one pack exists, --pack may be omitted. When multiple packs exist,
-show/apply/remove/verify require --pack.
+When exactly one pack exists, --pack may be omitted. Verify defaults to all
+packs. The value "all" expands to every pack or every supported tool.
 USAGE
 }
 
@@ -38,6 +39,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --target-repo|-TargetRepo)
       TARGET_REPO="$2"
+      TARGET_REPO_PROVIDED=1
       shift 2
       ;;
     --tools|-Tools)
@@ -65,7 +67,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 pack_root() {
-  printf '%s/%s' "$BASELINES_DIR" "$PACK"
+  printf '%s/%s' "$BASELINES_DIR" "$1"
 }
 
 pack_names() {
@@ -76,20 +78,39 @@ pack_names() {
 }
 
 require_pack() {
-  if [[ ! -f "$(pack_root)/pack.json" ]]; then
-    echo "Unknown portable baseline pack: $PACK" >&2
+  local pack="$1"
+  if [[ ! -f "$(pack_root "$pack")/pack.json" ]]; then
+    echo "Unknown portable baseline pack: $pack" >&2
     exit 1
   fi
 }
 
-resolve_pack() {
-  if [[ -n "$PACK" ]]; then
-    require_pack
+resolve_packs() {
+  local names=()
+  local name
+
+  if [[ "$COMMAND" == "verify" && -z "$PACK" ]]; then
+    PACK="all"
+  fi
+
+  if [[ "$PACK" == "all" ]]; then
+    while IFS= read -r name; do
+      names+=("$name")
+    done < <(pack_names)
+    if [[ "${#names[@]}" -eq 0 ]]; then
+      echo "No portable baseline packs found in: $BASELINES_DIR" >&2
+      exit 1
+    fi
+    printf '%s\n' "${names[@]}"
     return
   fi
 
-  local names=()
-  local name
+  if [[ -n "$PACK" ]]; then
+    require_pack "$PACK"
+    printf '%s\n' "$PACK"
+    return
+  fi
+
   while IFS= read -r name; do
     names+=("$name")
   done < <(pack_names)
@@ -99,7 +120,7 @@ resolve_pack() {
     exit 1
   fi
   if [[ "${#names[@]}" -eq 1 ]]; then
-    PACK="${names[0]}"
+    printf '%s\n' "${names[0]}"
     return
   fi
 
@@ -108,8 +129,9 @@ resolve_pack() {
 }
 
 json_field() {
-  local field="$1"
-  sed -nE "s/^[[:space:]]*\"$field\"[[:space:]]*:[[:space:]]*\"([^\"]*)\".*/\1/p" "$(pack_root)/pack.json" | head -n 1
+  local pack="$1"
+  local field="$2"
+  sed -nE "s/^[[:space:]]*\"$field\"[[:space:]]*:[[:space:]]*\"([^\"]*)\".*/\1/p" "$(pack_root "$pack")/pack.json" | head -n 1
 }
 
 tool_target() {
@@ -118,14 +140,40 @@ tool_target() {
     claude) printf 'CLAUDE.md|CLAUDE.md.block' ;;
     copilot) printf '.github/copilot-instructions.md|copilot-instructions.md.block' ;;
     *)
-      echo "Unsupported tool '$1'. Supported tools: codex, claude, copilot" >&2
+      echo "Unsupported tool '$1'. Supported tools: codex, claude, copilot, all" >&2
       exit 1
       ;;
   esac
 }
 
+normalized_tools() {
+  local values="$1"
+  local emitted=""
+  local tool
+  IFS=',' read -r -a tool_list <<< "$values"
+  for tool in "${tool_list[@]}"; do
+    tool="${tool//[[:space:]]/}"
+    [[ -z "$tool" ]] && continue
+    if [[ "$tool" == "all" ]]; then
+      for all_tool in codex claude copilot; do
+        if [[ ",$emitted," != *",$all_tool,"* ]]; then
+          emitted="${emitted:+$emitted,}$all_tool"
+          printf '%s\n' "$all_tool"
+        fi
+      done
+      continue
+    fi
+    tool_target "$tool" >/dev/null
+    if [[ ",$emitted," != *",$tool,"* ]]; then
+      emitted="${emitted:+$emitted,}$tool"
+      printf '%s\n' "$tool"
+    fi
+  done
+}
+
 verify_pack_shape() {
-  require_pack
+  local pack="$1"
+  require_pack "$pack"
   local required=(
     "pack.json"
     "baseline.md"
@@ -135,44 +183,34 @@ verify_pack_shape() {
   )
   local rel
   for rel in "${required[@]}"; do
-    if [[ ! -f "$(pack_root)/$rel" ]]; then
+    if [[ ! -f "$(pack_root "$pack")/$rel" ]]; then
       echo "Missing portable baseline file: $rel" >&2
       exit 1
     fi
   done
   local adapter
-  for adapter in "$(pack_root)"/adapters/*.block; do
-    if ! grep -q "<!-- BEGIN baseline:$PACK v" "$adapter"; then
+  for adapter in "$(pack_root "$pack")"/adapters/*.block; do
+    if ! grep -q "<!-- BEGIN baseline:$pack v" "$adapter"; then
       echo "Adapter missing BEGIN marker: $adapter" >&2
       exit 1
     fi
-    if ! grep -q "<!-- END baseline:$PACK -->" "$adapter"; then
+    if ! grep -q "<!-- END baseline:$pack -->" "$adapter"; then
       echo "Adapter missing END marker: $adapter" >&2
       exit 1
     fi
   done
-  echo "pack ok: $PACK"
-}
-
-for_each_tool() {
-  local callback="$1"
-  local tool
-  IFS=',' read -r -a tool_list <<< "$TOOLS"
-  for tool in "${tool_list[@]}"; do
-    tool="${tool//[[:space:]]/}"
-    [[ -z "$tool" ]] && continue
-    "$callback" "$tool"
-  done
+  echo "pack ok: $pack"
 }
 
 apply_tool() {
-  local tool="$1"
-  local mapping target_rel adapter_rel target_path adapter_path action
+  local pack="$1"
+  local tool="$2"
+  local mapping target_rel adapter_rel target_path adapter_path action marker
   mapping="$(tool_target "$tool")"
   target_rel="${mapping%%|*}"
   adapter_rel="${mapping#*|}"
   target_path="$TARGET_REPO/$target_rel"
-  adapter_path="$(pack_root)/adapters/$adapter_rel"
+  adapter_path="$(pack_root "$pack")/adapters/$adapter_rel"
 
   if [[ ! -f "$target_path" ]]; then
     if [[ "$CREATE_MISSING" -ne 1 ]]; then
@@ -180,33 +218,35 @@ apply_tool() {
       return
     fi
     if [[ "$DRY_RUN" -eq 1 ]]; then
-      echo "would create $target_rel with $PACK for $tool"
+      echo "would create $target_rel with $pack for $tool"
       return
     fi
     mkdir -p "$(dirname "$target_path")"
     cp "$adapter_path" "$target_path"
     printf '\n' >> "$target_path"
-    echo "created $target_rel with $PACK for $tool"
+    echo "created $target_rel with $pack for $tool"
     return
   fi
 
   local has_new=0
   local has_legacy=0
-  grep -q "<!-- BEGIN baseline:$PACK v" "$target_path" && has_new=1
-  grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$target_path" && has_legacy=1
+  grep -q "<!-- BEGIN baseline:$pack v" "$target_path" && has_new=1
+  grep -q "<!-- BEGIN portable-agent-baseline:$pack v" "$target_path" && has_legacy=1
 
   if [[ "$has_new" -eq 1 && "$has_legacy" -eq 1 ]]; then
-    echo "Both baseline and legacy portable-agent-baseline blocks exist for $PACK in $target_rel; resolve the duplicate manually." >&2
+    echo "Both baseline and legacy portable-agent-baseline blocks exist for $pack in $target_rel; resolve the duplicate manually." >&2
     exit 1
   fi
 
   if [[ "$has_new" -eq 1 || "$has_legacy" -eq 1 ]]; then
     action="update"
-    [[ "$has_legacy" -eq 1 ]] && action="migrate"
+    marker="baseline"
+    if [[ "$has_legacy" -eq 1 ]]; then
+      action="migrate"
+      marker="portable-agent-baseline"
+    fi
     if [[ "$DRY_RUN" -ne 1 ]]; then
-      local marker="baseline"
-      [[ "$has_legacy" -eq 1 ]] && marker="portable-agent-baseline"
-      PACK="$PACK" MARKER="$marker" BLOCK_FILE="$adapter_path" perl -0pi -e 'BEGIN { $pack=$ENV{"PACK"}; $marker=$ENV{"MARKER"}; $block_file=$ENV{"BLOCK_FILE"}; open my $fh, "<", $block_file or die $!; local $/; $block=<$fh>; chomp $block; } $pattern=qr/<!-- BEGIN \Q$marker\E:\Q$pack\E v[^>]+ -->.*?<!-- END \Q$marker\E:\Q$pack\E -->/s; s/$pattern/$block/s;' "$target_path"
+      PACK="$pack" MARKER="$marker" BLOCK_FILE="$adapter_path" perl -0pi -e 'BEGIN { $pack=$ENV{"PACK"}; $marker=$ENV{"MARKER"}; $block_file=$ENV{"BLOCK_FILE"}; open my $fh, "<", $block_file or die $!; local $/; $block=<$fh>; chomp $block; } $pattern=qr/<!-- BEGIN \Q$marker\E:\Q$pack\E v[^>]+ -->.*?<!-- END \Q$marker\E:\Q$pack\E -->/s; s/$pattern/$block/s;' "$target_path"
     fi
   else
     action="add"
@@ -220,19 +260,20 @@ apply_tool() {
   fi
 
   if [[ "$DRY_RUN" -eq 1 ]]; then
-    echo "would $action $PACK in $target_rel for $tool"
+    echo "would $action $pack in $target_rel for $tool"
   elif [[ "$action" == "migrate" ]]; then
-    echo "migrated $PACK in $target_rel for $tool"
+    echo "migrated $pack in $target_rel for $tool"
   elif [[ "$action" == "update" ]]; then
-    echo "updated $PACK in $target_rel for $tool"
+    echo "updated $pack in $target_rel for $tool"
   else
-    echo "added $PACK in $target_rel for $tool"
+    echo "added $pack in $target_rel for $tool"
   fi
 }
 
 remove_tool() {
-  local tool="$1"
-  local mapping target_rel target_path
+  local pack="$1"
+  local tool="$2"
+  local mapping target_rel target_path marker
   mapping="$(tool_target "$tool")"
   target_rel="${mapping%%|*}"
   target_path="$TARGET_REPO/$target_rel"
@@ -241,97 +282,132 @@ remove_tool() {
     echo "skip missing $target_rel for $tool in $TARGET_REPO"
     return
   fi
+
   local has_new=0
   local has_legacy=0
-  grep -q "<!-- BEGIN baseline:$PACK v" "$target_path" && has_new=1
-  grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$target_path" && has_legacy=1
+  grep -q "<!-- BEGIN baseline:$pack v" "$target_path" && has_new=1
+  grep -q "<!-- BEGIN portable-agent-baseline:$pack v" "$target_path" && has_legacy=1
 
   if [[ "$has_new" -eq 1 && "$has_legacy" -eq 1 ]]; then
-    echo "Both baseline and legacy portable-agent-baseline blocks exist for $PACK in $target_rel; resolve the duplicate manually." >&2
+    echo "Both baseline and legacy portable-agent-baseline blocks exist for $pack in $target_rel; resolve the duplicate manually." >&2
     exit 1
   fi
 
   if [[ "$has_new" -ne 1 && "$has_legacy" -ne 1 ]]; then
-    echo "skip absent $PACK in $target_rel for $tool"
+    echo "skip absent $pack in $target_rel for $tool"
     return
   fi
   if [[ "$DRY_RUN" -eq 1 ]]; then
-    echo "would remove $PACK from $target_rel for $tool"
+    echo "would remove $pack from $target_rel for $tool"
     return
   fi
 
-  local marker="baseline"
+  marker="baseline"
   [[ "$has_legacy" -eq 1 ]] && marker="portable-agent-baseline"
-  PACK="$PACK" MARKER="$marker" perl -0pi -e 'BEGIN { $pack=$ENV{"PACK"}; $marker=$ENV{"MARKER"}; } $pattern=qr/\r?\n?\r?\n?<!-- BEGIN \Q$marker\E:\Q$pack\E v[^>]+ -->.*?<!-- END \Q$marker\E:\Q$pack\E -->\r?\n?/s; s/$pattern/\n/s;' "$target_path"
-  echo "removed $PACK from $target_rel for $tool"
+  PACK="$pack" MARKER="$marker" perl -0pi -e 'BEGIN { $pack=$ENV{"PACK"}; $marker=$ENV{"MARKER"}; } $pattern=qr/\r?\n?\r?\n?<!-- BEGIN \Q$marker\E:\Q$pack\E v[^>]+ -->.*?<!-- END \Q$marker\E:\Q$pack\E -->\r?\n?/s; s/$pattern/\n/s;' "$target_path"
+  echo "removed $pack from $target_rel for $tool"
 }
 
 verify_tool() {
-  local tool="$1"
-  local mapping target_rel target_path
+  local pack="$1"
+  local tool="$2"
+  local mapping target_rel target_path pack_version installed_version marker_status block_line
   mapping="$(tool_target "$tool")"
   target_rel="${mapping%%|*}"
   target_path="$TARGET_REPO/$target_rel"
+  pack_version="$(json_field "$pack" version)"
 
   if [[ ! -f "$target_path" ]]; then
     echo "skip missing $target_rel for $tool in $TARGET_REPO"
     return
   fi
+
   local has_new=0
   local has_legacy=0
-  grep -q "<!-- BEGIN baseline:$PACK v" "$target_path" && has_new=1
-  grep -q "<!-- BEGIN portable-agent-baseline:$PACK v" "$target_path" && has_legacy=1
+  grep -q "<!-- BEGIN baseline:$pack v" "$target_path" && has_new=1
+  grep -q "<!-- BEGIN portable-agent-baseline:$pack v" "$target_path" && has_legacy=1
 
   if [[ "$has_new" -eq 1 && "$has_legacy" -eq 1 ]]; then
-    echo "Both baseline and legacy portable-agent-baseline blocks exist for $PACK in $target_rel" >&2
+    echo "Both baseline and legacy portable-agent-baseline blocks exist for $pack in $target_rel" >&2
     exit 1
   fi
 
   if [[ "$has_new" -ne 1 && "$has_legacy" -ne 1 ]]; then
-    echo "Missing $PACK managed block in $target_rel" >&2
+    echo "Missing $pack managed block in $target_rel" >&2
     exit 1
   fi
+
   if [[ "$has_legacy" -eq 1 ]]; then
-    echo "target ok: $target_rel contains legacy $PACK marker (run apply to migrate)"
+    block_line="$(grep -m1 "<!-- BEGIN portable-agent-baseline:$pack v" "$target_path")"
+    marker_status="legacy marker; run apply to migrate"
   else
-    echo "target ok: $target_rel contains $PACK"
+    block_line="$(grep -m1 "<!-- BEGIN baseline:$pack v" "$target_path")"
+    marker_status="marker ok"
   fi
+  installed_version="$(printf '%s\n' "$block_line" | sed -nE 's/.* v([^ >]+) -->.*/\1/p')"
+  if [[ "$installed_version" != "$pack_version" ]]; then
+    echo "Stale $pack managed block in ${target_rel}: installed v$installed_version, source v$pack_version" >&2
+    exit 1
+  fi
+
+  echo "target ok: $target_rel contains $pack v$installed_version ($marker_status)"
+}
+
+run_target_tools() {
+  local pack="$1"
+  local callback="$2"
+  local tool
+  while IFS= read -r tool; do
+    "$callback" "$pack" "$tool"
+  done < <(normalized_tools "$TOOLS")
 }
 
 case "$COMMAND" in
   list)
     pack_names | while read -r pack_name; do
-      PACK="$pack_name"
-      echo "$(json_field name) $(json_field version) [$(json_field status)] - $(json_field description)"
+      echo "$(json_field "$pack_name" name) $(json_field "$pack_name" version) [$(json_field "$pack_name" status)] - $(json_field "$pack_name" description)"
     done
     ;;
   show)
-    resolve_pack
-    echo "# $(json_field name) $(json_field version) [$(json_field status)]"
-    echo
-    echo "$(json_field description)"
-    echo
-    echo "Adapters:"
-    sed -nE 's/^[[:space:]]*"([^"]+)"[[:space:]]*:[[:space:]]*"([^"]+\.block)".*/- \1: \2/p' "$(pack_root)/pack.json"
-    echo
-    sed -n '1,$p' "$(pack_root)/baseline.md"
+    while IFS= read -r pack_name; do
+      echo "# $(json_field "$pack_name" name) $(json_field "$pack_name" version) [$(json_field "$pack_name" status)]"
+      echo
+      echo "$(json_field "$pack_name" description)"
+      echo
+      echo "Adapters:"
+      sed -nE 's/^[[:space:]]*"([^"]+)"[[:space:]]*:[[:space:]]*"([^"]+\.block)".*/- \1: \2/p' "$(pack_root "$pack_name")/pack.json"
+      echo
+      sed -n '1,$p' "$(pack_root "$pack_name")/baseline.md"
+      echo
+    done < <(resolve_packs)
     ;;
   apply)
-    resolve_pack
-    verify_pack_shape >/dev/null
     TARGET_REPO="$(cd "$TARGET_REPO" && pwd -P)"
-    for_each_tool apply_tool
+    while IFS= read -r pack_name; do
+      verify_pack_shape "$pack_name" >/dev/null
+      run_target_tools "$pack_name" apply_tool
+    done < <(resolve_packs)
     ;;
   remove)
-    resolve_pack
     TARGET_REPO="$(cd "$TARGET_REPO" && pwd -P)"
-    for_each_tool remove_tool
+    while IFS= read -r pack_name; do
+      run_target_tools "$pack_name" remove_tool
+    done < <(resolve_packs)
     ;;
   verify)
-    resolve_pack
-    verify_pack_shape
-    TARGET_REPO="$(cd "$TARGET_REPO" && pwd -P)"
-    for_each_tool verify_tool
+    current_dir="$(pwd -P)"
+    verify_target=1
+    if [[ "$TARGET_REPO_PROVIDED" -eq 0 && "$current_dir" == "$ROOT_DIR" ]]; then
+      verify_target=0
+    else
+      TARGET_REPO="$(cd "$TARGET_REPO" && pwd -P)"
+    fi
+    while IFS= read -r pack_name; do
+      verify_pack_shape "$pack_name"
+      if [[ "$verify_target" -eq 1 ]]; then
+        run_target_tools "$pack_name" verify_tool
+      fi
+    done < <(resolve_packs)
     ;;
   --help|-h|help)
     usage

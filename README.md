@@ -117,7 +117,8 @@ attribution in `NOTICE.md` and `docs/upstream-sources.md`.
 
 Local companion skills include `grill-spec`, `methodology-intake`,
 `capture-input-note`, `setup-agent-team`, `staff-level-review`,
-`ship-vertical-slice`, `diagnose-regression`, and `client-flow-diagrams`.
+`ship-vertical-slice`, `diagnose-regression`, `client-flow-diagrams`, and
+`query-azure-devops`.
 
 Current baseline packs include `karpathy-principles`,
 `git-collaboration-hygiene`, `repo-context-grounding`,
