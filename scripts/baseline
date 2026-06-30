@@ -16,6 +16,7 @@ TARGET_REPO_PROVIDED=0
 TOOLS="codex,claude"
 DRY_RUN=0
 CREATE_MISSING=0
+TOOLS_PROVIDED=0
 
 usage() {
   cat <<USAGE
@@ -44,6 +45,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --tools|-Tools)
       TOOLS="$2"
+      TOOLS_PROVIDED=1
       shift 2
       ;;
     --dry-run|-DryRun)
@@ -146,6 +148,18 @@ tool_target() {
   esac
 }
 
+tool_instruction_file() {
+  case "$1" in
+    claude) printf 'CLAUDE.md' ;;
+    codex) printf 'AGENTS.md' ;;
+    copilot) printf '.github/copilot-instructions.md' ;;
+    *)
+      echo "Unsupported tool '$1'. Supported tools: codex, claude, copilot, all" >&2
+      exit 1
+      ;;
+  esac
+}
+
 normalized_tools() {
   local values="$1"
   local emitted=""
@@ -169,6 +183,34 @@ normalized_tools() {
       printf '%s\n' "$tool"
     fi
   done
+}
+
+list_tools() {
+  if [[ "$TOOLS_PROVIDED" -eq 1 ]]; then
+    normalized_tools "$TOOLS"
+  else
+    printf '%s\n' claude codex copilot
+  fi
+}
+
+baseline_installed() {
+  local pack="$1"
+  local tool="$2"
+  local target_rel target_path
+  target_rel="$(tool_instruction_file "$tool")"
+  target_path="$TARGET_REPO/$target_rel"
+  [[ -f "$target_path" ]] || return 1
+  grep -q "<!-- BEGIN baseline:$pack v" "$target_path" && return 0
+  grep -q "<!-- BEGIN portable-agent-baseline:$pack v" "$target_path" && return 0
+  return 1
+}
+
+status_cell() {
+  local tool="$1"
+  local installed="$2"
+  local marker=" "
+  [[ "$installed" == "1" ]] && marker="+"
+  printf '[%-6s %s]' "$tool" "$marker"
 }
 
 verify_pack_shape() {
@@ -364,8 +406,19 @@ run_target_tools() {
 
 case "$COMMAND" in
   list)
+    TARGET_REPO="$(cd "$TARGET_REPO" && pwd -P)"
+    echo "Available packs  (target: $TARGET_REPO)"
+    echo
     pack_names | while read -r pack_name; do
-      echo "$(json_field "$pack_name" name) $(json_field "$pack_name" version) [$(json_field "$pack_name" status)] - $(json_field "$pack_name" description)"
+      cells=()
+      while IFS= read -r tool; do
+        if baseline_installed "$pack_name" "$tool"; then
+          cells+=("$(status_cell "$tool" 1)")
+        else
+          cells+=("$(status_cell "$tool" 0)")
+        fi
+      done < <(list_tools)
+      printf '%-40s v%-8s %s\n' "$(json_field "$pack_name" name)" "$(json_field "$pack_name" version)" "${cells[*]}"
     done
     ;;
   show)

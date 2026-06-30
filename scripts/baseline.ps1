@@ -27,6 +27,7 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Split-Path -Parent $scriptDir
 $baselinesRoot = Join-Path $repoRoot "baselines"
 $targetRepoWasProvided = $PSBoundParameters.ContainsKey("TargetRepo")
+$toolsWereProvided = $PSBoundParameters.ContainsKey("Tools")
 
 function Read-Utf8Text($Path) {
     return [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8)
@@ -109,6 +110,38 @@ function Normalize-Tools($ToolValues) {
     return $normalized
 }
 
+function Get-ToolMap {
+    return @{
+        claude = "CLAUDE.md"
+        codex = "AGENTS.md"
+        copilot = ".github\copilot-instructions.md"
+    }
+}
+
+function Test-BaselineInstalled($ResolvedTargetRepo, $PackName, $ToolName) {
+    $toolMap = Get-ToolMap
+    if (-not $toolMap.ContainsKey($ToolName)) {
+        return $false
+    }
+
+    $targetPath = Join-Path $ResolvedTargetRepo $toolMap[$ToolName]
+    if (-not (Test-Path -LiteralPath $targetPath)) {
+        return $false
+    }
+
+    $text = Read-Utf8Text $targetPath
+    $escapedPack = [regex]::Escape($PackName)
+    return (
+        [regex]::IsMatch($text, "<!-- BEGIN baseline:$escapedPack v[^>]+ -->") -or
+        [regex]::IsMatch($text, "<!-- BEGIN portable-agent-baseline:$escapedPack v[^>]+ -->")
+    )
+}
+
+function Format-StatusCell($ToolName, $Installed) {
+    $marker = if ($Installed) { "+" } else { " " }
+    return ("[{0,-6} {1}]" -f $ToolName, $marker)
+}
+
 if (@("show", "apply", "remove", "verify") -contains $Command) {
     if ($Command -eq "verify" -and -not $Pack) {
         $Pack = "all"
@@ -119,9 +152,19 @@ if (@("show", "apply", "remove", "verify") -contains $Command) {
 
 switch ($Command) {
     "list" {
+        $resolvedTarget = (Resolve-Path -LiteralPath $TargetRepo).Path
+        $listTools = if ($toolsWereProvided) { Normalize-Tools $Tools } else { @("claude", "codex", "copilot") }
+
+        Write-Output "Available packs  (target: $resolvedTarget)"
+        Write-Output ""
         Get-PackNames | ForEach-Object {
-            $packInfo = Read-PackJson $_
-            Write-Output "$($packInfo.name) $($packInfo.version) [$($packInfo.status)] - $($packInfo.description)"
+            $packName = $_
+            $packInfo = Read-PackJson $packName
+            $cells = @()
+            foreach ($tool in $listTools) {
+                $cells += Format-StatusCell $tool (Test-BaselineInstalled $resolvedTarget $packName $tool)
+            }
+            Write-Output ("{0,-40} v{1,-8} {2}" -f $packInfo.name, $packInfo.version, ($cells -join "  "))
         }
     }
     "show" {

@@ -30,6 +30,7 @@ $ErrorActionPreference = "Stop"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Split-Path -Parent $scriptDir
 $skillsRoot = Join-Path $repoRoot "skills\engineering"
+$targetWasProvided = $PSBoundParameters.ContainsKey("Target")
 
 function Read-Utf8Text($Path) {
     return [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8)
@@ -131,6 +132,56 @@ function Get-Targets {
     return @($Target)
 }
 
+function Get-DefaultTargetsForList {
+    if ($targetWasProvided) {
+        return Get-Targets
+    }
+
+    return @("claude", "codex", "copilot")
+}
+
+function Get-PersonalSkillTargetPath($TargetName, $SkillName) {
+    switch ($TargetName) {
+        "codex" {
+            $root = if ($env:CODEX_SKILLS_DIR) { $env:CODEX_SKILLS_DIR } else { Join-Path $HOME ".codex\skills" }
+            return Join-Path $root $SkillName
+        }
+        "claude" {
+            $root = if ($env:CLAUDE_SKILLS_DIR) { $env:CLAUDE_SKILLS_DIR } else { Join-Path $HOME ".claude\skills" }
+            return Join-Path $root $SkillName
+        }
+        "copilot" {
+            return ""
+        }
+    }
+}
+
+function Get-ProjectSkillTargetPath($TargetName, $SkillName) {
+    switch ($TargetName) {
+        "claude" {
+            return (Join-Path (Join-Path $TargetRepo ".claude\skills") $SkillName)
+        }
+        default {
+            return ""
+        }
+    }
+}
+
+function Test-SkillInstalled($TargetName, $SkillName) {
+    $targetPath = if ($Scope -eq "personal") {
+        Get-PersonalSkillTargetPath $TargetName $SkillName
+    } else {
+        Get-ProjectSkillTargetPath $TargetName $SkillName
+    }
+
+    return ($targetPath -and (Test-Path -LiteralPath $targetPath))
+}
+
+function Format-StatusCell($TargetName, $Installed) {
+    $marker = if ($Installed) { "+" } else { " " }
+    return ("[{0,-6} {1}]" -f $TargetName, $marker)
+}
+
 function Install-PersonalTarget($TargetName, $VerifyOnly) {
     switch ($TargetName) {
         "codex" {
@@ -182,11 +233,27 @@ function Install-ProjectTarget($TargetName, $VerifyOnly) {
 
 switch ($Command) {
     "list" {
+        $listTargets = Get-DefaultTargetsForList
+        $scopeLabel = if ($Scope -eq "project") {
+            "scope: project, target: $((Resolve-Path -LiteralPath $TargetRepo).Path)"
+        } else {
+            "scope: personal"
+        }
+
+        Write-Output "Available skills  ($scopeLabel)"
+        Write-Output ""
         Get-SkillDirs | ForEach-Object {
             $skillFile = Join-Path $_.FullName "SKILL.md"
             $content = Read-Utf8Text $skillFile
-            $description = Get-FrontmatterValue $content "description"
-            Write-Output "$($_.Name) - $description"
+            $status = Get-FrontmatterValue $content "status"
+            if (-not $status) {
+                $status = "unknown"
+            }
+            $cells = @()
+            foreach ($targetName in $listTargets) {
+                $cells += Format-StatusCell $targetName (Test-SkillInstalled $targetName $_.Name)
+            }
+            Write-Output ("{0,-40} [{1,-8}] {2}" -f $_.Name, $status, ($cells -join "  "))
         }
     }
     "show" {

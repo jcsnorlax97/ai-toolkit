@@ -101,6 +101,9 @@ Use `scripts/baseline.ps1` as the human-friendly entrypoint:
 When called from inside the target repo, omit `-TargetRepo`; it defaults to the
 current directory.
 
+`list` shows the available packs and whether each pack is already present in
+the target repo's `CLAUDE.md`, `AGENTS.md`, or Copilot instruction file.
+
 When exactly one pack exists, the CLI infers it. Once multiple packs exist,
 `show`, `apply`, `remove`, and `verify` require an explicit pack name or
 `-Pack all`. `-Tools all` expands to `codex`, `claude`, and `copilot`.

@@ -90,6 +90,12 @@ List and apply baselines:
 ./scripts/baseline.ps1 apply -Pack all -Tools all -DryRun
 ```
 
+`baseline list` shows each pack plus whether it is already present in the
+current target repo's Claude, Codex, or Copilot instruction file.
+
+`skills list` shows each skill plus whether it is installed for the selected
+personal or project runtime target.
+
 Install optional command shims:
 
 ```powershell
