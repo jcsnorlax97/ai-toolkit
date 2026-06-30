@@ -251,6 +251,7 @@ tool lists, so both the direct `.ps1` script and the global
 ```powershell
 .\scripts\baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
 baseline apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
+baseline apply -Pack all -Tools all -DryRun
 ```
 
 For narrow changes, one tool per command is also valid:
@@ -260,6 +261,11 @@ baseline apply -Pack karpathy-principles -Tools codex -DryRun
 baseline apply -Pack karpathy-principles -Tools claude -DryRun
 baseline apply -Pack karpathy-principles -Tools copilot -DryRun
 ```
+
+`-Pack all` expands to every baseline pack in `baselines/`. `-Tools all`
+expands to `codex`, `claude`, and `copilot`. Without `-CreateMissing`, baseline
+apply updates only instruction files that already exist in the target repo and
+skips missing targets.
 
 Portable baseline placement is intentionally conservative. The installer
 updates an existing managed block in place; when a block is missing, it appends

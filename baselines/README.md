@@ -93,6 +93,7 @@ Use `scripts/baseline.ps1` as the human-friendly entrypoint:
 ./scripts/baseline.ps1 list
 ./scripts/baseline.ps1 show
 ./scripts/baseline.ps1 apply -TargetRepo C:\path\to\repo -Tools codex,claude,copilot -DryRun
+./scripts/baseline.ps1 apply -TargetRepo C:\path\to\repo -Pack all -Tools all -DryRun
 ./scripts/baseline.ps1 remove -TargetRepo C:\path\to\repo -Tools codex,claude,copilot -DryRun
 ./scripts/baseline.ps1 verify -TargetRepo C:\path\to\repo -Tools codex,claude,copilot
 ```
@@ -101,7 +102,8 @@ When called from inside the target repo, omit `-TargetRepo`; it defaults to the
 current directory.
 
 When exactly one pack exists, the CLI infers it. Once multiple packs exist,
-`show`, `apply`, `remove`, and `verify` require an explicit pack name.
+`show`, `apply`, `remove`, and `verify` require an explicit pack name or
+`-Pack all`. `-Tools all` expands to `codex`, `claude`, and `copilot`.
 
 On macOS or Linux, the native shell entrypoint is:
 
@@ -109,6 +111,7 @@ On macOS or Linux, the native shell entrypoint is:
 ./scripts/baseline list
 ./scripts/baseline show
 ./scripts/baseline apply --tools codex,claude,copilot --dry-run
+./scripts/baseline apply --pack all --tools all --dry-run
 ```
 
 ## Global Shim
@@ -119,17 +122,17 @@ any repo.
 Windows PowerShell or CMD:
 
 ```powershell
-./scripts/install-baseline-shim.ps1 -AddToUserPath
+./scripts/baseline.ps1 shim install -AddToUserPath
 baseline list
-./scripts/install-baseline-shim.ps1 -Remove
+./scripts/baseline.ps1 shim remove
 ```
 
 macOS or Linux:
 
 ```bash
-./scripts/install-baseline-shim.sh
+./scripts/baselines/install-shim.sh
 baseline list
-./scripts/install-baseline-shim.sh --remove
+./scripts/baselines/install-shim.sh --remove
 ```
 
 The shim writes only one command wrapper into the selected bin directory. It

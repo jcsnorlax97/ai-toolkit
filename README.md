@@ -87,6 +87,7 @@ List and apply baselines:
 ```powershell
 ./scripts/baseline.ps1 list
 ./scripts/baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude -DryRun
+./scripts/baseline.ps1 apply -Pack all -Tools all -DryRun
 ```
 
 Install optional command shims:
