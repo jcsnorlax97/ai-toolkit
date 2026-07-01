@@ -43,9 +43,9 @@ Tool-specific adapters point at or install from that source tree.
 
 ```text
 .claude/skills/<skill-name> -> ../../skills/engineering/<skill-name>
-~/.local/share/ai-agent-library/current -> <this repo clone>
-~/.claude/skills/<skill-name>  -> ~/.local/share/ai-agent-library/current/skills/engineering/<skill-name>
-~/.codex/skills/<skill-name>   -> ~/.local/share/ai-agent-library/current/skills/engineering/<skill-name>
+~/.local/share/ai-toolkit/current -> <this repo clone>
+~/.claude/skills/<skill-name>  -> ~/.local/share/ai-toolkit/current/skills/engineering/<skill-name>
+~/.codex/skills/<skill-name>   -> ~/.local/share/ai-toolkit/current/skills/engineering/<skill-name>
 ```
 
 `baselines/` is the canonical source tree for always-on instruction
@@ -107,9 +107,9 @@ Installation scripts expose canonical skill directories to personal tool
 directories. The default mode is symlink mode:
 
 ```text
-~/.local/share/ai-agent-library/current -> <this repo clone>
-~/.claude/skills/<skill-name> -> ~/.local/share/ai-agent-library/current/skills/engineering/<skill-name>
-~/.codex/skills/<skill-name> -> ~/.local/share/ai-agent-library/current/skills/engineering/<skill-name>
+~/.local/share/ai-toolkit/current -> <this repo clone>
+~/.claude/skills/<skill-name> -> ~/.local/share/ai-toolkit/current/skills/engineering/<skill-name>
+~/.codex/skills/<skill-name> -> ~/.local/share/ai-toolkit/current/skills/engineering/<skill-name>
 ```
 
 Pulling the repo updates installed skills immediately because runtime skill
@@ -124,7 +124,7 @@ If a personal target already exists as a real directory from an older copy-based
 install and symlink mode is requested, the installer moves that directory into:
 
 ```text
-<tool-skills-dir>/.ai-agent-library-backups/<timestamp>/<skill-name>
+<tool-skills-dir>/.ai-toolkit-backups/<timestamp>/<skill-name>
 ```
 
 It then creates the symlink. This preserves local customizations without keeping

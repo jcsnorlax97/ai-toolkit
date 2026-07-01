@@ -43,7 +43,7 @@ sibling repo:
 
 ## Repository Design
 
-- Recommended repo name: `ai-agent-library`.
+- Recommended repo name: `ai-toolkit`.
 - `skills/` is the canonical source for reusable skills.
 - `baselines/` is the canonical source for always-on agent baseline packs.
 - `workflows/`, `agents/`, and `templates/` are planned source trees for
@@ -52,7 +52,7 @@ sibling repo:
 - `scripts/skills.ps1` is the public skill CLI.
 - `scripts/baseline.ps1` is the public baseline CLI.
 - Personal installs use symlinks by default through
-  `~/.local/share/ai-agent-library/current`. On Windows, use Git Bash
+  `~/.local/share/ai-toolkit/current`. On Windows, use Git Bash
   with real symlink support, such as elevated Git Bash plus
   `MSYS=winsymlinks:nativestrict`. `--copy` is only an explicit fallback.
   After moving or renaming the repo, run `scripts/skills/repair-personal-links.sh`.

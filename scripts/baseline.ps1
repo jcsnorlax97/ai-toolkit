@@ -139,7 +139,7 @@ function Test-BaselineInstalled($ResolvedTargetRepo, $PackName, $ToolName) {
 
 function Format-StatusCell($ToolName, $Installed) {
     $marker = if ($Installed) { "+" } else { " " }
-    return ("[{0,-6} {1}]" -f $ToolName, $marker)
+    return ("[{0} {1}]" -f $ToolName, $marker)
 }
 
 if (@("show", "apply", "remove", "verify") -contains $Command) {
@@ -166,6 +166,8 @@ switch ($Command) {
             }
             Write-Output ("{0,-40} v{1,-8} {2}" -f $packInfo.name, $packInfo.version, ($cells -join "  "))
         }
+        Write-Output ""
+        Write-Output "Legend: [+ applied]  [ absent]"
     }
     "show" {
         foreach ($packName in $Packs) {

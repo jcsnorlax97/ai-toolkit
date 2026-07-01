@@ -14,8 +14,8 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $scriptsRoot = Split-Path -Parent $scriptDir
 $cliPath = Join-Path $scriptsRoot "skills.ps1"
 $shimPath = Join-Path $InstallDir "skills.cmd"
-$marker = "ai-agent-library skills shim"
-$acceptedMarkers = @($marker, "agentic-engineering-skills skills shim")
+$marker = "ai-toolkit skills shim"
+$acceptedMarkers = @($marker, "ai-agent-library skills shim", "agentic-engineering-skills skills shim")
 
 function Path-ContainsInstallDir {
     $userPath = [Environment]::GetEnvironmentVariable("Path", "User")

@@ -1,7 +1,8 @@
-# AI Agent Library
+# AI Toolkit
 
-Reusable AI agent assets: skills, baselines, workflow definitions, agent role
-packs, and supporting templates.
+Reusable AI operating assets: skills, baselines, workflow definitions, agent
+role packs, supporting templates, and deterministic install/apply/verify
+tooling.
 
 This repo keeps reusable agent behavior in one maintained source tree and
 exposes it to tools such as Codex, Claude Code, and Copilot through explicit

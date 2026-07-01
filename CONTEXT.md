@@ -1,9 +1,9 @@
-# AI Agent Library
+# AI Toolkit
 
 Reusable AI agent assets: skills, baselines, workflow definitions, agent role
 packs, and supporting templates.
 
-Recommended repository name: `ai-agent-library`.
+Recommended repository name: `ai-toolkit`.
 
 ## Language
 
@@ -35,7 +35,7 @@ Personal link install: A personal tool install where `~/.claude/skills/<skill-na
 
 Personal copy install: A personal tool install where canonical skill directories are copied into `~/.claude/skills/<skill-name>` or `~/.codex/skills/<skill-name>` as runtime snapshots. This is an explicit fallback for environments that cannot create real symlinks. Avoid: stale manual copy, untracked fork
 
-Stable repo link: The machine-local symlink `~/.local/share/ai-agent-library/current` that points to the current clone of this repository. Personal skill links point through this path so repo moves require repairing one stable link, not every installed skill. Avoid: hardcoded clone path
+Stable repo link: The machine-local symlink `~/.local/share/ai-toolkit/current` that points to the current clone of this repository. Personal skill links point through this path so repo moves require repairing one stable link, not every installed skill. Avoid: hardcoded clone path
 
 Source registry: A repository document that records each external skill source, imported paths, license, copyright notice, verification date, and obligations. In this repo, the source registry is `docs/upstream-sources.md`. Avoid: informal attribution
 

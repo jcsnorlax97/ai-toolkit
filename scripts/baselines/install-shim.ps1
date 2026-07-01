@@ -14,8 +14,8 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $scriptsRoot = Split-Path -Parent $scriptDir
 $cliPath = Join-Path $scriptsRoot "baseline.ps1"
 $shimPath = Join-Path $InstallDir "baseline.cmd"
-$marker = "ai-agent-library baseline shim"
-$acceptedMarkers = @($marker, "agentic-engineering-skills baseline shim")
+$marker = "ai-toolkit baseline shim"
+$acceptedMarkers = @($marker, "ai-agent-library baseline shim", "agentic-engineering-skills baseline shim")
 $legacyShims = @(
     @{ Path = (Join-Path $InstallDir "p-baseline.cmd"); Marker = "agentic-engineering-skills p-baseline shim" },
     @{ Path = (Join-Path $InstallDir "portable-baseline.cmd"); Marker = "agentic-engineering-skills portable-baseline shim" }

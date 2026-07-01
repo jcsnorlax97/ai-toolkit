@@ -179,7 +179,7 @@ function Test-SkillInstalled($TargetName, $SkillName) {
 
 function Format-StatusCell($TargetName, $Installed) {
     $marker = if ($Installed) { "+" } else { " " }
-    return ("[{0,-6} {1}]" -f $TargetName, $marker)
+    return ("[{0} {1}]" -f $TargetName, $marker)
 }
 
 function Install-PersonalTarget($TargetName, $VerifyOnly) {
@@ -255,6 +255,8 @@ switch ($Command) {
             }
             Write-Output ("{0,-40} [{1,-8}] {2}" -f $_.Name, $status, ($cells -join "  "))
         }
+        Write-Output ""
+        Write-Output "Legend: [+ installed]  [ absent]"
     }
     "show" {
         $skillDir = Resolve-SkillDir $Name

@@ -1,7 +1,7 @@
 # Compatibility
 
-This repo was previously named `agentic-engineering-skills`. The new intended
-name is `ai-agent-library`.
+This repo was previously named `agentic-engineering-skills`, then
+`ai-agent-library`. The current intended name is `ai-toolkit`.
 
 ## Repo Name
 
@@ -22,15 +22,17 @@ For symlink mode, run the equivalent Git Bash installer from the renamed clone.
 New symlink installs should use:
 
 ```text
-~/.local/share/ai-agent-library/current
+~/.local/share/ai-toolkit/current
 ```
 
 The installer still accepts the older state variables and path:
 
 ```text
+AI_TOOLKIT_STATE_DIR
 AI_AGENT_LIBRARY_STATE_DIR
 AGENTIC_ENGINEERING_SKILLS_STATE_DIR
 AGENTIC_SKILLS_STATE_DIR
+~/.local/share/ai-agent-library
 ~/.local/share/agentic-engineering-skills
 ```
 

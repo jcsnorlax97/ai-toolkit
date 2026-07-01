@@ -1,6 +1,6 @@
 # Repo Layout
 
-`ai-agent-library` stores reusable AI agent assets without coupling them to one
+`ai-toolkit` stores reusable AI operating assets without coupling them to one
 assistant runtime.
 
 ## Canonical Source Trees

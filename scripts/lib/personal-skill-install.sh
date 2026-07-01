@@ -8,7 +8,7 @@ Usage: install script [--link|--copy] [--verify-only] [--keep-existing]
 Installs personal skills from the canonical skills directory.
 
 Default mode is automatic:
-  - symlinks through ~/.local/share/ai-agent-library/current
+  - symlinks through ~/.local/share/ai-toolkit/current
   - on Windows, run from a shell that can create real symlinks
 
 Options:
@@ -163,12 +163,15 @@ install_personal_skills() {
   esac
 
   root_dir="$(cd "$root_dir" && pwd -P)"
-  state_dir="${AI_AGENT_LIBRARY_STATE_DIR:-${AGENTIC_ENGINEERING_SKILLS_STATE_DIR:-${AGENTIC_SKILLS_STATE_DIR:-}}}"
+  state_dir="${AI_TOOLKIT_STATE_DIR:-${AI_AGENT_LIBRARY_STATE_DIR:-${AGENTIC_ENGINEERING_SKILLS_STATE_DIR:-${AGENTIC_SKILLS_STATE_DIR:-}}}}"
   if [ -z "$state_dir" ]; then
-    preferred_state_dir="$HOME/.local/share/ai-agent-library"
-    legacy_state_dir="$HOME/.local/share/agentic-engineering-skills"
-    if [ -e "$legacy_state_dir/current" ] && [ ! -e "$preferred_state_dir/current" ]; then
-      state_dir="$legacy_state_dir"
+    preferred_state_dir="$HOME/.local/share/ai-toolkit"
+    legacy_ai_agent_library_dir="$HOME/.local/share/ai-agent-library"
+    legacy_agentic_dir="$HOME/.local/share/agentic-engineering-skills"
+    if [ -e "$legacy_ai_agent_library_dir/current" ] && [ ! -e "$preferred_state_dir/current" ]; then
+      state_dir="$legacy_ai_agent_library_dir"
+    elif [ -e "$legacy_agentic_dir/current" ] && [ ! -e "$preferred_state_dir/current" ]; then
+      state_dir="$legacy_agentic_dir"
     else
       state_dir="$preferred_state_dir"
     fi
@@ -201,7 +204,7 @@ install_personal_skills() {
         fail "Current link path exists but is not a symlink: $current_link"
       fi
 
-      backup_dir="$state_dir/.ai-agent-library-backups/$backup_stamp"
+      backup_dir="$state_dir/.ai-toolkit-backups/$backup_stamp"
       backup_target="$(move_to_backup "$current_link" "$backup_dir" "current")"
       create_symlink "$root_dir" "$current_link"
       printf 'Moved existing repo current path to backup: %s\n' "$backup_target"
@@ -253,7 +256,7 @@ install_personal_skills() {
           continue
         fi
 
-        backup_dir="$target_dir/.ai-agent-library-backups/$backup_stamp"
+        backup_dir="$target_dir/.ai-toolkit-backups/$backup_stamp"
         backup_target="$(move_to_backup "$target" "$backup_dir" "$skill_name")"
         copy_skill_snapshot "$skill_dir" "$target"
         updated=$((updated + 1))
@@ -297,7 +300,7 @@ install_personal_skills() {
         continue
       fi
 
-      backup_dir="$target_dir/.ai-agent-library-backups/$backup_stamp"
+      backup_dir="$target_dir/.ai-toolkit-backups/$backup_stamp"
       backup_target="$(move_to_backup "$target" "$backup_dir" "$skill_name")"
       create_symlink "$desired" "$target"
       migrated=$((migrated + 1))

@@ -210,7 +210,7 @@ status_cell() {
   local installed="$2"
   local marker=" "
   [[ "$installed" == "1" ]] && marker="+"
-  printf '[%-6s %s]' "$tool" "$marker"
+  printf '[%s %s]' "$tool" "$marker"
 }
 
 verify_pack_shape() {
@@ -420,6 +420,8 @@ case "$COMMAND" in
       done < <(list_tools)
       printf '%-40s v%-8s %s\n' "$(json_field "$pack_name" name)" "$(json_field "$pack_name" version)" "${cells[*]}"
     done
+    echo
+    echo "Legend: [+ applied]  [ absent]"
     ;;
   show)
     while IFS= read -r pack_name; do
