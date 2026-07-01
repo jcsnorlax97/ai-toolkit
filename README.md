@@ -83,6 +83,18 @@ Install personal skill adapters:
 ./scripts/skills.ps1 install -Target claude -Scope personal -Copy
 ```
 
+Install a project skill profile for Claude Code from a downstream repo:
+
+```powershell
+skills install query-azure-devops -Scope project -Target claude
+skills list -Scope project -Target claude
+skills verify -Scope project -Target claude
+```
+
+Project-scope installs copy selected skills into `.claude/skills/` and record
+the intended set in `.ai-toolkit/skills.json`. They do not create project
+symlinks.
+
 List and apply baselines:
 
 ```powershell

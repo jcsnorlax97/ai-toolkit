@@ -16,6 +16,7 @@ Runtime skill directories are adapters:
 ```text
 ~/.claude/skills/<skill-name>
 ~/.codex/skills/<skill-name>
+<project>/.claude/skills/<skill-name>
 ```
 
 The preferred personal install mode is symlink mode:
@@ -68,12 +69,43 @@ Use the `skills` CLI for the assistant target you want to expose skills to:
 | Install or repair Codex personal skills from PowerShell | `./scripts/skills.ps1 install -Target codex -Scope personal -Copy` | `~/.codex/skills/` |
 | Install or repair supported personal targets from PowerShell | `./scripts/skills.ps1 install -Target all -Scope personal -Copy` | Claude Code and Codex |
 | Verify one copied personal target without changing files | `./scripts/skills.ps1 verify -Target claude -Scope personal -Copy` | Selected runtime |
+| Add one skill to a project profile | `skills add query-azure-devops -Scope project` | `<project>/.ai-toolkit/skills.json` |
+| Install one project skill for Claude Code | `skills install query-azure-devops -Scope project -Target claude` | `<project>/.claude/skills/` |
+| Install the project profile for Claude Code | `skills install -Scope project -Target claude` | `<project>/.claude/skills/` |
+| Verify a project skill profile | `skills verify -Scope project -Target claude` | Selected project repo |
 
 `-Target` accepts `codex`, `claude`, `copilot`, or `all`. `-Scope` accepts
 `personal` or `project`. Codex and Claude personal installs are supported
 today. Copilot is accepted as a target name, but this repo does not yet define a
 Copilot skills runtime contract; use baselines for Copilot instruction blocks
 until that exists.
+
+Project-scope install currently supports Claude Code only. It uses copy mode by
+default and intentionally does not create project symlinks. The committed
+project profile is:
+
+```text
+<project>/.ai-toolkit/skills.json
+```
+
+The generated project runtime adapter is:
+
+```text
+<project>/.claude/skills/<skill-name>/
+```
+
+To enable one skill for a project, run from the downstream repo:
+
+```powershell
+skills install query-azure-devops -Scope project -Target claude
+skills verify -Scope project -Target claude
+skills list -Scope project -Target claude
+```
+
+If `.ai-toolkit/skills.json` already exists, `skills install -Scope project
+-Target claude` installs every skill listed in the profile. Existing project
+skill copies must match the canonical source; if a copy differs, the command
+stops instead of overwriting or deleting the directory.
 
 Legacy command names live under `scripts/compat/` as compatibility wrappers.
 New docs should point at `scripts/skills.ps1` or the organized

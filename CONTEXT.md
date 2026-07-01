@@ -35,6 +35,10 @@ Personal link install: A personal tool install where `~/.claude/skills/<skill-na
 
 Personal copy install: A personal tool install where canonical skill directories are copied into `~/.claude/skills/<skill-name>` or `~/.codex/skills/<skill-name>` as runtime snapshots. This is an explicit fallback for environments that cannot create real symlinks. Avoid: stale manual copy, untracked fork
 
+Project skill profile: A repo-local `.ai-toolkit/skills.json` file that lists the toolkit skills intentionally enabled for that project. Avoid: hidden global skill set, accidental personal runtime dependency
+
+Project copy install: A project tool install where canonical skill directories are copied into a repo-local adapter such as `.claude/skills/<skill-name>`. This is the default project-scope mode so each repo owns an explicit snapshot of its intended skill set. Avoid: project symlink, invisible global update
+
 Stable repo link: The machine-local symlink `~/.local/share/ai-toolkit/current` that points to the current clone of this repository. Personal skill links point through this path so repo moves require repairing one stable link, not every installed skill. Avoid: hardcoded clone path
 
 Source registry: A repository document that records each external skill source, imported paths, license, copyright notice, verification date, and obligations. In this repo, the source registry is `docs/upstream-sources.md`. Avoid: informal attribution
@@ -127,6 +131,10 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
   useful as default behavior in ordinary chats.
 - Personal link installs expose canonical skills through the stable repo link so pulling the repo updates installed skills without copying or deleting existing skill directories.
 - Personal copy installs avoid symlink privileges but require rerunning the installer after pulling repo changes.
+- Project skill profiles keep project-specific skill sets explicit, repo-local,
+  and independent from the user's personal runtime skill set.
+- Project copy installs intentionally avoid symlinks so a project sees a stable
+  snapshot until the project skill profile is reinstalled deliberately.
 - Imported skills must be backed by the source registry and required license notices.
 - An agent team workflow may define agent roles, but a subagent runtime is tool-specific.
 - A team profile defines who should work; a workflow defines when and why they work.

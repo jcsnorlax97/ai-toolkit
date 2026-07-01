@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("list", "show", "install", "verify", "shim")]
+    [ValidateSet("list", "show", "add", "install", "verify", "shim")]
     [string] $Command = "list",
 
     [Parameter(Position = 1)]
@@ -34,6 +34,11 @@ $targetWasProvided = $PSBoundParameters.ContainsKey("Target")
 
 function Read-Utf8Text($Path) {
     return [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8)
+}
+
+function Write-Utf8Text($Path, $Text) {
+    $encoding = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($Path, $Text, $encoding)
 }
 
 function Get-SkillDirs {
@@ -167,6 +172,124 @@ function Get-ProjectSkillTargetPath($TargetName, $SkillName) {
     }
 }
 
+function Get-ProjectProfilePath {
+    return (Join-Path (Join-Path $TargetRepo ".ai-toolkit") "skills.json")
+}
+
+function Read-ProjectProfile {
+    $profilePath = Get-ProjectProfilePath
+    if (-not (Test-Path -LiteralPath $profilePath)) {
+        return [ordered]@{
+            version = 1
+            skills = @()
+        }
+    }
+
+    $profile = Read-Utf8Text $profilePath | ConvertFrom-Json
+    $skills = @()
+    if ($profile.PSObject.Properties.Name -contains "skills") {
+        $skills = @($profile.skills)
+    }
+
+    return [ordered]@{
+        version = if ($profile.version) { $profile.version } else { 1 }
+        skills = @($skills | Where-Object { $_ } | Sort-Object -Unique)
+    }
+}
+
+function Write-ProjectProfile($Profile) {
+    $profilePath = Get-ProjectProfilePath
+    $profileDir = Split-Path -Parent $profilePath
+    if (-not (Test-Path -LiteralPath $profileDir)) {
+        New-Item -ItemType Directory -Force -Path $profileDir | Out-Null
+    }
+
+    $normalized = [ordered]@{
+        version = 1
+        skills = @($Profile.skills | Where-Object { $_ } | Sort-Object -Unique)
+    }
+    $json = ($normalized | ConvertTo-Json -Depth 4)
+    Write-Utf8Text $profilePath ($json + [Environment]::NewLine)
+}
+
+function Add-ProjectSkill($SkillName) {
+    $null = Resolve-SkillDir $SkillName
+    $profile = Read-ProjectProfile
+    if ($profile.skills -notcontains $SkillName) {
+        $profile.skills = @($profile.skills + $SkillName | Sort-Object -Unique)
+        Write-ProjectProfile $profile
+        Write-Output "project profile added: $SkillName"
+        return
+    }
+
+    Write-Output "project profile already contains: $SkillName"
+}
+
+function Resolve-ProjectSkillNames($SkillName) {
+    if ($SkillName) {
+        $null = Resolve-SkillDir $SkillName
+        return @($SkillName)
+    }
+
+    $profilePath = Get-ProjectProfilePath
+    if (-not (Test-Path -LiteralPath $profilePath)) {
+        throw "Missing project skill profile: $profilePath. Run: skills add <skill-name> -Scope project"
+    }
+
+    $profile = Read-ProjectProfile
+    if ($profile.skills.Count -eq 0) {
+        throw "Project skill profile has no skills: $profilePath"
+    }
+
+    foreach ($skillName in $profile.skills) {
+        $null = Resolve-SkillDir $skillName
+    }
+
+    return @($profile.skills)
+}
+
+function Get-RelativeFileHashes($RootPath) {
+    $rootFull = (Resolve-Path -LiteralPath $RootPath).Path.TrimEnd("\", "/")
+    $files = @{}
+    Get-ChildItem -LiteralPath $rootFull -Recurse -File | ForEach-Object {
+        $relative = $_.FullName.Substring($rootFull.Length).TrimStart("\", "/") -replace "\\", "/"
+        $files[$relative] = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash
+    }
+
+    return $files
+}
+
+function Test-SkillSnapshotMatches($SourcePath, $TargetPath) {
+    if (-not (Test-Path -LiteralPath $TargetPath)) {
+        return $false
+    }
+
+    $targetItem = Get-Item -Force -LiteralPath $TargetPath
+    if (($targetItem.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw "Project skill target is a link, but project installs require real copied directories: $TargetPath"
+    }
+    if (-not $targetItem.PSIsContainer) {
+        throw "Project skill target is not a directory: $TargetPath"
+    }
+
+    $sourceHashes = Get-RelativeFileHashes $SourcePath
+    $targetHashes = Get-RelativeFileHashes $TargetPath
+    $sourceKeys = @($sourceHashes.Keys | Sort-Object)
+    $targetKeys = @($targetHashes.Keys | Sort-Object)
+
+    if (($sourceKeys -join "`n") -ne ($targetKeys -join "`n")) {
+        return $false
+    }
+
+    foreach ($key in $sourceKeys) {
+        if ($sourceHashes[$key] -ne $targetHashes[$key]) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
 function Test-SkillInstalled($TargetName, $SkillName) {
     $targetPath = if ($Scope -eq "personal") {
         Get-PersonalSkillTargetPath $TargetName $SkillName
@@ -203,16 +326,35 @@ function Install-PersonalTarget($TargetName, $VerifyOnly) {
 function Install-ProjectTarget($TargetName, $VerifyOnly) {
     switch ($TargetName) {
         "claude" {
-            $targetSkills = Join-Path $TargetRepo ".claude\skills"
-            if ($VerifyOnly) {
-                if (-not (Test-Path -LiteralPath $targetSkills)) {
-                    throw "Missing project Claude skills directory: $targetSkills"
+            $skillNames = Resolve-ProjectSkillNames $Name
+            if (-not $VerifyOnly -and $Name) {
+                Add-ProjectSkill $Name
+            }
+            foreach ($skillName in $skillNames) {
+                $source = Resolve-SkillDir $skillName
+                $target = Get-ProjectSkillTargetPath $TargetName $skillName
+                if (Test-Path -LiteralPath $target) {
+                    if (Test-SkillSnapshotMatches $source $target) {
+                        Write-Output "project claude skill ok: $skillName"
+                        continue
+                    }
+
+                    throw "Project Claude skill copy differs from canonical source: $target. Remove or refresh that explicit skill directory before reinstalling."
                 }
-                Write-Output "project claude skills ok: $targetSkills"
-                return
+
+                if ($VerifyOnly) {
+                    throw "Missing project Claude skill copy: $target"
+                }
+
+                $parent = Split-Path -Parent $target
+                if (-not (Test-Path -LiteralPath $parent)) {
+                    New-Item -ItemType Directory -Force -Path $parent | Out-Null
+                }
+                Copy-Item -LiteralPath $source -Destination $target -Recurse
+                Write-Output "project claude skill copied: $skillName"
             }
 
-            throw "Project Claude skill adapter installation is not automated yet; use this repo's .claude/skills adapter as the model."
+            return
         }
         "codex" {
             if ($Target -eq "all") {
@@ -261,6 +403,12 @@ switch ($Command) {
     "show" {
         $skillDir = Resolve-SkillDir $Name
         Write-Output (Read-Utf8Text (Join-Path $skillDir "SKILL.md")).Trim()
+    }
+    "add" {
+        if ($Scope -ne "project") {
+            throw "skills add currently supports only -Scope project."
+        }
+        Add-ProjectSkill $Name
     }
     "install" {
         foreach ($targetName in (Get-Targets)) {

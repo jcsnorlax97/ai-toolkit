@@ -165,8 +165,23 @@ installer moves that path into the state directory's timestamped backup folder
 before creating the real symlink. It must preserve the old path rather than
 deleting it.
 
-Project-level Claude Code usage uses `.claude/skills/`. In this repo those
-entries are symlinks so local edits immediately affect the canonical files.
+Project-level Claude Code usage in the toolkit repo itself uses
+`.claude/skills/` symlinks so local edits immediately affect the canonical
+files.
+
+Downstream project-level skill profiles use copy mode by default:
+
+```text
+<project>/.ai-toolkit/skills.json
+<project>/.claude/skills/<skill-name>/
+```
+
+The profile records the intended project skill set. The generated
+`.claude/skills/` entries are copied snapshots, not symlinks, so a project does
+not silently change when the user's personal runtime or toolkit clone changes.
+Existing copied project skills must match the canonical source before install
+continues; the installer stops on drift instead of overwriting or deleting the
+project directory.
 
 Operational commands, the scenario-by-scenario behavior matrix, and
 macOS/Windows notes live in `docs/how-to/install.md`.
