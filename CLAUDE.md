@@ -2,17 +2,6 @@
 
 Use traditional Chinese unless the user explicitly asks for another language.
 
-<!-- BEGIN baseline:karpathy-principles v0.1.0 -->
-## Portable Agent Baseline: Karpathy Principles
-
-- Think before coding: state assumptions, surface ambiguity, and ask when the safe interpretation is unclear.
-- Simplicity first: prefer the smallest design that satisfies the request; avoid speculative abstractions or extra configuration.
-- Surgical changes: touch only files and lines needed for the task, match local style, and mention unrelated concerns instead of editing them.
-- Goal-driven execution: turn open-ended work into success criteria and verify the result with tests, scripts, inspection, or another concrete check.
-
-Apply this baseline before ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
-<!-- END baseline:karpathy-principles -->
-
 ## Project Purpose
 
 This repo stores reusable AI agent assets: skills, baselines, workflow
@@ -79,3 +68,14 @@ Run this after portable baseline changes:
 - 禁止批量刪除文件或目錄。
 - Do not use `rm -rf`, `rmdir /s`, `rd /s`, `del /s`, or `Remove-Item -Recurse`.
 - Delete only one explicit file path at a time when deletion is necessary.
+
+<!-- BEGIN baseline:karpathy-principles v0.1.0 -->
+## Portable Agent Baseline: Karpathy Principles
+
+- Think before coding: state assumptions, surface ambiguity, and ask when the safe interpretation is unclear.
+- Simplicity first: prefer the smallest design that satisfies the request; avoid speculative abstractions or extra configuration.
+- Surgical changes: touch only files and lines needed for the task, match local style, and mention unrelated concerns instead of editing them.
+- Goal-driven execution: turn open-ended work into success criteria and verify the result with tests, scripts, inspection, or another concrete check.
+
+Apply this baseline before ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
+<!-- END baseline:karpathy-principles -->
