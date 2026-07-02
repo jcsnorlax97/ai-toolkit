@@ -91,11 +91,12 @@ Use `scripts/baseline.ps1` as the human-friendly entrypoint:
 
 ```powershell
 ./scripts/baseline.ps1 list
-./scripts/baseline.ps1 show
-./scripts/baseline.ps1 apply -TargetRepo C:\path\to\repo -Tools codex,claude,copilot -DryRun
-./scripts/baseline.ps1 apply -TargetRepo C:\path\to\repo -Pack all -Tools all -DryRun
-./scripts/baseline.ps1 remove -TargetRepo C:\path\to\repo -Tools codex,claude,copilot -DryRun
-./scripts/baseline.ps1 verify -TargetRepo C:\path\to\repo -Tools codex,claude,copilot
+./scripts/baseline.ps1 show karpathy-principles
+./scripts/baseline.ps1 apply karpathy-principles -TargetRepo C:\path\to\repo -DryRun
+./scripts/baseline.ps1 apply-all -TargetRepo C:\path\to\repo -DryRun
+./scripts/baseline.ps1 remove karpathy-principles -TargetRepo C:\path\to\repo -DryRun
+./scripts/baseline.ps1 verify karpathy-principles -TargetRepo C:\path\to\repo
+./scripts/baseline.ps1 help
 ```
 
 When called from inside the target repo, omit `-TargetRepo`; it defaults to the
@@ -106,15 +107,22 @@ the target repo's `CLAUDE.md`, `AGENTS.md`, or Copilot instruction file.
 
 When exactly one pack exists, the CLI infers it. Once multiple packs exist,
 `show`, `apply`, `remove`, and `verify` require an explicit pack name or
-`-Pack all`. `-Tools all` expands to `codex`, `claude`, and `copilot`.
+`all`. `apply-all` applies every baseline pack. `-Pack` remains supported for
+existing scripts. When `-Tools` is omitted, commands use every supported tool:
+`codex`, `claude`, and `copilot`.
+
+Missing instruction files are created by default. Pass `-SkipMissing` on
+PowerShell or `--skip-missing` on the shell entrypoint to update only files
+that already exist.
 
 On macOS or Linux, the native shell entrypoint is:
 
 ```bash
 ./scripts/baseline list
-./scripts/baseline show
-./scripts/baseline apply --tools codex,claude,copilot --dry-run
-./scripts/baseline apply --pack all --tools all --dry-run
+./scripts/baseline show karpathy-principles
+./scripts/baseline apply karpathy-principles --dry-run
+./scripts/baseline apply-all --dry-run
+./scripts/baseline help
 ```
 
 ## Global Shim

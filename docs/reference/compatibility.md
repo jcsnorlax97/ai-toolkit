@@ -12,7 +12,7 @@ After the remote and local folder are renamed, reinstall or repair personal
 skill adapters:
 
 ```powershell
-./scripts/skills.ps1 install -Target all -Scope personal -Copy
+./scripts/skills.ps1 install user all -Copy
 ```
 
 For symlink mode, run the equivalent Git Bash installer from the renamed clone.

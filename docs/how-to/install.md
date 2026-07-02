@@ -65,18 +65,21 @@ Use the `skills` CLI for the assistant target you want to expose skills to:
 | List canonical skills | `./scripts/skills.ps1 list` | Source repo |
 | Show one skill | `./scripts/skills.ps1 show diagnose` | Source repo |
 | Verify source skills and adapters | `./scripts/skills.ps1 verify` | Source repo |
-| Install or repair Claude Code personal skills from PowerShell | `./scripts/skills.ps1 install -Target claude -Scope personal -Copy` | `~/.claude/skills/` |
-| Install or repair Codex personal skills from PowerShell | `./scripts/skills.ps1 install -Target codex -Scope personal -Copy` | `~/.codex/skills/` |
-| Install or repair supported personal targets from PowerShell | `./scripts/skills.ps1 install -Target all -Scope personal -Copy` | Claude Code and Codex |
-| Verify one copied personal target without changing files | `./scripts/skills.ps1 verify -Target claude -Scope personal -Copy` | Selected runtime |
-| Add one skill to a project profile | `skills add query-azure-devops -Scope project` | `<project>/.ai-toolkit/skills.json` |
-| Install one project skill for Claude Code | `skills install query-azure-devops -Scope project -Target claude` | `<project>/.claude/skills/` |
-| Install the project profile for Claude Code | `skills install -Scope project -Target claude` | `<project>/.claude/skills/` |
-| Verify a project skill profile | `skills verify -Scope project -Target claude` | Selected project repo |
+| Install or repair Claude Code personal skills from PowerShell | `./scripts/skills.ps1 install user claude -Copy` | `~/.claude/skills/` |
+| Install or repair Codex personal skills from PowerShell | `./scripts/skills.ps1 install user codex -Copy` | `~/.codex/skills/` |
+| Install or repair supported personal targets from PowerShell | `./scripts/skills.ps1 install user all -Copy` | Claude Code and Codex |
+| Verify one copied personal target without changing files | `./scripts/skills.ps1 verify user claude -Copy` | Selected runtime |
+| Add one skill to a project profile | `skills add repo query-azure-devops` | `<project>/.ai-toolkit/skills.json` |
+| Install one project skill for Claude Code | `skills install repo query-azure-devops claude` | `<project>/.claude/skills/` |
+| Install the project profile for Claude Code | `skills install repo claude` | `<project>/.claude/skills/` |
+| Verify a project skill profile | `skills verify repo claude` | Selected project repo |
 
-`-Target` accepts `codex`, `claude`, `copilot`, or `all`. `-Scope` accepts
-`personal` or `project`. Codex and Claude personal installs are supported
-today. Copilot is accepted as a target name, but this repo does not yet define a
+Use positional `user` or `repo` to choose the install level, and `codex`,
+`claude`, `copilot`, or `all` to choose the target. The explicit `-User`,
+`-Repo`, and `-Target` switches are also supported, and the older
+`-Scope personal|project` form remains supported for existing scripts. Codex
+and Claude personal installs are supported today. Copilot is accepted as a
+target name, but this repo does not yet define a
 Copilot skills runtime contract; use baselines for Copilot instruction blocks
 until that exists.
 
@@ -97,13 +100,13 @@ The generated project runtime adapter is:
 To enable one skill for a project, run from the downstream repo:
 
 ```powershell
-skills install query-azure-devops -Scope project -Target claude
-skills verify -Scope project -Target claude
-skills list -Scope project -Target claude
+skills install repo query-azure-devops claude
+skills verify repo claude
+skills list repo claude
 ```
 
-If `.ai-toolkit/skills.json` already exists, `skills install -Scope project
--Target claude` installs every skill listed in the profile. Existing project
+If `.ai-toolkit/skills.json` already exists, `skills install repo claude`
+installs every skill listed in the profile. Existing project
 skill copies must match the canonical source; if a copy differs, the command
 stops instead of overwriting or deleting the directory.
 
@@ -144,7 +147,7 @@ The default installer mode is symlink mode. Use `-Copy` from `skills.ps1`, or
 `--copy` from the organized shell scripts, as an explicit fallback:
 
 ```powershell
-./scripts/skills.ps1 install -Target claude -Scope personal -Copy
+./scripts/skills.ps1 install user claude -Copy
 ```
 
 ```bash
@@ -214,8 +217,8 @@ symlink mode. Open Git Bash as Administrator and use the commands above.
 From PowerShell or VS Code, use copy mode only:
 
 ```powershell
-./scripts/skills.ps1 install -Target claude -Scope personal -Copy
-./scripts/skills.ps1 verify -Target claude -Scope personal -Copy
+./scripts/skills.ps1 install user claude -Copy
+./scripts/skills.ps1 verify user claude -Copy
 ```
 
 If troubleshooting path resolution from PowerShell, confirm whether `bash`
@@ -281,23 +284,26 @@ tool lists, so both the direct `.ps1` script and the global
 `baseline` shim support multiple tools in one command:
 
 ```powershell
-.\scripts\baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
-baseline apply -Pack karpathy-principles -Tools codex,claude,copilot -DryRun
-baseline apply -Pack all -Tools all -DryRun
+.\scripts\baseline.ps1 apply karpathy-principles -DryRun
+baseline apply karpathy-principles -DryRun
+baseline apply-all -DryRun
+baseline help
 ```
 
 For narrow changes, one tool per command is also valid:
 
 ```powershell
-baseline apply -Pack karpathy-principles -Tools codex -DryRun
-baseline apply -Pack karpathy-principles -Tools claude -DryRun
-baseline apply -Pack karpathy-principles -Tools copilot -DryRun
+baseline apply karpathy-principles -Tools codex -DryRun
+baseline apply karpathy-principles -Tools claude -DryRun
+baseline apply karpathy-principles -Tools copilot -DryRun
 ```
 
-`-Pack all` expands to every baseline pack in `baselines/`. `-Tools all`
-expands to `codex`, `claude`, and `copilot`. Without `-CreateMissing`, baseline
-apply updates only instruction files that already exist in the target repo and
-skips missing targets.
+Positional pack names are the preferred shorthand; `-Pack` remains supported
+for existing scripts. `apply-all` is shorthand for applying every baseline pack.
+When `-Tools` is omitted, baseline commands use every supported tool:
+`codex`, `claude`, and `copilot`. Missing instruction files are created by
+default. Use `-SkipMissing` when you want baseline apply to update only
+instruction files that already exist in the target repo.
 
 Portable baseline placement is intentionally conservative. The installer
 updates an existing managed block in place; when a block is missing, it appends

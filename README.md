@@ -79,16 +79,16 @@ List and inspect skills:
 Install personal skill adapters:
 
 ```powershell
-./scripts/skills.ps1 install -Target codex -Scope personal -Copy
-./scripts/skills.ps1 install -Target claude -Scope personal -Copy
+./scripts/skills.ps1 install user codex -Copy
+./scripts/skills.ps1 install user claude -Copy
 ```
 
 Install a project skill profile for Claude Code from a downstream repo:
 
 ```powershell
-skills install query-azure-devops -Scope project -Target claude
-skills list -Scope project -Target claude
-skills verify -Scope project -Target claude
+skills install repo query-azure-devops claude
+skills list repo claude
+skills verify repo claude
 ```
 
 Project-scope installs copy selected skills into `.claude/skills/` and record
@@ -99,8 +99,10 @@ List and apply baselines:
 
 ```powershell
 ./scripts/baseline.ps1 list
-./scripts/baseline.ps1 apply -Pack karpathy-principles -Tools codex,claude -DryRun
-./scripts/baseline.ps1 apply -Pack all -Tools all -DryRun
+./scripts/baseline.ps1 show karpathy-principles
+./scripts/baseline.ps1 apply karpathy-principles -DryRun
+./scripts/baseline.ps1 apply-all -DryRun
+./scripts/baseline.ps1 help
 ```
 
 `baseline list` shows each pack plus whether it is already present in the

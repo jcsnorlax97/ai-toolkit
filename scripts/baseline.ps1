@@ -1,22 +1,25 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("list", "show", "apply", "remove", "verify", "shim")]
     [string] $Command = "list",
 
     [Parameter(Position = 1)]
-    [string] $ShimAction = "install",
+    [string] $Name = "",
 
     [string] $TargetRepo = (Get-Location).Path,
 
     [string] $Pack = "",
 
-    [string[]] $Tools = @("codex", "claude"),
+    [string[]] $Tools = @("all"),
 
     [switch] $CreateMissing,
+
+    [switch] $SkipMissing,
 
     [switch] $DryRun,
 
     [string] $InstallDir = "",
+
+    [string] $ShimAction = "",
 
     [switch] $AddToUserPath
 )
@@ -28,6 +31,82 @@ $repoRoot = Split-Path -Parent $scriptDir
 $baselinesRoot = Join-Path $repoRoot "baselines"
 $targetRepoWasProvided = $PSBoundParameters.ContainsKey("TargetRepo")
 $toolsWereProvided = $PSBoundParameters.ContainsKey("Tools")
+
+function Show-Usage {
+    Write-Output @"
+Usage:
+  baseline list
+  baseline show [pack|all]
+  baseline apply <pack|all> [-Tools codex,claude,copilot|all] [-TargetRepo <path>] [-DryRun] [-SkipMissing]
+  baseline remove <pack|all> [-Tools codex,claude,copilot|all] [-TargetRepo <path>] [-DryRun]
+  baseline verify [pack|all] [-Tools codex,claude,copilot|all] [-TargetRepo <path>]
+  baseline apply-all [-Tools codex,claude,copilot|all] [-TargetRepo <path>] [-DryRun] [-SkipMissing]
+  baseline shim install|verify|remove [-AddToUserPath] [-InstallDir <path>]
+  baseline help
+
+Compatibility:
+  -Pack and -Tools are still supported.
+  When -Tools is omitted, commands use all supported tools: codex, claude, copilot.
+  Missing target instruction files are created unless -SkipMissing is passed.
+  -CreateMissing is still accepted for older scripts, but is no longer needed.
+"@
+}
+
+function Write-FriendlyError($Message) {
+    [Console]::Error.WriteLine("baseline: $Message")
+
+    if ($Message -like "Unknown portable baseline pack:*") {
+        [Console]::Error.WriteLine("Suggestion: run 'baseline list' to see available packs.")
+    } elseif ($Message -like "Multiple portable baseline packs are available:*") {
+        [Console]::Error.WriteLine("Suggestion: pass a pack name, for example 'baseline show karpathy-principles'.")
+    } elseif ($Message -like "Unsupported tool*") {
+        [Console]::Error.WriteLine("Suggestion: use -Tools codex,claude,copilot or -Tools all.")
+    } elseif ($Message -like "Both baseline and legacy portable-agent-baseline blocks exist*") {
+        [Console]::Error.WriteLine("Suggestion: remove one duplicate managed block manually, then rerun the command.")
+    } elseif ($Message -like "Unknown command:*") {
+        [Console]::Error.WriteLine("Suggestion: run 'baseline help'.")
+    } elseif ($Message -like "Unknown shim action:*") {
+        [Console]::Error.WriteLine("Suggestion: use 'baseline shim install', 'baseline shim verify', or 'baseline shim remove'.")
+    } elseif ($Message -like "Choose either -SkipMissing or -CreateMissing*") {
+        [Console]::Error.WriteLine("Suggestion: omit both to create missing instruction files, or pass -SkipMissing to leave them absent.")
+    }
+}
+
+function Invoke-BaselineCommand {
+    if ($Command -eq "apply-all") {
+        $Command = "apply"
+        if (-not $Pack) {
+            $script:Pack = "all"
+        }
+    }
+
+    $validCommands = @("list", "show", "apply", "remove", "verify", "shim", "help", "--help", "-h")
+    if ($validCommands -notcontains $Command) {
+        throw "Unknown command: $Command"
+    }
+
+    if (@("help", "--help", "-h") -contains $Command) {
+        Show-Usage
+        return
+    }
+
+    if ($SkipMissing -and $CreateMissing) {
+        throw "Choose either -SkipMissing or -CreateMissing, not both."
+    }
+
+    if (@("show", "apply", "remove", "verify") -contains $Command) {
+        if ($Name -and -not $Pack) {
+            $script:Pack = $Name
+        }
+    }
+
+    if ($Command -eq "shim") {
+        if ($Name) {
+            $script:ShimAction = $Name
+        } elseif (-not $ShimAction) {
+            $script:ShimAction = "install"
+        }
+    }
 
 function Read-Utf8Text($Path) {
     return [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8)
@@ -189,7 +268,7 @@ switch ($Command) {
     "apply" {
         $applyScript = Join-Path $scriptDir "baselines\apply.ps1"
         foreach ($packName in $Packs) {
-            & $applyScript -TargetRepo $TargetRepo -Pack $packName -Tools $Tools -CreateMissing:$CreateMissing -DryRun:$DryRun
+            & $applyScript -TargetRepo $TargetRepo -Pack $packName -Tools $Tools -CreateMissing:$CreateMissing -SkipMissing:$SkipMissing -DryRun:$DryRun
         }
     }
     "remove" {
@@ -236,4 +315,12 @@ switch ($Command) {
 
         & $shimScript @shimArgs
     }
+}
+}
+
+try {
+    Invoke-BaselineCommand
+} catch {
+    Write-FriendlyError $_.Exception.Message
+    exit 1
 }

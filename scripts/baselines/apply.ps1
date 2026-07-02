@@ -7,6 +7,8 @@ param(
 
     [switch] $CreateMissing,
 
+    [switch] $SkipMissing,
+
     [switch] $DryRun
 )
 
@@ -32,6 +34,10 @@ function Read-Utf8Text($Path) {
 
 function Write-Utf8Text($Path, $Text) {
     $encoding = [System.Text.UTF8Encoding]::new($false)
+    $dir = Split-Path -Parent $Path
+    if ($dir -and -not (Test-Path -LiteralPath $dir)) {
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+    }
     [System.IO.File]::WriteAllText($Path, $Text, $encoding)
 }
 
@@ -58,7 +64,7 @@ foreach ($tool in $Tools) {
     $block = (Read-Utf8Text $adapterPath).Trim()
 
     if (-not (Test-Path -LiteralPath $targetPath)) {
-        if (-not $CreateMissing) {
+        if ($SkipMissing) {
             Write-Output "skip missing $targetRel for $tool in $resolvedTarget"
             continue
         }

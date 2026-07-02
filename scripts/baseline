@@ -13,24 +13,34 @@ fi
 PACK=""
 TARGET_REPO="$(pwd -P)"
 TARGET_REPO_PROVIDED=0
-TOOLS="codex,claude"
+TOOLS="all"
 DRY_RUN=0
-CREATE_MISSING=0
+SKIP_MISSING=0
 TOOLS_PROVIDED=0
 
 usage() {
   cat <<USAGE
 Usage:
   $COMMAND_NAME list
-  $COMMAND_NAME show [--pack <pack>|all]
-  $COMMAND_NAME apply --pack <pack>|all --tools codex,claude,copilot|all [--target-repo <path>] [--dry-run] [--create-missing]
-  $COMMAND_NAME remove --pack <pack>|all --tools codex,claude,copilot|all [--target-repo <path>] [--dry-run]
-  $COMMAND_NAME verify [--pack <pack>|all] [--tools codex,claude,copilot|all] [--target-repo <path>]
+  $COMMAND_NAME show [pack|all]
+  $COMMAND_NAME apply <pack|all> [--tools codex,claude,copilot|all] [--target-repo <path>] [--dry-run] [--skip-missing]
+  $COMMAND_NAME remove <pack|all> [--tools codex,claude,copilot|all] [--target-repo <path>] [--dry-run]
+  $COMMAND_NAME verify [pack|all] [--tools codex,claude,copilot|all] [--target-repo <path>]
+  $COMMAND_NAME apply-all [--tools codex,claude,copilot|all] [--target-repo <path>] [--dry-run] [--skip-missing]
+  $COMMAND_NAME help
 
-When exactly one pack exists, --pack may be omitted. Verify defaults to all
-packs. The value "all" expands to every pack or every supported tool.
+Compatibility:
+  --pack and --tools are still supported.
+  When --tools is omitted, commands use all supported tools: codex, claude, copilot.
+  Missing target instruction files are created unless --skip-missing is passed.
+  --create-missing is still accepted for older scripts, but is no longer needed.
 USAGE
 }
+
+if [[ "$COMMAND" == "apply-all" ]]; then
+  COMMAND="apply"
+  PACK="all"
+fi
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -52,8 +62,11 @@ while [[ $# -gt 0 ]]; do
       DRY_RUN=1
       shift
       ;;
+    --skip-missing|-SkipMissing)
+      SKIP_MISSING=1
+      shift
+      ;;
     --create-missing|-CreateMissing)
-      CREATE_MISSING=1
       shift
       ;;
     --help|-h)
@@ -61,9 +74,15 @@ while [[ $# -gt 0 ]]; do
       exit 0
       ;;
     *)
-      echo "Unknown argument: $1" >&2
-      usage >&2
-      exit 2
+      if [[ -z "$PACK" && "$1" != -* && "$COMMAND" =~ ^(show|apply|remove|verify)$ ]]; then
+        PACK="$1"
+        shift
+      else
+        echo "Unknown argument: $1" >&2
+        echo "Suggestion: run '$COMMAND_NAME help'." >&2
+        usage >&2
+        exit 2
+      fi
       ;;
   esac
 done
@@ -255,7 +274,7 @@ apply_tool() {
   adapter_path="$(pack_root "$pack")/adapters/$adapter_rel"
 
   if [[ ! -f "$target_path" ]]; then
-    if [[ "$CREATE_MISSING" -ne 1 ]]; then
+    if [[ "$SKIP_MISSING" -eq 1 ]]; then
       echo "skip missing $target_rel for $tool in $TARGET_REPO"
       return
     fi

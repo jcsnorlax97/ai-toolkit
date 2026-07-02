@@ -6,11 +6,18 @@ param(
     [Parameter(Position = 1)]
     [string] $Name = "",
 
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]] $RemainingArgs = @(),
+
     [ValidateSet("codex", "claude", "copilot", "all")]
     [string] $Target = "all",
 
     [ValidateSet("personal", "project")]
     [string] $Scope = "personal",
+
+    [switch] $User,
+
+    [switch] $Repo,
 
     [string] $TargetRepo = (Get-Location).Path,
 
@@ -31,6 +38,102 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Split-Path -Parent $scriptDir
 $skillsRoot = Join-Path $repoRoot "skills\engineering"
 $targetWasProvided = $PSBoundParameters.ContainsKey("Target")
+$scopeWasProvided = $PSBoundParameters.ContainsKey("Scope")
+$positionalTargetWasProvided = $false
+$positionalScopeWasProvided = $false
+
+function Stop-WithMessage($Message, $Suggestion = "") {
+    [Console]::Error.WriteLine("skills: $Message")
+    if ($Suggestion) {
+        [Console]::Error.WriteLine("Suggestion: $Suggestion")
+    }
+    exit 1
+}
+
+if ($User -and $Repo) {
+    Stop-WithMessage "choose either -User or -Repo, not both."
+}
+
+function Set-PositionalScope($NextScope) {
+    if ($User -and $NextScope -ne "personal") {
+        Stop-WithMessage "positional scope conflicts with -User." "Use either -User or repo/project, not both."
+    }
+    if ($Repo -and $NextScope -ne "project") {
+        Stop-WithMessage "positional scope conflicts with -Repo." "Use either -Repo or user/personal, not both."
+    }
+    if ($scopeWasProvided -and $Scope -ne $NextScope) {
+        Stop-WithMessage "positional scope conflicts with -Scope $Scope." "Use one scope: user or repo."
+    }
+
+    $script:Scope = $NextScope
+    $script:scopeWasProvided = $true
+    $script:positionalScopeWasProvided = $true
+}
+
+function Set-PositionalTarget($NextTarget) {
+    if ($targetWasProvided -and $Target -ne $NextTarget) {
+        Stop-WithMessage "positional target conflicts with -Target $Target." "Use one target: codex, claude, copilot, or all."
+    }
+
+    $script:Target = $NextTarget
+    $script:targetWasProvided = $true
+    $script:positionalTargetWasProvided = $true
+}
+
+function Resolve-PositionalSkillArgs {
+    if (@("install", "add", "list", "verify") -notcontains $Command) {
+        return
+    }
+
+    $tokens = @()
+    if ($Name) {
+        $tokens += $Name
+    }
+    $tokens += @($RemainingArgs)
+    $script:Name = ""
+
+    $skillNames = @()
+    foreach ($token in $tokens) {
+        $normalized = $token.ToLowerInvariant()
+        if ($normalized -eq "user" -or $normalized -eq "personal") {
+            Set-PositionalScope "personal"
+        } elseif ($normalized -eq "repo" -or $normalized -eq "project") {
+            Set-PositionalScope "project"
+        } elseif (@("codex", "claude", "copilot", "all") -contains $normalized) {
+            Set-PositionalTarget $normalized
+        } else {
+            $skillNames += $token
+        }
+    }
+
+    if ($skillNames.Count -gt 1) {
+        Stop-WithMessage "too many skill names: $($skillNames -join ', ')." "Use one skill name, for example: skills install repo query-azure-devops claude"
+    }
+
+    if ($skillNames.Count -eq 1) {
+        $script:Name = $skillNames[0]
+    }
+}
+
+Resolve-PositionalSkillArgs
+
+if ($User) {
+    $Scope = "personal"
+    $scopeWasProvided = $true
+}
+
+if ($Repo) {
+    $Scope = "project"
+    $scopeWasProvided = $true
+}
+
+function Require-ExplicitScope($Action) {
+    if ($scopeWasProvided -or $positionalScopeWasProvided) {
+        return
+    }
+
+    Stop-WithMessage "choose where to $Action skills." "Use -User/-Repo, or positional user/repo. Examples: skills install user codex; skills install repo query-azure-devops claude"
+}
 
 function Read-Utf8Text($Path) {
     return [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8)
@@ -138,7 +241,7 @@ function Get-Targets {
 }
 
 function Get-DefaultTargetsForList {
-    if ($targetWasProvided) {
+    if ($targetWasProvided -or $positionalTargetWasProvided) {
         return Get-Targets
     }
 
@@ -233,7 +336,7 @@ function Resolve-ProjectSkillNames($SkillName) {
 
     $profilePath = Get-ProjectProfilePath
     if (-not (Test-Path -LiteralPath $profilePath)) {
-        throw "Missing project skill profile: $profilePath. Run: skills add <skill-name> -Scope project"
+        throw "Missing project skill profile: $profilePath. Run: skills add repo <skill-name>"
     }
 
     $profile = Read-ProjectProfile
@@ -405,12 +508,14 @@ switch ($Command) {
         Write-Output (Read-Utf8Text (Join-Path $skillDir "SKILL.md")).Trim()
     }
     "add" {
+        Require-ExplicitScope "record"
         if ($Scope -ne "project") {
-            throw "skills add currently supports only -Scope project."
+            throw "skills add currently supports only repo, -Repo, or -Scope project."
         }
         Add-ProjectSkill $Name
     }
     "install" {
+        Require-ExplicitScope "install"
         foreach ($targetName in (Get-Targets)) {
             if ($Scope -eq "personal") {
                 Install-PersonalTarget $targetName $false
@@ -431,7 +536,11 @@ switch ($Command) {
         }
 
         $verifyInstall = $PSBoundParameters.ContainsKey("Target") -or $PSBoundParameters.ContainsKey("Scope")
+        if (-not $verifyInstall -and ($User -or $Repo -or $positionalScopeWasProvided -or $positionalTargetWasProvided)) {
+            $verifyInstall = $true
+        }
         if ($verifyInstall) {
+            Require-ExplicitScope "verify installed"
             foreach ($targetName in (Get-Targets)) {
                 if ($Scope -eq "personal") {
                     Install-PersonalTarget $targetName $true

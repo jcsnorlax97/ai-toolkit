@@ -272,7 +272,7 @@ When adding a new skill:
 1. Create `skills/engineering/<skill-name>/SKILL.md`.
 2. Add or refresh `.claude/skills/<skill-name>`.
 3. Run `./scripts/skills.ps1 verify`.
-4. Run `./scripts/skills.ps1 verify -Target claude -Scope personal` after
+4. Run `./scripts/skills.ps1 verify -User -Target claude` after
    personal symlink install or repair, or add `-Copy` after copy-mode install.
 5. Update `README.md` and `docs/how-to/install.md` only if the skill changes the
    public catalog or bootstrap story.
