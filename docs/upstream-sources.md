@@ -161,3 +161,79 @@ Required obligations:
 - Do not present the original upstream Claude Code plugin or examples as
   authored by this repository.
 - Re-check license details before any future verbatim import.
+
+## op7418/guizang-social-card-skill
+
+Source repository:
+
+```text
+https://github.com/op7418/guizang-social-card-skill
+```
+
+Related public methodology source:
+
+```text
+https://x.com/op7418/status/2072510211626336740
+```
+
+Imported upstream paths:
+
+```text
+No upstream files are imported verbatim.
+```
+
+Local target paths:
+
+```text
+skills/media/social-live-photo-card
+```
+
+License:
+
+```text
+GNU Affero General Public License v3.0, as stated by the upstream GitHub
+repository license.
+```
+
+License source:
+
+```text
+https://github.com/op7418/guizang-social-card-skill/blob/main/LICENSE
+```
+
+Copyright notice:
+
+```text
+No upstream files are imported. Preserve attribution to op7418 / 歸藏(guizang.ai)
+when discussing the public methodology source.
+```
+
+Verification date:
+
+```text
+2026-07-03
+```
+
+Import or refresh commit:
+
+```text
+Not applicable. The local skill is a reference-based adaptation, not a verbatim
+import.
+```
+
+Verification method:
+
+- Read the public X post through X oEmbed and a third-party public renderer.
+- Checked the upstream GitHub repository, README, and LICENSE.
+- Classified each source idea through `methodology-intake`.
+- Created local wording and did not copy upstream files, templates, assets,
+  scripts, or skill text.
+
+Required obligations:
+
+- Do not present the upstream project or examples as authored by this
+  repository.
+- Do not import upstream files, assets, templates, or scripts without a separate
+  AGPL-3.0 license review.
+- Keep `skills/media/social-live-photo-card/references/source-intake.md`
+  updated with adoption evidence and platform caveats.

@@ -8,7 +8,7 @@ into local assistant runtimes.
 The maintained source of truth is always:
 
 ```text
-skills/engineering/<skill-name>/
+skills/<category>/<skill-name>/
 ```
 
 Runtime skill directories are adapters:
@@ -26,10 +26,10 @@ The preferred personal install mode is symlink mode:
   -> <this repo clone>
 
 ~/.claude/skills/<skill-name>
-  -> ~/.local/share/ai-toolkit/current/skills/engineering/<skill-name>
+  -> ~/.local/share/ai-toolkit/current/skills/<category>/<skill-name>
 
 ~/.codex/skills/<skill-name>
-  -> ~/.local/share/ai-toolkit/current/skills/engineering/<skill-name>
+  -> ~/.local/share/ai-toolkit/current/skills/<category>/<skill-name>
 ```
 
 Only `~/.local/share/ai-toolkit/current` is the repo-level
@@ -44,11 +44,14 @@ In other words, `current` is the pointer:
 ~/.local/share/ai-toolkit/current -> <this repo clone>
 ```
 
-`current/skills/engineering/<skill-name>` is not a second symlink created by the
+`current/skills/<category>/<skill-name>` is not a second symlink created by the
 installer. It is the real skill directory reached after the shell follows
 `current` into the repo. The repo remains the source of truth because every
 runtime symlink points through this stable `current` pointer into
-`skills/engineering/<skill-name>/`.
+`skills/<category>/<skill-name>/`.
+
+Skill names must be unique across categories because runtime directories still
+use `~/.claude/skills/<skill-name>` and `~/.codex/skills/<skill-name>`.
 
 Because the runtime path is also a symlink to a directory, files will appear
 inside `~/.claude/skills/<skill-name>` or `~/.codex/skills/<skill-name>`. That
@@ -361,7 +364,7 @@ Default symlink mode is deterministic:
 | --- | --- |
 | Fresh machine, no stable repo link | Create `~/.local/share/ai-toolkit/current -> <this repo>`. |
 | Fresh machine, no runtime skill target | Create `~/.claude/skills/<skill-name>` or `~/.codex/skills/<skill-name>` as a symlink through `current`. |
-| New skill added under `skills/engineering/` | Rerun the relevant installer; it creates the missing runtime symlink. |
+| New skill added under `skills/<category>/` | Rerun the relevant installer; it creates the missing runtime symlink. |
 | Runtime skill symlink already correct | Leave it as-is and report it as verified. |
 | Runtime skill symlink points elsewhere, is stale, or is broken | Replace it with the expected symlink through `current`. |
 | Runtime skill exists as a real directory or copied install | Move it to `.ai-toolkit-backups/<timestamp>/<skill-name>`, then create the symlink. |
@@ -387,7 +390,7 @@ Copy mode behavior differs from symlink mode:
 
 | Scenario | Behavior |
 | --- | --- |
-| Fresh machine, no runtime skill target | Copy `skills/engineering/<skill-name>/` into the runtime skills directory. |
+| Fresh machine, no runtime skill target | Copy `skills/<category>/<skill-name>/` into the runtime skills directory. |
 | Runtime skill copy matches canonical source | Leave it as-is and report it as verified. |
 | Runtime skill copy differs from canonical source | Move it to `.ai-toolkit-backups/<timestamp>/<skill-name>`, then copy the canonical source. |
 | Repo content changes after `git pull` | Rerun the installer to refresh copied snapshots. |

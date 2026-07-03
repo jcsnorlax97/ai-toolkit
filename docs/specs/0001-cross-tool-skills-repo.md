@@ -23,7 +23,7 @@ files.
 
 ```text
 skills/
-└── engineering/
+└── <category>/
     └── <skill-name>/
         └── SKILL.md
 ```
@@ -42,11 +42,14 @@ gradually so source imports do not become noisy metadata churn.
 Tool-specific adapters point at or install from that source tree.
 
 ```text
-.claude/skills/<skill-name> -> ../../skills/engineering/<skill-name>
+.claude/skills/<skill-name> -> ../../skills/<category>/<skill-name>
 ~/.local/share/ai-toolkit/current -> <this repo clone>
-~/.claude/skills/<skill-name>  -> ~/.local/share/ai-toolkit/current/skills/engineering/<skill-name>
-~/.codex/skills/<skill-name>   -> ~/.local/share/ai-toolkit/current/skills/engineering/<skill-name>
+~/.claude/skills/<skill-name>  -> ~/.local/share/ai-toolkit/current/skills/<category>/<skill-name>
+~/.codex/skills/<skill-name>   -> ~/.local/share/ai-toolkit/current/skills/<category>/<skill-name>
 ```
+
+Skill names must remain unique across categories because runtime adapters use
+`<skill-name>` as the installed directory name.
 
 `baselines/` is the canonical source tree for always-on instruction
 packs.
@@ -108,8 +111,8 @@ directories. The default mode is symlink mode:
 
 ```text
 ~/.local/share/ai-toolkit/current -> <this repo clone>
-~/.claude/skills/<skill-name> -> ~/.local/share/ai-toolkit/current/skills/engineering/<skill-name>
-~/.codex/skills/<skill-name> -> ~/.local/share/ai-toolkit/current/skills/engineering/<skill-name>
+~/.claude/skills/<skill-name> -> ~/.local/share/ai-toolkit/current/skills/<category>/<skill-name>
+~/.codex/skills/<skill-name> -> ~/.local/share/ai-toolkit/current/skills/<category>/<skill-name>
 ```
 
 Pulling the repo updates installed skills immediately because runtime skill
@@ -269,7 +272,7 @@ Do not commit:
 
 When adding a new skill:
 
-1. Create `skills/engineering/<skill-name>/SKILL.md`.
+1. Create `skills/<category>/<skill-name>/SKILL.md`.
 2. Add or refresh `.claude/skills/<skill-name>`.
 3. Run `./scripts/skills.ps1 verify`.
 4. Run `./scripts/skills.ps1 verify -User -Target claude` after

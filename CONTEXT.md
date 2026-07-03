@@ -13,7 +13,7 @@ Workflow: A repeatable multi-step engineering process with entry criteria, exit 
 
 Workflow skill: A skill that orchestrates multiple lower-level skills, gates, artifacts, and verification steps for a recurring engineering process. Avoid: macro, one-click automation
 
-Canonical source: The directory that owns the maintained copy of a skill. In this repo, canonical skills live under `skills/engineering/`. Avoid: duplicate source, copied truth
+Canonical source: The directory that owns the maintained copy of a skill. In this repo, canonical skills live under category directories such as `skills/engineering/` and `skills/media/`. Avoid: duplicate source, copied truth
 
 Skill metadata: Frontmatter inside `SKILL.md` that records AI trigger text and human maintenance fields such as status, problem, when-not-to-use, and maintainer. Avoid: companion metadata file, maturity folder
 
@@ -70,6 +70,11 @@ External methodology source: An article, repository, paper, tool list, framework
 Input note: A redacted inbox artifact created from an external source, such as a Gemini, ChatGPT, or Claude shared conversation, meeting transcript, video notes, article, workflow idea, or copied excerpt. It preserves only enough context for later review, methodology intake, daily work logs, or skill formulation. It is not final knowledge, not a raw transcript, and not a formal skill. Avoid: raw dump, final note, saved chat
 
 Tool-list-only source: An external methodology source that primarily lists tools, SDKs, repositories, or frameworks without enough trigger criteria, workflow steps, outputs, verification, and stop conditions to become a skill. Avoid: tool worship
+
+Social Live Photo card: A social-platform card that must work as a static first
+frame and as a short motion asset. It is produced from user-provided video when
+one small motion point gives evidence that a still image cannot. Avoid: generic
+video edit, animated decoration
 
 Intake destination: The single primary outcome assigned by methodology intake. Valid destinations are Rule, Skill, Context term, ADR, Spec, Issue, and No-op. Avoid: tag pile, mixed outcome
 
@@ -159,6 +164,9 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
 - A context term belongs in the glossary only when it stabilizes recurring project language rather than preserving one source's jargon.
 - An ADR destination is for the repo decision caused by a source, not for the source merely being interesting.
 - An issue destination is for a source that can already become a tracked, scoped, independently verifiable work item.
+- A social Live Photo card workflow belongs in a skill, not a portable baseline,
+  because it is triggered media-production work rather than always-on agent
+  posture.
 - Agent roles and ad hoc workers default to analysis-only mode unless an execution packet explicitly grants edit mode.
 - Agent roles and ad hoc workers operate inside a workspace sandbox by default.
 - An agent team workflow should identify external systems and separate no-secret verification paths from credentialed verification paths before delegation.

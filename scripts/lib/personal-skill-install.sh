@@ -5,7 +5,7 @@ usage() {
   cat <<'USAGE'
 Usage: install script [--link|--copy] [--verify-only] [--keep-existing]
 
-Installs personal skills from the canonical skills directory.
+Installs personal skills from the canonical skills root.
 
 Default mode is automatic:
   - symlinks through ~/.local/share/ai-toolkit/current
@@ -217,7 +217,7 @@ install_personal_skills() {
     mkdir -p "$target_dir"
   else
     [ -L "$current_link" ] || fail "Missing repo current symlink: $current_link"
-    [ -d "$current_link/skills/engineering" ] || fail "Repo current link does not resolve to skills: $current_link"
+    [ -d "$current_link/skills" ] || fail "Repo current link does not resolve to skills: $current_link"
     current_resolved="$(cd "$current_link" && pwd -P)"
     [ "$current_resolved" = "$root_dir" ] || fail "Repo current link points at $current_resolved, expected $root_dir"
     [ -d "$target_dir" ] || fail "Missing target directory: $target_dir"
@@ -231,87 +231,101 @@ install_personal_skills() {
   copied=0
   updated=0
 
-  for skill_dir in "$source_dir"/*; do
-    [ -d "$skill_dir" ] || continue
-    found=1
+  seen_names="|"
 
-    skill_name="$(basename "$skill_dir")"
-    target="$target_dir/$skill_name"
+  for category_dir in "$source_dir"/*; do
+    [ -d "$category_dir" ] || continue
+    category_name="$(basename "$category_dir")"
 
-    if [ "$install_mode" = "copy" ]; then
-      if [ "$verify_only" -eq 1 ]; then
-        verify_copy_snapshot "$skill_dir" "$target" "$tool_label skill"
-        continue
-      fi
+    for skill_dir in "$category_dir"/*; do
+      [ -d "$skill_dir" ] || continue
+      found=1
 
-      if [ -e "$target" ] || [ -L "$target" ]; then
-        if diff -qr "$skill_dir" "$target" >/dev/null 2>&1; then
-          printf 'Verified %s skill copy: %s\n' "$tool_label" "$target"
+      skill_name="$(basename "$skill_dir")"
+      [ -f "$skill_dir/SKILL.md" ] || fail "Missing SKILL.md for canonical skill: $category_name/$skill_name"
+      case "$seen_names" in
+        *"|$skill_name|"*)
+          fail "Duplicate canonical skill name across categories: $skill_name"
+          ;;
+      esac
+      seen_names="${seen_names}${skill_name}|"
+      target="$target_dir/$skill_name"
+
+      if [ "$install_mode" = "copy" ]; then
+        if [ "$verify_only" -eq 1 ]; then
+          verify_copy_snapshot "$skill_dir" "$target" "$tool_label skill"
           continue
         fi
 
+        if [ -e "$target" ] || [ -L "$target" ]; then
+          if diff -qr "$skill_dir" "$target" >/dev/null 2>&1; then
+            printf 'Verified %s skill copy: %s\n' "$tool_label" "$target"
+            continue
+          fi
+
+          if [ "$keep_existing" -eq 1 ]; then
+            kept=$((kept + 1))
+            printf 'Keeping existing %s skill copy: %s\n' "$tool_label" "$target"
+            continue
+          fi
+
+          backup_dir="$target_dir/.ai-toolkit-backups/$backup_stamp"
+          backup_target="$(move_to_backup "$target" "$backup_dir" "$skill_name")"
+          copy_skill_snapshot "$skill_dir" "$target"
+          updated=$((updated + 1))
+          printf 'Moved existing %s skill to backup: %s\n' "$tool_label" "$backup_target"
+          printf 'Copied %s skill: %s\n' "$tool_label" "$target"
+          continue
+        fi
+
+        copy_skill_snapshot "$skill_dir" "$target"
+        copied=$((copied + 1))
+        printf 'Copied %s skill: %s\n' "$tool_label" "$target"
+        continue
+      fi
+
+      desired="$current_link/skills/$category_name/$skill_name"
+
+      if [ "$verify_only" -eq 1 ]; then
+        [ -L "$target" ] || fail "$tool_label skill is not a symlink: $target"
+        link_target="$(readlink "$target")"
+        [ "$link_target" = "$desired" ] || fail "$tool_label skill points at $link_target, expected $desired"
+        [ -f "$target/SKILL.md" ] || fail "$tool_label skill link does not resolve to SKILL.md: $target"
+        continue
+      fi
+
+      if [ -L "$target" ]; then
+        link_target="$(readlink "$target")"
+        if [ "$link_target" = "$desired" ] && [ -f "$target/SKILL.md" ]; then
+          printf 'Verified %s skill link: %s\n' "$tool_label" "$target"
+        else
+          replace_symlink "$desired" "$target"
+          repaired=$((repaired + 1))
+          printf 'Repaired %s skill link: %s -> %s\n' "$tool_label" "$target" "$desired"
+        fi
+        continue
+      fi
+
+      if [ -e "$target" ]; then
         if [ "$keep_existing" -eq 1 ]; then
           kept=$((kept + 1))
-          printf 'Keeping existing %s skill copy: %s\n' "$tool_label" "$target"
+          printf 'Keeping existing non-symlink %s skill: %s\n' "$tool_label" "$target"
           continue
         fi
 
         backup_dir="$target_dir/.ai-toolkit-backups/$backup_stamp"
         backup_target="$(move_to_backup "$target" "$backup_dir" "$skill_name")"
-        copy_skill_snapshot "$skill_dir" "$target"
-        updated=$((updated + 1))
+        create_symlink "$desired" "$target"
+        migrated=$((migrated + 1))
         printf 'Moved existing %s skill to backup: %s\n' "$tool_label" "$backup_target"
-        printf 'Copied %s skill: %s\n' "$tool_label" "$target"
+        printf 'Linked %s skill: %s -> %s\n' "$tool_label" "$target" "$desired"
         continue
       fi
 
-      copy_skill_snapshot "$skill_dir" "$target"
-      copied=$((copied + 1))
-      printf 'Copied %s skill: %s\n' "$tool_label" "$target"
-      continue
-    fi
-
-    desired="$current_link/skills/engineering/$skill_name"
-
-    if [ "$verify_only" -eq 1 ]; then
-      [ -L "$target" ] || fail "$tool_label skill is not a symlink: $target"
-      link_target="$(readlink "$target")"
-      [ "$link_target" = "$desired" ] || fail "$tool_label skill points at $link_target, expected $desired"
-      [ -f "$target/SKILL.md" ] || fail "$tool_label skill link does not resolve to SKILL.md: $target"
-      continue
-    fi
-
-    if [ -L "$target" ]; then
-      link_target="$(readlink "$target")"
-      if [ "$link_target" = "$desired" ] && [ -f "$target/SKILL.md" ]; then
-        printf 'Verified %s skill link: %s\n' "$tool_label" "$target"
-      else
-        replace_symlink "$desired" "$target"
-        repaired=$((repaired + 1))
-        printf 'Repaired %s skill link: %s -> %s\n' "$tool_label" "$target" "$desired"
-      fi
-      continue
-    fi
-
-    if [ -e "$target" ]; then
-      if [ "$keep_existing" -eq 1 ]; then
-        kept=$((kept + 1))
-        printf 'Keeping existing non-symlink %s skill: %s\n' "$tool_label" "$target"
-        continue
-      fi
-
-      backup_dir="$target_dir/.ai-toolkit-backups/$backup_stamp"
-      backup_target="$(move_to_backup "$target" "$backup_dir" "$skill_name")"
       create_symlink "$desired" "$target"
-      migrated=$((migrated + 1))
-      printf 'Moved existing %s skill to backup: %s\n' "$tool_label" "$backup_target"
+      linked=$((linked + 1))
       printf 'Linked %s skill: %s -> %s\n' "$tool_label" "$target" "$desired"
-      continue
-    fi
-
-    create_symlink "$desired" "$target"
-    linked=$((linked + 1))
-    printf 'Linked %s skill: %s -> %s\n' "$tool_label" "$target" "$desired"
+    done
   done
 
   [ "$found" -eq 1 ] || fail "No canonical skills found under $source_dir"

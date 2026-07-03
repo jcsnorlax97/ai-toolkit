@@ -30,7 +30,8 @@ adapters or managed instruction blocks.
 │   ├── skills/
 │   └── lib/
 └── skills/
-    └── engineering/
+    ├── engineering/
+    └── media/
 ```
 
 Planned future source trees:
@@ -139,7 +140,7 @@ attribution in `NOTICE.md` and `docs/upstream-sources.md`.
 Local companion skills include `grill-spec`, `methodology-intake`,
 `capture-input-note`, `setup-agent-team`, `staff-level-review`,
 `ship-vertical-slice`, `diagnose-regression`, `client-flow-diagrams`, and
-`query-azure-devops`.
+`query-azure-devops`. Media skills include `social-live-photo-card`.
 
 Current baseline packs include `karpathy-principles`,
 `git-collaboration-hygiene`, `repo-context-grounding`,

@@ -36,7 +36,7 @@ $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Split-Path -Parent $scriptDir
-$skillsRoot = Join-Path $repoRoot "skills\engineering"
+$skillsRoot = Join-Path $repoRoot "skills"
 $targetWasProvided = $PSBoundParameters.ContainsKey("Target")
 $scopeWasProvided = $PSBoundParameters.ContainsKey("Scope")
 $positionalTargetWasProvided = $false
@@ -149,9 +149,25 @@ function Get-SkillDirs {
         throw "Missing skills directory: $skillsRoot"
     }
 
-    return @(Get-ChildItem -LiteralPath $skillsRoot -Directory | Where-Object {
-        Test-Path -LiteralPath (Join-Path $_.FullName "SKILL.md")
-    })
+    $skillDirs = @()
+    Get-ChildItem -LiteralPath $skillsRoot -Directory | Sort-Object Name | ForEach-Object {
+        $categoryDir = $_
+        Get-ChildItem -LiteralPath $categoryDir.FullName -Directory | Sort-Object Name | Where-Object {
+            Test-Path -LiteralPath (Join-Path $_.FullName "SKILL.md")
+        } | ForEach-Object {
+            $skillDirs += $_
+        }
+    }
+
+    $seen = @{}
+    foreach ($skillDir in $skillDirs) {
+        if ($seen.ContainsKey($skillDir.Name)) {
+            throw "Duplicate canonical skill name across categories: $($skillDir.Name)"
+        }
+        $seen[$skillDir.Name] = $skillDir.FullName
+    }
+
+    return @($skillDirs)
 }
 
 function Resolve-SkillDir($SkillName) {
@@ -159,13 +175,15 @@ function Resolve-SkillDir($SkillName) {
         throw "Pass a skill name."
     }
 
-    $path = Join-Path $skillsRoot $SkillName
-    $skillFile = Join-Path $path "SKILL.md"
-    if (-not (Test-Path -LiteralPath $skillFile)) {
+    $matches = @(Get-SkillDirs | Where-Object { $_.Name -eq $SkillName })
+    if ($matches.Count -eq 0) {
         throw "Unknown skill: $SkillName"
     }
+    if ($matches.Count -gt 1) {
+        throw "Duplicate canonical skill name across categories: $SkillName"
+    }
 
-    return $path
+    return $matches[0].FullName
 }
 
 function Get-FrontmatterValue($Content, $Field) {

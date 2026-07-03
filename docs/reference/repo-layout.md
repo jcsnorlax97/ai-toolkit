@@ -13,9 +13,10 @@ agents/      # planned
 templates/   # planned
 ```
 
-`skills/` owns invoked workflow skills. Current skills live under
-`skills/engineering/` because the first library slice focused on engineering
-workflows. Do not move existing skills merely to express maturity or status.
+`skills/` owns invoked workflow skills. Skills live under category directories
+such as `skills/engineering/` and `skills/media/`. The category describes the
+workflow domain, not lifecycle maturity or install scope. Do not move existing
+skills merely to express maturity or status.
 
 `baselines/` owns always-on instruction packs. Baselines are applied to
 downstream repo instruction files through managed blocks; they are not runtime
