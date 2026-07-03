@@ -24,7 +24,7 @@
 
 - Primary destination: `Skill`
 - Retention: `revisit-on-trigger`
-- Confidence: `medium`
+- Confidence: `medium-high`
 
 The source describes a repeatable workflow with clear triggers, inputs, modes,
 quality gates, stop conditions, and delivery checks. It is not suitable as a
@@ -32,6 +32,20 @@ portable baseline because the behavior is domain-specific media production, not
 an always-on default posture for ordinary agent work.
 
 No upstream files, templates, assets, scripts, or skill text were imported.
+
+## Forward-Test Evidence
+
+2026-07-03: Forward-tested the local skill on a user-provided Universal Studios
+parade video. The workflow produced a source contact sheet, candidate first-frame
+sheet, selected 5-second Rednote/Xiaohongshu segment, verified static first
+frame, review MP4, MOV motion asset, `.pvt` package, downloadable zip, and
+delivery note. File-level checks confirmed a 1080x1440 first frame, 1080x1440
+30fps 5.000s motion asset, and matching Live Photo content identifier in the
+packaged JPG/MOV pair.
+
+This evidence supports expanding the skill from single-video-first trial usage
+to collection-aware screening. Collection support is still procedural guidance,
+not a bundled upstream implementation.
 
 ## One-By-One Classification
 
@@ -50,6 +64,8 @@ No upstream files, templates, assets, scripts, or skill text were imported.
 | Contact sheet for sparse review | Workflow phase | Include for long or unclear videos. |
 | Platform duration differences (`3s` WeChat, `5s` Rednote/Xiaohongshu) | Delivery constraint | Include in platform confirmation and verification. |
 | Phone-side publish path / `.pvt` package | Delivery constraint | Include as packaging and delivery note; do not promise `.pvt` if tooling is missing. |
+| Photo or video collections as source material | Skill mode | Include as collection screening and selection guidance. |
+| Photo-only Live Photo card | Skill mode | Include as synthetic-motion output with explicit labeling. |
 | Live Photo fills the gap between static cards and short videos | Rationale | Mention implicitly through trigger; no separate artifact. |
 | A skill needs aesthetics, boundaries, and workflow, not just trigger words | Existing repo rule | Already covered by `methodology-intake` skill admission criteria; no new baseline. |
 | Upstream install/update commands | No-op | Do not add installer or vendor upstream AGPL project into this repo. |
@@ -71,5 +87,6 @@ engineering work.
 
 ## Revisit Trigger
 
-Revisit this skill after one real use that produces a Live Photo card with
-locally verified preview output and a documented platform-publish result.
+Revisit this skill after one real collection-based use that produces a Live
+Photo card from a folder of photos, videos, or mixed media, with locally verified
+preview output and a documented platform-publish result.

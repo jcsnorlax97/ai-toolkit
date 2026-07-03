@@ -18,6 +18,7 @@ repo-specific instructions.
 | `karpathy-principles` | active | Apply four default engineering principles: think before coding, simplicity first, surgical changes, and goal-driven execution. |
 | `oop-extension-safety` | active | Guards for OOP extension points: complete template methods, prefer primitive hook parameters, and mock concrete injected types in tests. |
 | `code-doc-sync` | active | Scan for adjacent architecture docs before closing any behavior-changing task; show concrete runtime types in flow diagrams rather than abstract declaration sites. |
+| `layered-ownership` | active | Keep decision records in the layer that owns them: cross-layer references are pointers not ownership, and no repo becomes a central governance hub. |
 
 ## Pack Shape
 

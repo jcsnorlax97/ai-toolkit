@@ -1,0 +1,4 @@
+interface:
+  display_name: "Social Live Photo Card"
+  short_description: "Create Live Photo social cards"
+  default_prompt: "Use $social-live-photo-card to create a platform-ready Live Photo card from this media collection."

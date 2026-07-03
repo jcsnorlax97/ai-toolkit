@@ -1,0 +1,17 @@
+{
+  "name": "layered-ownership",
+  "version": "0.1.0",
+  "status": "active",
+  "description": "Always-on documentation posture for AI agents in multi-repo systems: each layer records its own decisions, cross-layer references are pointers not ownership, and no repo becomes a central governance hub.",
+  "source": {
+    "title": "AI OS Layered Ownership",
+    "repository": "local",
+    "license": "repo-local",
+    "relationship": "Authored as a portable baseline pack after a real violation: ecosystem-wide decisions were written into ai-toolkit's roadmap, recreating the frozen governance-hub pattern the operator had just dismantled (2026-07-03)."
+  },
+  "adapters": {
+    "codex": "adapters/AGENTS.md.block",
+    "claude": "adapters/CLAUDE.md.block",
+    "copilot": "adapters/copilot-instructions.md.block"
+  }
+}

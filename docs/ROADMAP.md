@@ -43,19 +43,19 @@ reference (see Ecosystem Status below).
 - Do not resume `ai-workbench` implementation until a real task demands its
   first slice (`ai-workbench start dev-task`); the doc scaffold stays dormant.
 
-## Ecosystem Status
+## This Repo And Its Neighbors
 
-Decided 2026-07-02: the multi-repo "AI OS" governance layer added more
-friction than value for a single operator. Consolidation decisions:
+This roadmap governs `ai-toolkit` only. Each layer records its own decisions:
 
-- `ai-toolkit` — active. Canonical reusable skills, baselines, workflows.
-- `skillops` — active. Skill lifecycle journal; kept separate because it
-  records evidence this repo intentionally does not hold.
-- `ai-workbench` — dormant seed. Docs only, zero code; revive on demand.
-- `ai-ops-ecosystem-spec` — frozen. ADRs, contracts, and reviews remain
-  readable history; no further mirror updates when this repo changes.
-- `ai-work-log-bootstrap`, `ai-second-brain-method`, and related capture
-  repos — unchanged by this decision; they are used, not governed, from here.
+- `skillops` — active. This repo's skill lifecycle journal; kept separate
+  because it records evidence this repo intentionally does not hold.
+- `ai-workbench` — dormant seed that consumes this repo via `AI_TOOLKIT_PATH`;
+  revive on demand.
+- `ai-ops-ecosystem-spec` — frozen (2026-07-02). Historical ADRs and
+  contracts; this file replaced its roadmap for toolkit priorities only.
+- Capture / second-brain layer (`ai-second-brain-method`,
+  `ai-work-log-bootstrap`, `personal-diary-capture`) — governs itself in
+  `../ai-second-brain-method/docs/roadmap.md`. Not governed from here.
 
 ## Update Rules
 

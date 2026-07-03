@@ -1,10 +1,11 @@
 ---
 name: social-live-photo-card
-description: Turn user-provided short video material into a social-platform Live Photo card when one small motion point explains more than a static image, with first-frame, duration, crop, and publish-path checks.
-status: trial
-problem: Agents often treat Live Photo work as generic video export, missing the static first-frame requirement, short platform duration limits, card layout constraints, and phone-side publishing path.
-when-not-to-use: Do not use for long-form video editing, pure photo retouching, unauthorized public-media harvesting, full tutorials that need sequential explanation, or static social cards with no motion evidence.
-maintainer: Justin Choi
+description: Turn user-provided short videos, video collections, photo collections, or mixed media into a social-platform Live Photo card when one small motion point explains more than a static image, with collection screening, first-frame, duration, crop, and publish-path checks.
+metadata:
+  status: trial
+  problem: Agents often treat Live Photo work as generic video export, missing the static first-frame requirement, short platform duration limits, card layout constraints, and phone-side publishing path.
+  when-not-to-use: Do not use for long-form video editing, pure photo retouching, unauthorized public-media harvesting, full tutorials that need sequential explanation, or static social cards with no motion evidence.
+  maintainer: Justin Choi
 ---
 
 # Social Live Photo Card
@@ -13,20 +14,25 @@ Create a social card that behaves like a still image first and a short motion
 asset second. The output should still read as a publishable card when the motion
 does not play.
 
-Use this skill when the user has video material for a social post and asks for a
-Live Photo, dynamic card, animated social card, Rednote/Xiaohongshu Live Photo,
-or WeChat article Live Photo.
+Use this skill when the user has media for a social post and asks for a Live
+Photo, dynamic card, animated social card, Rednote/Xiaohongshu Live Photo, or
+WeChat article Live Photo. Accept a single file or a folder/collection of
+photos, videos, screen recordings, or mixed media.
 
 ## Inputs
 
-- User-provided video clips, screen recordings, product captures, or short
-  lifestyle clips.
+- User-provided video clips, screen recordings, product captures, short
+  lifestyle clips, photo sets, or folders containing mixed photos and videos.
 - Optional text, article excerpt, product claim, tutorial step, or target
   platform.
 - Optional existing static card style, brand constraints, or visual examples.
 
 Default to user-provided media. Use public media only for explicitly approved
 demo or test work, and keep source attribution.
+
+Treat photo-only collections as synthetic-motion Live Photo candidates. They can
+be converted into a short pan, zoom, parallax-like crop, or slideshow motion
+asset, but they do not preserve real capture-time Live Photo movement.
 
 ## Output
 
@@ -37,6 +43,8 @@ directory:
 - preview video for review
 - MOV or platform-required motion asset when tooling is available
 - `.pvt` package only when a local packager exists and is verified
+- collection contact sheet, candidate sheet, or selection note when more than
+  one source file is provided
 - short delivery note explaining platform duration, publish path, and any
   remaining manual phone-side step
 
@@ -54,16 +62,29 @@ Name the single motion point the viewer should understand without audio. If the
 clip needs a full tutorial, narration, or a long sequence, recommend static
 multi-card instructions or video instead of Live Photo.
 
-### 2. Screen The Material
+### 2. Classify And Screen The Material
 
-Prefer clips near 10 seconds or less. If the source is longer or unclear, create
-a sparse contact sheet of 8-15 frames before editing. Use it to check for:
+Classify the source before editing:
+
+- Single video: choose the best 3-5 second time range.
+- Video collection: create per-video thumbnails or contact sheets, then choose
+  one winning clip before detailed editing.
+- Photo collection: choose one hero still and define synthetic motion that keeps
+  the card readable as a still.
+- Mixed collection: choose whether the hero still comes from a photo, a video
+  frame, or a composed card; choose the motion asset from the strongest short
+  video unless a synthetic photo motion is clearer.
+
+Prefer clips near 10 seconds or less. If the source is longer, unclear, or a
+folder with multiple candidates, create a sparse contact sheet of 8-15 frames or
+thumbnails before editing. Use it to check for:
 
 - black or empty first frames
 - transitions crossing pages or scenes
 - UI text too small for mobile
 - key result not yet visible
 - subject, face, product, button, or result area getting cropped
+- duplicate, weak, or off-topic collection items
 
 Ask the user to choose a time range when the contact sheet does not make the
 best segment obvious.
@@ -77,6 +98,9 @@ Pick one structure:
   visuals carry the message and text can stay minimal.
 - Triple Live Photo: three parallel results, states, views, or examples. Do not
   use this for a sequence that must be understood in order.
+- Synthetic-motion photo card: one or more photos animated with subtle pan,
+  zoom, hold, or slideshow motion. Label it as synthetic motion in the delivery
+  note.
 - No Live Photo: motion is decorative, confusing, too long, or less clear than a
   static card.
 
@@ -94,6 +118,10 @@ card:
 
 If the first frame fails, fix crop, segment, or layout before continuing.
 
+For collections, the first frame must also explain why the selected item won:
+prefer the clearest subject, strongest emotion/action, best product evidence, or
+most recognizable place over a merely busy frame.
+
 ### 5. Generate And Package Motion Assets
 
 Generate the shortest asset that proves the motion point. Keep the dynamic
@@ -102,6 +130,10 @@ portion aligned with the static card crop and typography.
 When packaging is available, produce the platform package expected by the user's
 publishing flow. When `.pvt` packaging is not available, deliver the verified
 JPG/MOV pair and state the missing packaging step plainly.
+
+For photo-only synthetic motion, keep movement subtle enough that the first
+frame remains the primary card. Avoid aggressive slideshow cuts unless the user
+explicitly asks for a multi-photo card.
 
 ### 6. Verify Before Delivery
 
@@ -112,6 +144,7 @@ Run a visual and file-level check:
 - action is understandable without audio
 - crop, safe areas, and text placement survive mobile viewing
 - MOV/preview opens locally
+- collection selection is documented when multiple source files were provided
 - package was written to the task output folder
 - delivery note explains that phone-side publishing may be required and desktop
   upload may not preserve Live Photo behavior

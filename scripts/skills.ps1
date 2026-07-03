@@ -196,6 +196,21 @@ function Get-FrontmatterValue($Content, $Field) {
     return ""
 }
 
+function Get-FrontmatterMetadataValue($Content, $Field) {
+    $frontmatter = [regex]::Match($Content, "(?s)^---\s*(.*?)\s*---")
+    if (-not $frontmatter.Success) {
+        return ""
+    }
+
+    $pattern = "(?m)^\s{2}$([regex]::Escape($Field)):\s*(.+?)\s*$"
+    $match = [regex]::Match($frontmatter.Groups[1].Value, $pattern)
+    if ($match.Success) {
+        return $match.Groups[1].Value
+    }
+
+    return ""
+}
+
 function Get-BashPath {
     $gitBash = "C:\Program Files\Git\bin\bash.exe"
     if (Test-Path -LiteralPath $gitBash) {
@@ -509,6 +524,9 @@ switch ($Command) {
             $skillFile = Join-Path $_.FullName "SKILL.md"
             $content = Read-Utf8Text $skillFile
             $status = Get-FrontmatterValue $content "status"
+            if (-not $status) {
+                $status = Get-FrontmatterMetadataValue $content "status"
+            }
             if (-not $status) {
                 $status = "unknown"
             }

@@ -35,9 +35,10 @@ interface.
 
 Skill metadata belongs in `SKILL.md` frontmatter, not a companion metadata
 file. Required runtime fields are `name` and `description`. New local skills
-should also include `status`, `problem`, `when-not-to-use`, and `maintainer`
-when the information is known. Existing imported skills may be reconciled
-gradually so source imports do not become noisy metadata churn.
+should keep local maintenance fields under a `metadata:` map, including
+`status`, `problem`, `when-not-to-use`, and `maintainer` when the information is
+known. Existing imported skills may be reconciled gradually so source imports do
+not become noisy metadata churn.
 
 Tool-specific adapters point at or install from that source tree.
 

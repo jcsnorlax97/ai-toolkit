@@ -79,3 +79,16 @@ Run this after portable baseline changes:
 
 Apply this baseline before ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
 <!-- END baseline:karpathy-principles -->
+
+
+<!-- BEGIN baseline:layered-ownership v0.1.0 -->
+## Portable Agent Baseline: Layered Ownership
+
+- Each repo or layer records its own decisions, status, and roadmap; do not write another layer's decisions into this repo's documents.
+- Cross-layer references are pointers, not ownership: link to the owning repo's artifact instead of duplicating or governing it.
+- Before recording a status or decision entry, identify which layer owns the affected asset and record it in that layer's own documents.
+- Do not create or grow a central governance hub; if a document starts mirroring another repo's changes, stop and move the content to its owner.
+
+Apply this baseline before ordinary documentation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
+<!-- END baseline:layered-ownership -->
+

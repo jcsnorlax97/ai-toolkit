@@ -6,29 +6,20 @@
 - Prefer concise, direct engineering communication.
 - If the repo is missing context, inspect first and create the minimum viable scaffolding before coding.
 
-## Personal AI OS Roadmap
+## Roadmap
 
 Before planning work related to methodology intake, engineering skills, agent
-workflows, staff-level review, external workflow intake, or cross-system roadmap
-decisions, read the canonical roadmap from the `ai-ops-ecosystem-spec` repo:
+workflows, staff-level review, or external workflow intake, read the canonical
+roadmap in this repo:
 
 ```text
-spec/ROADMAP.md
+docs/ROADMAP.md
 ```
 
-In the standard sibling-repo workspace layout, this repo can reach it at
-`../ai-ops-ecosystem-spec/spec/ROADMAP.md`. If that repo is not available, ask
-the user where the canonical roadmap is cloned.
-
-Use that roadmap as the current source of truth for priorities and for deciding
-which workflows are still being grilled before becoming formal skills.
-
-Before cross-repo AI OS work, run the central freshness check from the standard
-sibling repo:
-
-```text
-../ai-ops-ecosystem-spec/scripts/check-ecosystem-repos.sh --fetch
-```
+Use it as the current source of truth for priorities and for deciding which
+workflows are still being grilled before becoming formal skills. The former
+ecosystem-wide roadmap at `../ai-ops-ecosystem-spec/spec/ROADMAP.md` is frozen
+historical reference; do not treat it as current.
 
 ## Repository Design
 
@@ -117,3 +108,16 @@ sibling repo:
 
 Apply this baseline before ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
 <!-- END baseline:karpathy-principles -->
+
+
+<!-- BEGIN baseline:layered-ownership v0.1.0 -->
+## Portable Agent Baseline: Layered Ownership
+
+- Each repo or layer records its own decisions, status, and roadmap; do not write another layer's decisions into this repo's documents.
+- Cross-layer references are pointers, not ownership: link to the owning repo's artifact instead of duplicating or governing it.
+- Before recording a status or decision entry, identify which layer owns the affected asset and record it in that layer's own documents.
+- Do not create or grow a central governance hub; if a document starts mirroring another repo's changes, stop and move the content to its owner.
+
+Apply this baseline before ordinary documentation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
+<!-- END baseline:layered-ownership -->
+

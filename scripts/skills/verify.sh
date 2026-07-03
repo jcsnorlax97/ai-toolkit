@@ -50,7 +50,7 @@ for category_dir in "$CANONICAL_DIR"/*; do
 
     missing_metadata=""
     for field in status problem when-not-to-use maintainer; do
-      if ! grep -q "^$field:[[:space:]]*" "$skill_file"; then
+      if ! grep -q "^$field:[[:space:]]*" "$skill_file" && ! grep -q "^[[:space:]][[:space:]]$field:[[:space:]]*" "$skill_file"; then
         missing_metadata="${missing_metadata}${missing_metadata:+, }$field"
       fi
     done

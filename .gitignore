@@ -6,6 +6,9 @@
 # Work-log captures are personal source material, not part of this skills repo.
 obsidian_log_formatter/
 
+# Generated task artifacts and media outputs are local delivery files.
+outputs/
+
 # Local Claude/Codex state
 .claude/settings.local.json
 CLAUDE.local.md

@@ -165,5 +165,5 @@ supporting files inside the skill directory.
 
 Keep maintenance metadata in `SKILL.md` frontmatter rather than companion
 metadata files. Runtime fields `name` and `description` are required; new local
-skills should also include `status`, `problem`, `when-not-to-use`, and
-`maintainer` when known.
+skills should put `status`, `problem`, `when-not-to-use`, and `maintainer` under
+a `metadata:` map when known.
