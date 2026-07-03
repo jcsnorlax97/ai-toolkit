@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("list", "show", "add", "install", "verify", "shim", "help")]
+    [ValidateSet("list", "show", "add", "install", "apply", "verify", "shim", "help")]
     [string] $Command = "list",
 
     [Parameter(Position = 1)]
@@ -81,7 +81,7 @@ function Set-PositionalTarget($NextTarget) {
 }
 
 function Resolve-PositionalSkillArgs {
-    if (@("install", "add", "list", "verify") -notcontains $Command) {
+    if (@("install", "apply", "add", "list", "verify") -notcontains $Command) {
         return
     }
 
@@ -560,6 +560,16 @@ switch ($Command) {
             }
         }
     }
+    "apply" {
+        Require-ExplicitScope "install"
+        foreach ($targetName in (Get-Targets)) {
+            if ($Scope -eq "personal") {
+                Install-PersonalTarget $targetName $false
+            } else {
+                Install-ProjectTarget $targetName $false
+            }
+        }
+    }
     "verify" {
         $verifyScript = Join-Path $scriptDir "skills/verify.sh"
         if (-not (Test-Path -LiteralPath $verifyScript)) {
@@ -615,7 +625,8 @@ Usage:
   skills list [-Target codex|claude|copilot|all] [-Scope personal|project] [-TargetRepo <path>]
   skills show <name>
   skills add <name> [-Target codex|claude|copilot|all] [-Scope personal|project] [-User|-Repo] [-Copy|-Link] [-KeepExisting]
-  skills install [-Target codex|claude|copilot|all] [-Scope personal|project] [-User|-Repo] [-Copy|-Link] [-KeepExisting]
+  skills apply  [-Target codex|claude|copilot|all] [-Scope personal|project] [-User|-Repo] [-Copy|-Link] [-KeepExisting]
+  skills install [-Target codex|claude|copilot|all] [-Scope personal|project] [-User|-Repo] [-Copy|-Link] [-KeepExisting]  (alias for apply)
   skills verify [-Target codex|claude|copilot|all] [-Scope personal|project] [-User|-Repo]
   skills shim [install|verify|remove] [-InstallDir <path>] [-AddToUserPath]
   skills help

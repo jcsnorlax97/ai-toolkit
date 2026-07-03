@@ -357,12 +357,18 @@ function Invoke-HooksCommand {
                         continue
                     }
 
-                    if (-not $packInfo.adapters.PSObject.Properties[$tool]) {
+                    # On Windows, prefer the claude-windows adapter when available
+                    $adapterKey = $tool
+                    if ($tool -eq "claude" -and $IsWindows -and $packInfo.adapters.PSObject.Properties["claude-windows"]) {
+                        $adapterKey = "claude-windows"
+                    }
+
+                    if (-not $packInfo.adapters.PSObject.Properties[$adapterKey]) {
                         Write-Output "skip $packName for ${tool}: no adapter defined"
                         continue
                     }
 
-                    $adapterRel = $packInfo.adapters.PSObject.Properties[$tool].Value
+                    $adapterRel = $packInfo.adapters.PSObject.Properties[$adapterKey].Value
                     $adapterPath = Join-Path (Get-PackRoot $packName) $adapterRel
                     if (-not (Test-Path -LiteralPath $adapterPath)) {
                         Write-Output "skip $packName for ${tool}: adapter file missing: $adapterPath"

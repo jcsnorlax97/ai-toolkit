@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$null = '# ai-toolkit-hook:ensure-vercel-cli'; $td = Join-Path $env:USERPROFILE '.local/share/ai-toolkit/tools'; $vb = Join-Path $td 'node_modules/.bin/vercel.cmd'; if (-not (Test-Path $vb)) { if (Test-Path (Join-Path $td 'package.json')) { npm install --prefix $td --silent } else { npm install --prefix $td vercel --silent } }\""
+      }
+    ]
+  }
+}
