@@ -3,4 +3,4 @@ set -eu
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 
-"$ROOT_DIR/scripts/skills/install-claude-code.sh" "$@"
+"$ROOT_DIR/scripts/skills-setup/install-claude-code.sh" "$@"

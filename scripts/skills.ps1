@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("list", "show", "add", "install", "verify", "shim")]
+    [ValidateSet("list", "show", "add", "install", "verify", "shim", "help")]
     [string] $Command = "list",
 
     [Parameter(Position = 1)]
@@ -568,7 +568,7 @@ switch ($Command) {
 
         & (Get-BashPath) (Convert-ToBashPath $verifyScript)
         if ($LASTEXITCODE -ne 0) {
-            throw "scripts/skills/verify.sh failed with exit code $LASTEXITCODE"
+            throw "scripts/skills-setup/verify.sh failed with exit code $LASTEXITCODE"
         }
 
         $verifyInstall = $PSBoundParameters.ContainsKey("Target") -or $PSBoundParameters.ContainsKey("Scope")
@@ -592,21 +592,33 @@ switch ($Command) {
             throw "Unknown shim action: $shimAction. Use install, verify, or remove."
         }
 
-        $shimScript = Join-Path $scriptDir "skills\install-shim.ps1"
-        $shimArgs = @{}
-        if ($InstallDir) {
-            $shimArgs.InstallDir = $InstallDir
+        if ($IsMacOS -or $IsLinux) {
+            $shimScript = Join-Path $scriptDir "skills-setup/install-shim.sh"
+            $bashArgs = @()
+            if ($InstallDir) { $bashArgs += "--install-dir"; $bashArgs += $InstallDir }
+            if ($shimAction -eq "verify") { $bashArgs += "--verify-only" }
+            if ($shimAction -eq "remove") { $bashArgs += "--remove" }
+            & (Get-BashPath) $shimScript @bashArgs
+        } else {
+            $shimScript = Join-Path $scriptDir "skills-setup\install-shim.ps1"
+            $shimArgs = @{}
+            if ($InstallDir) { $shimArgs.InstallDir = $InstallDir }
+            if ($AddToUserPath) { $shimArgs.AddToUserPath = $true }
+            if ($shimAction -eq "verify") { $shimArgs.VerifyOnly = $true }
+            if ($shimAction -eq "remove") { $shimArgs.Remove = $true }
+            & $shimScript @shimArgs
         }
-        if ($AddToUserPath) {
-            $shimArgs.AddToUserPath = $true
-        }
-        if ($shimAction -eq "verify") {
-            $shimArgs.VerifyOnly = $true
-        }
-        if ($shimAction -eq "remove") {
-            $shimArgs.Remove = $true
-        }
-
-        & $shimScript @shimArgs
+    }
+    "help" {
+        Write-Output @"
+Usage:
+  skills list [-Target codex|claude|copilot|all] [-Scope personal|project] [-TargetRepo <path>]
+  skills show <name>
+  skills add <name> [-Target codex|claude|copilot|all] [-Scope personal|project] [-User|-Repo] [-Copy|-Link] [-KeepExisting]
+  skills install [-Target codex|claude|copilot|all] [-Scope personal|project] [-User|-Repo] [-Copy|-Link] [-KeepExisting]
+  skills verify [-Target codex|claude|copilot|all] [-Scope personal|project] [-User|-Repo]
+  skills shim [install|verify|remove] [-InstallDir <path>] [-AddToUserPath]
+  skills help
+"@
     }
 }

@@ -136,7 +136,7 @@ the stale copy active. Pass `--keep-existing` to leave non-symlink targets in
 place.
 
 If the repository is renamed or moved, rerun `scripts/skills.ps1 install` or
-`scripts/skills/repair-personal-links.sh` from the new clone. Existing personal
+`scripts/skills-setup/repair-personal-links.sh` from the new clone. Existing personal
 skill links continue to point through the stable repo link, so repair updates
 the repo pointer instead of rewriting every path by hand. In explicit copy mode,
 rerunning the installer refreshes the copied snapshots.
@@ -146,8 +146,8 @@ rerunning the installer refreshes the copied snapshots.
 repair implementation runs both personal install implementations:
 
 ```text
-scripts/skills/install-codex.sh
-scripts/skills/install-claude-code.sh
+scripts/skills-setup/install-codex.sh
+scripts/skills-setup/install-claude-code.sh
 ```
 
 Each install script is idempotent for its target runtime. It creates missing
@@ -159,7 +159,7 @@ before replacing them, and does not require symlink privileges.
 
 On Windows Git Bash/MSYS/Cygwin, symlink mode requires real Windows symlink
 support. The recommended command is
-`MSYS=winsymlinks:nativestrict ./scripts/skills/install-claude-code.sh`, and
+`MSYS=winsymlinks:nativestrict ./scripts/skills-setup/install-claude-code.sh`, and
 Windows may require Developer Mode or an elevated shell. If `ln -s` does not
 produce a real symlink, the installer must fail instead of treating a copied
 directory or placeholder as success.
@@ -242,7 +242,7 @@ alone.
 
 ## Verification Requirements
 
-`scripts/skills.ps1 verify`, implemented by `scripts/skills/verify.sh`, must
+`scripts/skills.ps1 verify`, implemented by `scripts/skills-setup/verify.sh`, must
 check:
 
 - Every canonical skill has a `SKILL.md`.

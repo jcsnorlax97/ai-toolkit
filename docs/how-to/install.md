@@ -65,13 +65,13 @@ Use the `skills` CLI for the assistant target you want to expose skills to:
 
 | Goal | Command | Scope |
 | --- | --- | --- |
-| List canonical skills | `./scripts/skills.ps1 list` | Source repo |
-| Show one skill | `./scripts/skills.ps1 show diagnose` | Source repo |
-| Verify source skills and adapters | `./scripts/skills.ps1 verify` | Source repo |
-| Install or repair Claude Code personal skills from PowerShell | `./scripts/skills.ps1 install user claude -Copy` | `~/.claude/skills/` |
-| Install or repair Codex personal skills from PowerShell | `./scripts/skills.ps1 install user codex -Copy` | `~/.codex/skills/` |
-| Install or repair supported personal targets from PowerShell | `./scripts/skills.ps1 install user all -Copy` | Claude Code and Codex |
-| Verify one copied personal target without changing files | `./scripts/skills.ps1 verify user claude -Copy` | Selected runtime |
+| List canonical skills | `./scripts/skills list` | Source repo |
+| Show one skill | `./scripts/skills show diagnose` | Source repo |
+| Verify source skills and adapters | `./scripts/skills verify` | Source repo |
+| Install or repair Claude Code personal skills | `./scripts/skills install user claude -Copy` | `~/.claude/skills/` |
+| Install or repair Codex personal skills | `./scripts/skills install user codex -Copy` | `~/.codex/skills/` |
+| Install or repair supported personal targets | `./scripts/skills install user all -Copy` | Claude Code and Codex |
+| Verify one copied personal target without changing files | `./scripts/skills verify user claude -Copy` | Selected runtime |
 | Add one skill to a project profile | `skills add repo query-azure-devops` | `<project>/.ai-toolkit/skills.json` |
 | Install one project skill for Claude Code | `skills install repo query-azure-devops claude` | `<project>/.claude/skills/` |
 | Install the project profile for Claude Code | `skills install repo claude` | `<project>/.claude/skills/` |
@@ -114,25 +114,25 @@ skill copies must match the canonical source; if a copy differs, the command
 stops instead of overwriting or deleting the directory.
 
 Legacy command names live under `scripts/compat/` as compatibility wrappers.
-New docs should point at `scripts/skills.ps1` or the organized
-`scripts/skills/` implementation directly.
+New docs should use `./scripts/skills` (Mac/Linux) or `./scripts/skills.ps1` (Windows) as entry points.
+See [ADR 0001](../adr/0001-powershell-as-cross-platform-core.md) for the cross-platform architecture.
 
 Command shims are separate from runtime installs:
 
 | Goal | Command | Scope |
 | --- | --- | --- |
+| Install macOS/Linux `baseline` shim | `./scripts/baseline shim install` | One shell wrapper in `~/.local/bin` |
+| Verify macOS/Linux `baseline` shim | `./scripts/baseline shim verify` | No writes |
+| Remove macOS/Linux `baseline` shim | `./scripts/baseline shim remove` | One managed shell wrapper |
+| Install macOS/Linux `skills` shim | `./scripts/skills shim install` | One shell wrapper in `~/.local/bin` |
+| Verify macOS/Linux `skills` shim | `./scripts/skills shim verify` | No writes |
+| Remove macOS/Linux `skills` shim | `./scripts/skills shim remove` | One managed shell wrapper |
 | Install Windows `baseline` shim | `./scripts/baseline.ps1 shim install -AddToUserPath` | User PATH and one `.cmd` wrapper |
-| Verify Windows shim | `./scripts/baseline.ps1 shim verify` | No writes |
-| Remove Windows shim | `./scripts/baseline.ps1 shim remove` | One managed `.cmd` wrapper |
+| Verify Windows `baseline` shim | `./scripts/baseline.ps1 shim verify` | No writes |
+| Remove Windows `baseline` shim | `./scripts/baseline.ps1 shim remove` | One managed `.cmd` wrapper |
 | Install Windows `skills` shim | `./scripts/skills.ps1 shim install -AddToUserPath` | User PATH and one `.cmd` wrapper |
 | Verify Windows `skills` shim | `./scripts/skills.ps1 shim verify` | No writes |
 | Remove Windows `skills` shim | `./scripts/skills.ps1 shim remove` | One managed `.cmd` wrapper |
-| Install macOS/Linux `baseline` shim | `./scripts/baselines/install-shim.sh` | One shell wrapper in `~/.local/bin` |
-| Verify macOS/Linux shim | `./scripts/baselines/install-shim.sh --verify-only` | No writes |
-| Remove macOS/Linux shim | `./scripts/baselines/install-shim.sh --remove` | One managed shell wrapper |
-| Install macOS/Linux `skills` shim | `./scripts/skills/install-shim.sh` | One shell wrapper in `~/.local/bin` |
-| Verify macOS/Linux `skills` shim | `./scripts/skills/install-shim.sh --verify-only` | No writes |
-| Remove macOS/Linux `skills` shim | `./scripts/skills/install-shim.sh --remove` | One managed shell wrapper |
 
 The `baseline` and `skills` shims do not install skills or write to
 `~/.claude/skills`, `~/.codex/skills`, or assistant runtime state. They only
@@ -149,30 +149,38 @@ the next `baseline apply` migrates them to the current `baseline` marker.
 The default installer mode is symlink mode. Use `-Copy` from `skills.ps1`, or
 `--copy` from the organized shell scripts, as an explicit fallback:
 
-```powershell
-./scripts/skills.ps1 install user claude -Copy
+```bash
+./scripts/skills install user claude -Copy
 ```
 
 ```bash
-./scripts/skills/install-claude-code.sh --link
+./scripts/skills-setup/install-claude-code.sh --link
 ```
 
 ## Platform Commands
 
 ### macOS
 
-macOS normally does not need special privileges for these symlinks:
+**Prerequisite:** `baseline` and `skills` require PowerShell. Install it once:
 
 ```bash
-./scripts/skills/install-claude-code.sh
-./scripts/skills/install-claude-code.sh --verify-only
+brew install powershell
 ```
 
-For the portable baseline command shim:
+macOS normally does not need special privileges for skill symlinks:
 
 ```bash
-./scripts/baselines/install-shim.sh
+./scripts/skills-setup/install-claude-code.sh
+./scripts/skills-setup/install-claude-code.sh --verify-only
+```
+
+For the `baseline` and `skills` command shims:
+
+```bash
+./scripts/baseline shim install
+./scripts/skills shim install
 baseline list
+skills list
 ```
 
 If `~/.local/bin` is not in `PATH`, add it to the shell profile:
@@ -208,8 +216,8 @@ Windows user profile.
 After the preflight passes, run the installer from the repo root:
 
 ```bash
-MSYS=winsymlinks:nativestrict ./scripts/skills/install-claude-code.sh
-MSYS=winsymlinks:nativestrict ./scripts/skills/install-claude-code.sh --verify-only
+MSYS=winsymlinks:nativestrict ./scripts/skills-setup/install-claude-code.sh
+MSYS=winsymlinks:nativestrict ./scripts/skills-setup/install-claude-code.sh --verify-only
 ```
 
 ### Windows, VS Code PowerShell Or `pwsh`
@@ -260,7 +268,7 @@ explicitly:
 ```powershell
 $env:MSYS = "winsymlinks:nativestrict"
 & "C:\Program Files\Git\bin\bash.exe" -lc `
-  "cd /c/Users/<WindowsUser>/Documents/a-codex/ai-toolkit && ./scripts/skills/repair-personal-links.sh"
+  "cd /c/Users/<WindowsUser>/Documents/a-codex/ai-toolkit && ./scripts/skills-setup/repair-personal-links.sh"
 ```
 
 If neither option is available, keep using copy mode and rerun the copy
@@ -321,8 +329,8 @@ the block's location.
 Use WSL only when Claude Code is also running inside WSL:
 
 ```bash
-./scripts/skills/install-claude-code.sh
-./scripts/skills/install-claude-code.sh --verify-only
+./scripts/skills-setup/install-claude-code.sh
+./scripts/skills-setup/install-claude-code.sh --verify-only
 ```
 
 If Claude Code is the Windows app, do not use WSL's default
@@ -334,7 +342,7 @@ Claude Code profile.
 Installer verification:
 
 ```bash
-./scripts/skills/install-claude-code.sh --verify-only
+./scripts/skills-setup/install-claude-code.sh --verify-only
 ```
 
 Manual Git Bash verification:
@@ -373,7 +381,7 @@ Default symlink mode is deterministic:
 | Stable `current` symlink points at an old repo path | Replace it to point at the current clone. |
 | Stable `current` symlink is broken | Replace it to point at the current clone. |
 | Stable `current` path exists but is not a symlink | Move it to `.ai-toolkit-backups/<timestamp>/current`, then create the real symlink. |
-| Repo is moved or renamed | Run `scripts/skills/repair-personal-links.sh` from the new clone. |
+| Repo is moved or renamed | Run `scripts/skills-setup/repair-personal-links.sh` from the new clone. |
 | Repo content changes after `git pull` | Existing linked skills see changes immediately; rerun installer only for new skills or repair. |
 | `--verify-only` | Check current state and fail if any expected symlink is missing, stale, or broken; do not mutate files. |
 
@@ -382,8 +390,8 @@ Default symlink mode is deterministic:
 Use copy mode only if a machine cannot create real symlinks:
 
 ```bash
-./scripts/skills/install-claude-code.sh --copy
-./scripts/skills/install-claude-code.sh --copy --verify-only
+./scripts/skills-setup/install-claude-code.sh --copy
+./scripts/skills-setup/install-claude-code.sh --copy --verify-only
 ```
 
 Copy mode behavior differs from symlink mode:

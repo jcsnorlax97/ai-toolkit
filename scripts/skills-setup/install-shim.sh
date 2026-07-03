@@ -13,9 +13,9 @@ LEGACY_MARKER="agentic-engineering-skills skills shim"
 usage() {
   cat <<'USAGE'
 Usage:
-  ./scripts/skills/install-shim.sh [--install-dir <dir>]
-  ./scripts/skills/install-shim.sh --verify-only [--install-dir <dir>]
-  ./scripts/skills/install-shim.sh --remove [--install-dir <dir>]
+  ./scripts/skills-setup/install-shim.sh [--install-dir <dir>]
+  ./scripts/skills-setup/install-shim.sh --verify-only [--install-dir <dir>]
+  ./scripts/skills-setup/install-shim.sh --remove [--install-dir <dir>]
 USAGE
 }
 

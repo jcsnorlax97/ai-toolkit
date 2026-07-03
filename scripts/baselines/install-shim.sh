@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
-CLI_PATH="$ROOT_DIR/scripts/baseline"
+CLI_PATH="$ROOT_DIR/scripts/baseline.ps1"
 INSTALL_DIR="${BASELINE_BIN_DIR:-${PORTABLE_BASELINE_BIN_DIR:-$HOME/.local/bin}}"
 VERIFY_ONLY=0
 REMOVE=0
@@ -117,7 +117,7 @@ mkdir -p "$INSTALL_DIR"
 cat > "$SHIM_PATH" <<SHIM
 #!/usr/bin/env bash
 # $MARKER
-BASELINE_COMMAND_NAME=baseline exec "$CLI_PATH" "\$@"
+exec pwsh -NoProfile -ExecutionPolicy Bypass -File "$CLI_PATH" "\$@"
 SHIM
 chmod +x "$SHIM_PATH"
 

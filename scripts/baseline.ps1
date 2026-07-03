@@ -298,22 +298,22 @@ switch ($Command) {
             throw "Unknown shim action: $ShimAction. Use install, verify, or remove."
         }
 
-        $shimScript = Join-Path $scriptDir "baselines\install-shim.ps1"
-        $shimArgs = @{}
-        if ($InstallDir) {
-            $shimArgs.InstallDir = $InstallDir
+        if ($IsMacOS -or $IsLinux) {
+            $shimScript = Join-Path $scriptDir "baselines/install-shim.sh"
+            $bashArgs = @()
+            if ($InstallDir) { $bashArgs += "--install-dir"; $bashArgs += $InstallDir }
+            if ($ShimAction -eq "verify") { $bashArgs += "--verify-only" }
+            if ($ShimAction -eq "remove") { $bashArgs += "--remove" }
+            & bash $shimScript @bashArgs
+        } else {
+            $shimScript = Join-Path $scriptDir "baselines\install-shim.ps1"
+            $shimArgs = @{}
+            if ($InstallDir) { $shimArgs.InstallDir = $InstallDir }
+            if ($AddToUserPath) { $shimArgs.AddToUserPath = $true }
+            if ($ShimAction -eq "verify") { $shimArgs.VerifyOnly = $true }
+            if ($ShimAction -eq "remove") { $shimArgs.Remove = $true }
+            & $shimScript @shimArgs
         }
-        if ($AddToUserPath) {
-            $shimArgs.AddToUserPath = $true
-        }
-        if ($ShimAction -eq "verify") {
-            $shimArgs.VerifyOnly = $true
-        }
-        if ($ShimAction -eq "remove") {
-            $shimArgs.Remove = $true
-        }
-
-        & $shimScript @shimArgs
     }
 }
 }

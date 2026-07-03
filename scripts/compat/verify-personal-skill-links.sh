@@ -3,4 +3,4 @@ set -eu
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 
-"$ROOT_DIR/scripts/skills/verify-personal-links.sh" "$@"
+"$ROOT_DIR/scripts/skills-setup/verify-personal-links.sh" "$@"

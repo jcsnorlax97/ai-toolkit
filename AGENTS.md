@@ -35,7 +35,7 @@ historical reference; do not treat it as current.
   `~/.local/share/ai-toolkit/current`. On Windows, use Git Bash
   with real symlink support, such as elevated Git Bash plus
   `MSYS=winsymlinks:nativestrict`. `--copy` is only an explicit fallback.
-  After moving or renaming the repo, run `scripts/skills/repair-personal-links.sh`.
+  After moving or renaming the repo, run `scripts/skills-setup/repair-personal-links.sh`.
 - The upstream engineering skills are imported from `mattpocock/skills`; do not present them as original work from this repo.
 - Local companion skills are `grill-spec`, `methodology-intake`,
   `setup-agent-team`, `staff-level-review`, `ship-vertical-slice`, and

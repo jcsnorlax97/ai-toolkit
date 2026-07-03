@@ -36,7 +36,7 @@ Windows note:
   Developer Mode or run the shell with privileges that can create symlinks.
   Prefer:
 
-    MSYS=winsymlinks:nativestrict ./scripts/skills/install-claude-code.sh
+    MSYS=winsymlinks:nativestrict ./scripts/skills-setup/install-claude-code.sh
 
   If you run from WSL, the default ~/.claude/skills path is inside WSL, not the
   Windows user's Claude Code profile, unless you explicitly set CLAUDE_SKILLS_DIR.

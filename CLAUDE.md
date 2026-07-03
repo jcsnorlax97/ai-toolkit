@@ -54,7 +54,7 @@ The following skills are local additions in this repository.
 Run this after skill or layout changes:
 
 ```bash
-./scripts/skills/verify.sh
+./scripts/skills-setup/verify.sh
 ```
 
 Run this after portable baseline changes:
