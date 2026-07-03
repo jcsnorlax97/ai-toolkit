@@ -1,0 +1,9 @@
+{
+  "name": "ensure-vercel-cli",
+  "version": "0.1.0",
+  "status": "active",
+  "description": "Ensures Vercel CLI is installed to the managed tools directory before any Bash command runs. Installs to ~/.local/share/ai-toolkit/tools/ and symlinks to ~/.local/bin/.",
+  "adapters": {
+    "claude": "adapters/claude.json.block"
+  }
+}

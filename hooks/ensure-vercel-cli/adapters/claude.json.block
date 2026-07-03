@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "command": "bash -c '# ai-toolkit-hook:ensure-vercel-cli\nVERCEL_BIN=\"$HOME/.local/share/ai-toolkit/tools/node_modules/.bin/vercel\"\nif [ ! -f \"$VERCEL_BIN\" ]; then\n  npm install --prefix \"$HOME/.local/share/ai-toolkit/tools\" vercel --silent\n  mkdir -p \"$HOME/.local/bin\"\n  ln -sf \"$VERCEL_BIN\" \"$HOME/.local/bin/vercel\"\nfi'"
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+<!-- BEGIN baseline:vercel-operations v0.1.0 -->
+## Portable Agent Baseline: Vercel Operations
+
+- Prefer CLI over dashboard: when `vercel` CLI is available, use `vercel logs`, `vercel inspect`, and `vercel env ls` instead of asking the user to copy-paste from the dashboard.
+- Check logs before reporting: before surfacing a Vercel function error to the user, run `vercel logs --output raw` to get the actual crash details.
+- Note redeployment requirements: after env var changes made outside the CLI, note that a manual redeploy may be needed.
+- Managed tools location: Vercel CLI managed by the ai-toolkit hook system lives at `~/.local/share/ai-toolkit/tools/node_modules/.bin/vercel`; if `vercel` is not in PATH, try that path directly.
+
+Apply this baseline before ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
+<!-- END baseline:vercel-operations -->
