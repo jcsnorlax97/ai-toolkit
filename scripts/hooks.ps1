@@ -288,14 +288,14 @@ function Invoke-HooksCommand {
                     }
 
                     if (-not $packInfo.adapters.PSObject.Properties[$tool]) {
-                        Write-Output "skip $packName for $tool: no adapter defined"
+                        Write-Output "skip $packName for ${tool}: no adapter defined"
                         continue
                     }
 
                     $adapterRel = $packInfo.adapters.PSObject.Properties[$tool].Value
                     $adapterPath = Join-Path (Get-PackRoot $packName) $adapterRel
                     if (-not (Test-Path -LiteralPath $adapterPath)) {
-                        Write-Output "skip $packName for $tool: adapter file missing: $adapterPath"
+                        Write-Output "skip $packName for ${tool}: adapter file missing: $adapterPath"
                         continue
                     }
 
