@@ -25,12 +25,27 @@ session. It pairs well with the `vercel-operations` baseline pack.
 
 | Location | Purpose |
 |---|---|
-| `~/.local/share/ai-toolkit/tools/node_modules/.bin/vercel` | Managed npm install of the Vercel CLI |
+| `~/.local/share/ai-toolkit/tools/package.json` | Managed toolchain manifest (seeded on `hooks apply`) |
+| `~/.local/share/ai-toolkit/tools/package-lock.json` | Lockfile for reproducible installs |
+| `~/.local/share/ai-toolkit/tools/node_modules/.bin/vercel` | Installed Vercel CLI binary |
 | `~/.local/bin/vercel` | Symlink so `vercel` is on PATH |
 
-npm is expected to be available in the environment. The install uses
-`npm install --prefix ... vercel --silent` and does not require global npm
-permissions.
+npm is expected to be available in the environment. The install does not require
+global npm permissions.
+
+## Managed toolchain
+
+When `hooks apply ensure-vercel-cli` runs, it:
+
+1. Reads the `toolchain.npm` declaration from `pack.json`
+2. Creates or updates `~/.local/share/ai-toolkit/tools/package.json` with
+   `vercel` as a declared dependency
+3. Runs `npm install --prefix ~/.local/share/ai-toolkit/tools` to install and
+   generate a `package-lock.json`
+4. Symlinks the binary to `~/.local/bin/vercel`
+
+On subsequent machines, run `hooks install-tools` to reinstall all declared
+tools from the manifest without re-applying hooks.
 
 ## Windows support
 

@@ -3,7 +3,7 @@
     "PreToolUse": [
       {
         "matcher": "Bash",
-        "command": "bash -c '# ai-toolkit-hook:ensure-vercel-cli\nVERCEL_BIN=\"$HOME/.local/share/ai-toolkit/tools/node_modules/.bin/vercel\"\nif [ ! -f \"$VERCEL_BIN\" ]; then\n  npm install --prefix \"$HOME/.local/share/ai-toolkit/tools\" vercel --silent\n  mkdir -p \"$HOME/.local/bin\"\n  ln -sf \"$VERCEL_BIN\" \"$HOME/.local/bin/vercel\"\nfi'"
+        "command": "bash -c '# ai-toolkit-hook:ensure-vercel-cli\nTOOLS_DIR=\"$HOME/.local/share/ai-toolkit/tools\"\nVERCEL_BIN=\"$TOOLS_DIR/node_modules/.bin/vercel\"\nif [ ! -f \"$VERCEL_BIN\" ]; then\n  if [ -f \"$TOOLS_DIR/package.json\" ]; then\n    npm install --prefix \"$TOOLS_DIR\" --silent 2>/dev/null\n  else\n    npm install --prefix \"$TOOLS_DIR\" vercel --silent 2>/dev/null\n  fi\n  mkdir -p \"$HOME/.local/bin\"\n  ln -sf \"$VERCEL_BIN\" \"$HOME/.local/bin/vercel\" 2>/dev/null || true\nfi'"
       }
     ]
   }

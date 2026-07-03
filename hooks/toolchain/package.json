@@ -1,0 +1,8 @@
+{
+  "name": "ai-toolkit-tools",
+  "private": true,
+  "description": "Canonical version declarations for all ai-toolkit hook-managed Node CLI tools. Seeded to ~/.local/share/ai-toolkit/tools/ on first hooks apply.",
+  "dependencies": {
+    "vercel": "latest"
+  }
+}

@@ -40,6 +40,7 @@ Usage:
   hooks remove <pack|all> [-Tools claude] [-Scope project|user] [-TargetRepo <path>] [-DryRun]
   hooks verify [pack|all] [-Tools claude] [-Scope project|user] [-TargetRepo <path>]
   hooks shim install|verify|remove [-AddToUserPath] [-InstallDir <path>]
+  hooks install-tools
   hooks help
 
 Notes:
@@ -193,8 +194,77 @@ function Format-StatusCell($Label, $Value) {
     return ("[{0} {1}]" -f $Label, $Value)
 }
 
+function Get-ManagedToolsDir {
+    return Join-Path $HOME ".local/share/ai-toolkit/tools"
+}
+
+function Install-PackToolchain($PackInfo, $IsDryRun) {
+    if (-not $PackInfo.PSObject.Properties["toolchain"]) { return }
+    $tc = $PackInfo.toolchain
+    if (-not $tc.PSObject.Properties["npm"]) { return }
+
+    $pkgName = $tc.npm.package
+    $pkgVersion = $tc.npm.version
+    $managedToolsDir = Get-ManagedToolsDir
+    $managedPkgPath = Join-Path $managedToolsDir "package.json"
+
+    if ($IsDryRun) {
+        Write-Output "would ensure toolchain: $pkgName@$pkgVersion → $managedPkgPath"
+        return
+    }
+
+    if (Test-Path -LiteralPath $managedPkgPath) {
+        $managedPkg = Read-Utf8Text $managedPkgPath | ConvertFrom-Json
+    } else {
+        $repoToolchainPkg = Join-Path $hooksRoot "toolchain/package.json"
+        if (Test-Path -LiteralPath $repoToolchainPkg) {
+            $managedPkg = Read-Utf8Text $repoToolchainPkg | ConvertFrom-Json
+        } else {
+            $managedPkg = [PSCustomObject]@{
+                name        = "ai-toolkit-tools"
+                private     = $true
+                description = "Hook-managed CLI tools installed by ai-toolkit."
+                dependencies = [PSCustomObject]@{}
+            }
+        }
+    }
+
+    if (-not $managedPkg.PSObject.Properties["dependencies"]) {
+        $managedPkg | Add-Member -NotePropertyName "dependencies" -NotePropertyValue ([PSCustomObject]@{})
+    }
+    $managedPkg.dependencies | Add-Member -NotePropertyName $pkgName -NotePropertyValue $pkgVersion -Force
+
+    if (-not (Test-Path -LiteralPath $managedToolsDir)) {
+        New-Item -ItemType Directory -Path $managedToolsDir -Force | Out-Null
+    }
+    $json = $managedPkg | ConvertTo-Json -Depth 5
+    Write-Utf8Text $managedPkgPath $json
+
+    Write-Output "installing $pkgName@$pkgVersion to $managedToolsDir..."
+    $npmOutput = & npm install --prefix $managedToolsDir --silent 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        Write-Output "warning: npm install exited $LASTEXITCODE"
+        if ($npmOutput) { Write-Output $npmOutput }
+    } else {
+        Write-Output "installed $pkgName to $managedToolsDir/node_modules"
+    }
+
+    if ($IsMacOS -or $IsLinux) {
+        $binDir = Join-Path $HOME ".local/bin"
+        if (-not (Test-Path -LiteralPath $binDir)) {
+            New-Item -ItemType Directory -Path $binDir -Force | Out-Null
+        }
+        $binPath = Join-Path $managedToolsDir "node_modules/.bin/$pkgName"
+        $symlinkPath = Join-Path $binDir $pkgName
+        if (Test-Path -LiteralPath $binPath) {
+            & ln -sf $binPath $symlinkPath
+            Write-Output "symlinked $pkgName → $symlinkPath"
+        }
+    }
+}
+
 function Invoke-HooksCommand {
-    $validCommands = @("list", "show", "apply", "remove", "verify", "shim", "help", "--help", "-h")
+    $validCommands = @("list", "show", "apply", "remove", "verify", "shim", "install-tools", "help", "--help", "-h")
     if ($validCommands -notcontains $Command) {
         throw "Unknown command: $Command"
     }
@@ -362,6 +432,8 @@ function Invoke-HooksCommand {
                         Write-Output "added $packName hooks for $tool in ${resolvedScope}: $settingsPath"
                     }
                 }
+
+                Install-PackToolchain $packInfo $DryRun
             }
         }
 
@@ -504,6 +576,22 @@ function Invoke-HooksCommand {
                 if ($ShimAction -eq "remove") { $shimArgs.Remove = $true }
                 & $shimScript @shimArgs
             }
+        }
+
+        "install-tools" {
+            $managedToolsDir = Get-ManagedToolsDir
+            $managedPkgPath = Join-Path $managedToolsDir "package.json"
+
+            if (-not (Test-Path -LiteralPath $managedPkgPath)) {
+                throw "No managed tools manifest at: $managedPkgPath. Run 'hooks apply <pack>' first."
+            }
+
+            $managedPkg = Read-Utf8Text $managedPkgPath | ConvertFrom-Json
+            $depCount = @($managedPkg.dependencies.PSObject.Properties).Count
+
+            Write-Output "Installing $depCount managed tool(s) from $managedPkgPath..."
+            & npm install --prefix $managedToolsDir
+            Write-Output "Done."
         }
     }
 }
