@@ -40,8 +40,6 @@ reference (see Ecosystem Status below).
   autonomous modes until manual execution packets have more real usage.
 - Do not vendor unclear-license or non-commercial external skill content.
 - Do not let the repo become a generic prompt dump.
-- Do not resume `ai-workbench` implementation until a real task demands its
-  first slice (`ai-workbench start dev-task`); the doc scaffold stays dormant.
 
 ## This Repo And Its Neighbors
 
@@ -49,8 +47,8 @@ This roadmap governs `ai-toolkit` only. Each layer records its own decisions:
 
 - `skillops` — active. This repo's skill lifecycle journal; kept separate
   because it records evidence this repo intentionally does not hold.
-- `ai-workbench` — dormant seed that consumes this repo via `AI_TOOLKIT_PATH`;
-  revive on demand.
+- `ai-workbench` — active (Phase 1 dev-task CLI implemented 2026-07); consumes
+  this repo via `AI_TOOLKIT_PATH` and governs itself in its own repo.
 - `ai-ops-ecosystem-spec` — frozen (2026-07-02). Historical ADRs and
   contracts; this file replaced its roadmap for toolkit priorities only.
 - Capture / second-brain layer (`ai-second-brain`,
