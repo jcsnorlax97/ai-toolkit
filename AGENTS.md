@@ -38,8 +38,10 @@ historical reference; do not treat it as current.
   After moving or renaming the repo, run `scripts/skills/repair-personal-links.sh`.
 - The upstream engineering skills are imported from `mattpocock/skills`; do not present them as original work from this repo.
 - Local companion skills are `grill-spec`, `methodology-intake`,
-  `capture-input-note`, `setup-agent-team`, `staff-level-review`,
-  `ship-vertical-slice`, and `diagnose-regression`.
+  `setup-agent-team`, `staff-level-review`, `ship-vertical-slice`, and
+  `diagnose-regression`. (`capture-input-note` migrated to
+  `../ai-second-brain/skills/` on 2026-07-03; capture skills live in the
+  capture layer.)
 - Reusable candidate skills may live in `skills/engineering/`, but SkillOps
   lifecycle metadata belongs in `../skillops/inventory/skills.yaml`. Do not
   create a repo-local `inventory/` directory for SkillOps data.
@@ -49,7 +51,8 @@ historical reference; do not treat it as current.
   `docs/specs/0001-cross-tool-skills-repo.md` before changing layout or install
   behavior.
 - Read `docs/specs/0005-capture-input-note-vs-methodology-intake.md` before
-  changing either source-capture or methodology-adoption behavior.
+  changing methodology-adoption behavior; the capture side
+  (`capture-input-note`) now lives in `../ai-second-brain`.
 
 ## Delivery Loop
 

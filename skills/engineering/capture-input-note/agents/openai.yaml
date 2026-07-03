@@ -1,4 +1,0 @@
-interface:
-  display_name: "Capture Input Note"
-  short_description: "Ingest external sources for later review"
-  default_prompt: "Use $capture-input-note to ingest this external source as a redacted input note with access status and provenance."

@@ -53,9 +53,9 @@ This roadmap governs `ai-toolkit` only. Each layer records its own decisions:
   revive on demand.
 - `ai-ops-ecosystem-spec` — frozen (2026-07-02). Historical ADRs and
   contracts; this file replaced its roadmap for toolkit priorities only.
-- Capture / second-brain layer (`ai-second-brain-method`,
+- Capture / second-brain layer (`ai-second-brain`,
   `ai-work-log-bootstrap`, `personal-diary-capture`) — governs itself in
-  `../ai-second-brain-method/docs/roadmap.md`. Not governed from here.
+  `../ai-second-brain/docs/roadmap.md`. Not governed from here.
 
 ## Update Rules
 
