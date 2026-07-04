@@ -1,7 +1,7 @@
 # Git Collaboration Hygiene Baseline
 
 Status: active
-Version: 0.1.0
+Version: 0.2.0
 
 This is a tool-neutral always-on baseline for AI coding agents working in Git
 repositories. It captures collaboration safety that should apply before
@@ -35,7 +35,7 @@ workflow-specific PR, release, deploy, or multi-agent procedures.
 
 ## Priority
 
-Apply this baseline before ordinary Git habits, but never use it to override
+This baseline takes precedence over ordinary Git habits, but never use it to override
 explicit user instructions, safety rules, privacy boundaries, or stricter
 repo-local instructions.
 

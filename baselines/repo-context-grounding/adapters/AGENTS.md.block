@@ -1,4 +1,4 @@
-<!-- BEGIN baseline:repo-context-grounding v0.1.0 -->
+<!-- BEGIN baseline:repo-context-grounding v0.2.0 -->
 ## Portable Agent Baseline: Repo Context Grounding
 
 - Start from local instructions: read repo-level agent instructions, README, and linked docs that define setup, boundaries, ownership, or workflow.

@@ -158,13 +158,16 @@ Imported engineering skills from `mattpocock/skills` are kept here with
 attribution in `NOTICE.md` and `docs/upstream-sources.md`.
 
 Local companion skills include `grill-spec`, `methodology-intake`,
-`capture-input-note`, `setup-agent-team`, `staff-level-review`,
-`ship-vertical-slice`, `diagnose-regression`, `client-flow-diagrams`, and
+`setup-agent-team`, `staff-level-review`, `client-flow-diagrams`, and
 `query-azure-devops`. Media skills include `social-live-photo-card`.
+(`capture-input-note` lives in `../ai-second-brain`; `ship-vertical-slice`
+and `diagnose-regression` were retired as thin duplicates of `tdd` and
+`diagnose` — see `docs/adr/0002-no-parallel-thin-skill-variants.md`.)
 
 Current baseline packs include `karpathy-principles`,
 `git-collaboration-hygiene`, `repo-context-grounding`,
-`oop-extension-safety`, and `code-doc-sync`.
+`oop-extension-safety`, `code-doc-sync`, `layered-ownership`, and
+`vercel-operations`.
 
 ## Development
 

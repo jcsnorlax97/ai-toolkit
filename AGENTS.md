@@ -38,10 +38,12 @@ historical reference; do not treat it as current.
   After moving or renaming the repo, run `scripts/skills-setup/repair-personal-links.sh`.
 - The upstream engineering skills are imported from `mattpocock/skills`; do not present them as original work from this repo.
 - Local companion skills are `grill-spec`, `methodology-intake`,
-  `setup-agent-team`, `staff-level-review`, `ship-vertical-slice`, and
-  `diagnose-regression`. (`capture-input-note` migrated to
+  `setup-agent-team`, `staff-level-review`, `client-flow-diagrams`, and
+  `query-azure-devops`. (`capture-input-note` migrated to
   `../ai-second-brain/skills/` on 2026-07-03; capture skills live in the
-  capture layer.)
+  capture layer. `ship-vertical-slice` and `diagnose-regression` were retired
+  on 2026-07-03 as thin duplicates of `tdd` and `diagnose`; see
+  `docs/adr/0002-no-parallel-thin-skill-variants.md`.)
 - Reusable candidate skills may live in `skills/engineering/`, but SkillOps
   lifecycle metadata belongs in `../skillops/inventory/skills.yaml`. Do not
   create a repo-local `inventory/` directory for SkillOps data.
@@ -56,11 +58,11 @@ historical reference; do not treat it as current.
 
 ## Delivery Loop
 
-1. Clarify the request with `grill-spec` when the task is ambiguous, cross-cutting, or domain-heavy.
+1. Clarify the request with `grill-spec` when no concrete plan exists yet; use `grill-with-docs` to challenge an existing plan against docs.
 2. Update `CONTEXT.md` when a domain term or relationship is clarified.
 3. Record an ADR only when the decision is hard to reverse, surprising without context, and the result of a real trade-off.
-4. Implement with `tdd` or `ship-vertical-slice`: one behavior, one test, one slice at a time.
-5. If behavior is broken or regressed, switch to `diagnose` or `diagnose-regression`.
+4. Implement with `tdd`: one behavior, one test, one slice at a time.
+5. If behavior is broken or regressed, switch to `diagnose`.
 6. End substantial work with a short verification summary and next-step risks.
 
 ## Repo Docs
@@ -101,7 +103,7 @@ historical reference; do not treat it as current.
 - 如需刪除文件，只能一次刪除一個明確路徑的文件。
 - 如果需要批量刪除，停止並請用戶手動處理。
 
-<!-- BEGIN baseline:karpathy-principles v0.1.0 -->
+<!-- BEGIN baseline:karpathy-principles v0.2.0 -->
 ## Portable Agent Baseline: Karpathy Principles
 
 - Think before coding: state assumptions, surface ambiguity, and ask when the safe interpretation is unclear.
@@ -109,11 +111,11 @@ historical reference; do not treat it as current.
 - Surgical changes: touch only files and lines needed for the task, match local style, and mention unrelated concerns instead of editing them.
 - Goal-driven execution: turn open-ended work into success criteria and verify the result with tests, scripts, inspection, or another concrete check.
 
-Apply this baseline before ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
+This baseline takes precedence over ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
 <!-- END baseline:karpathy-principles -->
 
 
-<!-- BEGIN baseline:layered-ownership v0.1.0 -->
+<!-- BEGIN baseline:layered-ownership v0.2.0 -->
 ## Portable Agent Baseline: Layered Ownership
 
 - Each repo or layer records its own decisions, status, and roadmap; do not write another layer's decisions into this repo's documents.
@@ -121,6 +123,6 @@ Apply this baseline before ordinary implementation habits, but never use it to o
 - Before recording a status or decision entry, identify which layer owns the affected asset and record it in that layer's own documents.
 - Do not create or grow a central governance hub; if a document starts mirroring another repo's changes, stop and move the content to its owner.
 
-Apply this baseline before ordinary documentation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
+This baseline takes precedence over ordinary documentation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
 <!-- END baseline:layered-ownership -->
 

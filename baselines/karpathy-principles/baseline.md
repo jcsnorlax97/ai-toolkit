@@ -1,7 +1,7 @@
 # Karpathy Principles Baseline
 
 Status: active
-Version: 0.1.0
+Version: 0.2.0
 
 This is a tool-neutral always-on baseline for AI coding agents. It adapts the
 four principles from the MIT-licensed
@@ -29,7 +29,7 @@ runtime state.
 
 ## Priority
 
-Apply this baseline before tool-specific or repo-specific habits, but never use
+This baseline takes precedence over tool-specific and repo-specific habits, but never use
 it to override explicit user instructions, safety rules, privacy boundaries, or
 the target repo's stricter local instructions.
 

@@ -30,6 +30,13 @@ This skill is _informed_ by the project's domain model. The domain language give
 
 ## Process
 
+**Pick the weight first.** If the user names a specific module/area or asks a
+narrow question ("is this seam right?", "should these two merge?"), skip the
+HTML report: explore just that area, present the candidates as markdown in the
+conversation (same fields as the report cards below), and go straight to the
+grilling loop (step 3). The full HTML report is for whole-codebase or
+multi-area reviews.
+
 ### 1. Explore
 
 Read the project's domain glossary and any ADRs in the area you're touching first.

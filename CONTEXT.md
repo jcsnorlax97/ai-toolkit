@@ -156,7 +156,7 @@ Issue: A tracked unit of work. In this repo the default issue tracker is local m
 - An input note can feed methodology intake, daily work logs, or later skill formulation, but it does not itself promote source material into durable knowledge.
 - Capture-input-note and methodology-intake are separate stages: capture-input-note preserves a redacted source note; methodology-intake classifies whether that source should change repo artifacts.
 - Methodology-intake belongs in this repo as an engineering artifact admission gate.
-- Capture-input-note currently lives in this repo as a companion to methodology intake, but should be revisited for migration to AI work-log infrastructure if its main change surface becomes work-log vault contracts or non-engineering capture flows.
+- Capture-input-note lives in `../ai-second-brain` (migrated 2026-07-03); this repo's methodology intake consumes its captured input notes as an optional input but does not own the capture skill.
 - A tool-list-only source may be retained for later reference without being promoted into a formal workflow artifact.
 - An external methodology source should be classified as Skill only when it defines a repeatable workflow with trigger criteria, inputs, steps, outputs, verification, stop conditions, and repo fit.
 - A no-op source does not create or update skills, specs, ADRs, issues, or glossary terms.

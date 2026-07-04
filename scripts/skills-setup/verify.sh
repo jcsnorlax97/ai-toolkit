@@ -80,4 +80,13 @@ if [ "$metadata_warnings" -gt 0 ]; then
   printf 'Metadata recommendations missing for %s skill(s); runtime verification still passed. Set VERIFY_SKILL_METADATA_VERBOSE=1 for details.\n' "$metadata_warnings" >&2
 fi
 
+# Personal installs are outside this repo, so a broken personal link (for
+# example after moving or renaming the repo clone) cannot fail repo
+# verification — but it should not stay invisible either. Warn only.
+if [ -d "$HOME/.claude/skills" ] || [ -d "$HOME/.codex/skills" ]; then
+  if ! "$ROOT_DIR/scripts/skills-setup/verify-personal-links.sh" >/dev/null 2>&1; then
+    warn "Personal skill installs failed verification (run ./scripts/skills-setup/verify-personal-links.sh for details; repair with ./scripts/skills-setup/repair-personal-links.sh). Repo verification still passed."
+  fi
+fi
+
 printf 'Verified skills and adapters successfully.\n'

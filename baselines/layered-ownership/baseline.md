@@ -1,7 +1,7 @@
 # Layered Ownership Baseline
 
 Status: active
-Version: 0.1.0
+Version: 0.2.0
 
 This is a tool-neutral always-on baseline for AI agents working inside a
 multi-repo personal system. It keeps decision records where they belong and

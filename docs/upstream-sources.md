@@ -97,6 +97,11 @@ Required obligations:
 - Do not present imported skills as original work from this repository.
 - Keep `NOTICE.md` and this source registry updated when importing or refreshing.
 
+Local modifications (permitted by MIT; re-apply or re-evaluate on refresh):
+
+- 2026-07-03: `improve-codebase-architecture/SKILL.md` — added a lightweight
+  routing note (skip the HTML report for single-module questions).
+
 ## multica-ai/andrej-karpathy-skills
 
 Source repository:

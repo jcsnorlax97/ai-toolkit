@@ -1,6 +1,6 @@
 ---
 name: staff-level-review
-description: Perform a read-only staff-level engineering review of a PR, branch diff, patch, or review context bundle. Use when the user asks for high-signal review findings across correctness, architecture, security, performance, tests, maintainability, operability, and requirement compliance.
+description: Read-only engineering review with a fixed findings/verdict output contract. Use when the review needs that contract, a review context bundle, or a non-GitHub diff source (e.g. Azure DevOps, a patch file, a bounded set of repos and docs). For routine review of a local diff or GitHub PR, prefer the built-in /code-review or /review instead.
 ---
 
 # Staff-Level Review
@@ -9,8 +9,9 @@ Use this as a read-only engineering review checkpoint. Produce findings and a
 verdict; do not edit files, push changes, or post PR comments unless the user
 explicitly switches to a separate review-fix or posting workflow.
 
-For the full local definition, consult `docs/specs/0004-staff-level-review.md`
-when available.
+If `docs/specs/0004-staff-level-review.md` exists in the current repo, it is
+the fuller definition and takes precedence. If it does not exist, this file is
+self-contained — do not go looking for the spec elsewhere.
 
 ## Inputs
 

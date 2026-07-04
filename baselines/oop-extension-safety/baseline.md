@@ -1,7 +1,7 @@
 # OOP Extension Safety Baseline
 
 Status: active
-Version: 0.1.0
+Version: 0.3.0
 
 Always-on guards for inheritance extension points in object-oriented codebases.
 Applies to any language that supports abstract/virtual methods and dependency
@@ -50,7 +50,7 @@ to compile, pass tests, and reach production.
 
 ## Priority
 
-Apply this baseline before ordinary implementation and test-writing habits, but
+This baseline takes precedence over ordinary implementation and test-writing habits, but
 never use it to override explicit user instructions, safety rules, privacy
 boundaries, or stricter repo-local instructions.
 

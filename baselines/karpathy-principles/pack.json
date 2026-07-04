@@ -1,6 +1,6 @@
 {
   "name": "karpathy-principles",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "active",
   "description": "Always-on engineering posture for AI coding agents: think first, keep changes simple, edit surgically, and verify goals.",
   "source": {

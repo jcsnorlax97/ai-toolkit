@@ -1,7 +1,7 @@
 # Vercel Operations Baseline
 
 Status: active
-Version: 0.1.0
+Version: 0.2.0
 
 This baseline installs operational habits for AI coding agents working on projects
 deployed to Vercel. It directs agents to use the Vercel CLI for observability tasks
@@ -31,7 +31,7 @@ Vercel dashboard.
 
 ## Priority
 
-Apply this baseline before ordinary implementation habits, but never use it to
+This baseline takes precedence over ordinary implementation habits, but never use it to
 override explicit user instructions, safety rules, privacy boundaries, or stricter
 repo-local instructions.
 

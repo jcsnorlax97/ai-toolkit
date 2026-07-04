@@ -1,6 +1,6 @@
 {
   "name": "vercel-operations",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "active",
   "description": "Operational habits for projects deployed to Vercel: use CLI for logs and status instead of asking the user to copy-paste from the dashboard.",
   "adapters": {

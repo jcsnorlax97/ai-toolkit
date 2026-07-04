@@ -1,9 +1,11 @@
 ---
 name: grill-spec
-description: 釐清需求、術語、邊界與驗收條件，逐題盤問直到工作可被安全拆解。Use when the user wants to plan a feature, stress-test assumptions, clarify domain language, or reduce ambiguity before coding.
+description: 在還沒有具體計畫時盤問需求、術語、邊界與驗收條件，出口是第一個最小 vertical slice。Use when requirements are unclear and no concrete plan exists yet — the user has a goal or feature idea but scope, acceptance checks, or domain terms are still fuzzy. Do NOT use when a concrete plan already exists and needs challenging against documented decisions — use grill-with-docs for that.
 ---
 
 # Grill Spec
+
+適用前提:還沒有具體計畫。如果已經有一份計畫需要對照 `CONTEXT.md` 與 ADR 挑戰,改用 `/grill-with-docs`。
 
 一次只問一個問題，直到以下內容足夠清楚：
 

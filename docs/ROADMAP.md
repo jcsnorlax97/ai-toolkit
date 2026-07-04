@@ -1,6 +1,6 @@
 # AI Toolkit Roadmap
 
-last_updated: 2026-07-02
+last_updated: 2026-07-03
 status: active
 
 This file is the current source of truth for toolkit priorities. It replaces
@@ -33,6 +33,14 @@ reference (see Ecosystem Status below).
    building any meeting-specific workflow.
 6. Forward-test `social-live-photo-card` on one real user-provided short video
    before expanding it beyond trial status.
+
+## Recent Skill Decisions
+
+- 2026-07-03: retired `ship-vertical-slice` and `diagnose-regression` as thin
+  duplicates of `tdd` and `diagnose`; repositioned `grill-spec` (pre-plan
+  grilling) and `staff-level-review` (bounded/non-GitHub review contract). See
+  `docs/adr/0002-no-parallel-thin-skill-variants.md`; lifecycle evidence lives
+  in `../skillops/inventory/skills.yaml`.
 
 ## Do Not Do Yet
 

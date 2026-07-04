@@ -1,6 +1,6 @@
 {
   "name": "oop-extension-safety",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "status": "active",
   "description": "Always-on guards for OOP extension points: complete template methods, prefer primitive hook parameters, mock concrete injected types in tests, and declare concrete delegate types at the class level.",
   "origin": {

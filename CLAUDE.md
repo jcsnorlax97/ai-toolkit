@@ -41,13 +41,17 @@ in `NOTICE.md` and `docs/upstream-sources.md` when changing or refreshing them.
 
 The following skills are local additions in this repository.
 
-- Use `/grill-spec` when requirements, terminology, scope, or acceptance checks are unclear.
+- Use `/grill-spec` when requirements are unclear and no concrete plan exists yet; it ends with a first vertical slice. For challenging an existing plan against docs, use `/grill-with-docs` instead.
 - Use `/methodology-intake` to classify external methodology sources before promoting them into repo artifacts.
 - Use `/setup-agent-team` to create a bounded manual execution packet for multi-domain, parallelizable, context-heavy agent-team work, or to refuse when single-agent work is more appropriate.
-- Use `/staff-level-review` for read-only findings-first engineering review across correctness, architecture, safety, tests, and operability.
-- Use `/ship-vertical-slice` when implementing a focused behavior or refactor.
-- Use `/diagnose-regression` when behavior is failing, flaky, or slower than expected.
+- Use `/staff-level-review` for reviews that need a fixed findings/verdict contract, a review context bundle, or a non-GitHub diff source; for routine local diff review prefer the built-in `/code-review`.
 - Use `/client-flow-diagrams` to create or revise high-level workflow, process, or integration diagrams for client or non-technical audiences.
+- Use `/query-azure-devops` to query Azure DevOps work items and pull requests via the Azure CLI.
+- Use `/social-live-photo-card` to turn user-provided media into a social-platform Live Photo card.
+
+Retired local skills (see `docs/adr/0002-no-parallel-thin-skill-variants.md`):
+`ship-vertical-slice` (use `/tdd`) and `diagnose-regression` (use `/diagnose`).
+Do not recreate thin local variants of imported skills.
 
 ## Verification
 
@@ -69,7 +73,7 @@ Run this after portable baseline changes:
 - Do not use `rm -rf`, `rmdir /s`, `rd /s`, `del /s`, or `Remove-Item -Recurse`.
 - Delete only one explicit file path at a time when deletion is necessary.
 
-<!-- BEGIN baseline:karpathy-principles v0.1.0 -->
+<!-- BEGIN baseline:karpathy-principles v0.2.0 -->
 ## Portable Agent Baseline: Karpathy Principles
 
 - Think before coding: state assumptions, surface ambiguity, and ask when the safe interpretation is unclear.
@@ -77,11 +81,11 @@ Run this after portable baseline changes:
 - Surgical changes: touch only files and lines needed for the task, match local style, and mention unrelated concerns instead of editing them.
 - Goal-driven execution: turn open-ended work into success criteria and verify the result with tests, scripts, inspection, or another concrete check.
 
-Apply this baseline before ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
+This baseline takes precedence over ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
 <!-- END baseline:karpathy-principles -->
 
 
-<!-- BEGIN baseline:layered-ownership v0.1.0 -->
+<!-- BEGIN baseline:layered-ownership v0.2.0 -->
 ## Portable Agent Baseline: Layered Ownership
 
 - Each repo or layer records its own decisions, status, and roadmap; do not write another layer's decisions into this repo's documents.
@@ -89,6 +93,6 @@ Apply this baseline before ordinary implementation habits, but never use it to o
 - Before recording a status or decision entry, identify which layer owns the affected asset and record it in that layer's own documents.
 - Do not create or grow a central governance hub; if a document starts mirroring another repo's changes, stop and move the content to its owner.
 
-Apply this baseline before ordinary documentation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
+This baseline takes precedence over ordinary documentation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
 <!-- END baseline:layered-ownership -->
 

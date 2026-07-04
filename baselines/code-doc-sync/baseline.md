@@ -1,7 +1,7 @@
 # Code-Doc Sync Baseline
 
 Status: active
-Version: 0.1.0
+Version: 0.2.0
 
 Always-on documentation hygiene for AI coding agents working in repositories
 that contain architecture documentation, flow diagrams, or developer references
@@ -13,14 +13,17 @@ an abstract declaration site instead of the concrete runtime type.
 
 ## Principles
 
-1. Scan for adjacent documentation before closing a behavior-changing task.
-   Before marking any task complete that changes a public API, method signature,
-   class relationship, or runtime control flow: scan the repository for adjacent
-   architecture docs, flow trees, developer references, or progress logs that
-   describe the changed behavior. Read each candidate and decide whether it needs
-   updating. An explicit decision of "no update needed" is fine; skipping the
-   scan is not. This applies equally to bug fixes and feature work — bugs often
-   correct behavior that was documented as if it were correct.
+1. Check adjacent documentation before closing a behavior-changing task.
+   First establish whether the repo has architecture docs at all (see "Applying
+   in a Repo" below); if no documentation folder exists, this principle fires
+   on nothing. When docs exist, and the task changes externally observable
+   behavior or a contract other code depends on — a public API, a documented
+   flow, a class relationship that appears in diagrams — check the docs that
+   describe the changed behavior and decide whether each needs updating. An
+   explicit decision of "no update needed" is fine; skipping the check is not.
+   This applies equally to bug fixes and feature work — bugs often correct
+   behavior that was documented as if it were correct. Purely internal changes
+   with no observable-behavior or contract impact do not require the check.
 
 2. Show the concrete runtime type in flow diagrams and call traces.
    When writing or updating a flow tree, sequence diagram, or call trace that
@@ -39,7 +42,7 @@ that is an acceptable outcome.
 
 ## Priority
 
-Apply this baseline before ordinary implementation habits, but never use it to
+This baseline takes precedence over ordinary implementation habits, but never use it to
 override explicit user instructions, safety rules, privacy boundaries, or
 stricter repo-local instructions.
 

@@ -108,6 +108,7 @@ replace_symlink() {
     fail "Failed to unlink old symlink: $link_target"
   fi
   if ! mv "$tmp_link" "$link_target"; then
+    unlink "$tmp_link" || true
     create_symlink "$old_source" "$link_target" || true
     fail "Failed to install replacement symlink: $link_target"
   fi

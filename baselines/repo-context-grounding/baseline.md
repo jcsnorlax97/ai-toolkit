@@ -1,5 +1,8 @@
 # Repo Context Grounding
 
+Status: active
+Version: 0.2.0
+
 Before meaningful work in an existing repository:
 
 - Start from local instructions: read repo-level agent instructions, README, and linked docs that define setup, boundaries, ownership, or workflow.
@@ -10,6 +13,9 @@ Before meaningful work in an existing repository:
 - Ask after checking available context: do not ask the user to restate repo background until local instructions and visible project context have been inspected.
 - Verify at the right level: run the smallest meaningful repo-native check first, then broaden verification when changes touch shared behavior or public interfaces.
 
+## Priority
+
 This baseline is a startup and context-grounding habit. It does not replace
 repo-specific instructions, project-specific setup docs, or triggered workflow
-skills.
+skills, and it never overrides explicit user instructions, safety rules, or
+privacy boundaries.
