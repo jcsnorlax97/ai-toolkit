@@ -39,9 +39,9 @@ reference (see Ecosystem Status below).
 8. Decide the single owner of multi-agent execution packets —
    `setup-agent-team` (this repo) vs ai-workbench task packets — before
    ai-workbench starts its Phase 2. One absorbs the other's role.
-9. Add `review_by: 2026-10-01` sunset review to both baseline packs: at
-   review, keep only rules with a concrete example of changing a session's
-   behavior in the past 90 days.
+9. Done 2026-07-03: `review_by: 2026-10-01` sunset review added to
+   `karpathy-principles` and `layered-ownership`; rule recorded in
+   `baselines/README.md` (Sunset Review).
 
 ## Recent Skill Decisions
 

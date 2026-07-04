@@ -2,6 +2,7 @@
   "name": "karpathy-principles",
   "version": "0.2.0",
   "status": "active",
+  "review_by": "2026-10-01",
   "description": "Always-on engineering posture for AI coding agents: think first, keep changes simple, edit surgically, and verify goals.",
   "source": {
     "title": "Karpathy-Inspired Claude Code Guidelines",

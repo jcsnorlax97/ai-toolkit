@@ -2,6 +2,7 @@
   "name": "layered-ownership",
   "version": "0.2.0",
   "status": "active",
+  "review_by": "2026-10-01",
   "description": "Always-on documentation posture for AI agents in multi-repo systems: each layer records its own decisions, cross-layer references are pointers not ownership, and no repo becomes a central governance hub.",
   "source": {
     "title": "AI OS Layered Ownership",

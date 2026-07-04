@@ -38,6 +38,15 @@ baselines/<pack-name>/
 Add adapters only when the target runtime has a stable project-level
 instruction surface.
 
+## Sunset Review
+
+Always-on rules cannot be counted per use, so packs use sunset reviews
+instead. A pack's `review_by` date in `pack.json` marks the next review. At
+review, ask one question per rule: which concrete session in the past 90
+days did this rule visibly change? Keep the rules that have an example, cut
+the ones that do not, then set the next `review_by`. Packs without a
+`review_by` yet inherit the date of the next repo-wide review.
+
 ## Adapter Contract
 
 Each `.block` adapter is the complete runtime behavior contract for that
