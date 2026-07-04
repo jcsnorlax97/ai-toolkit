@@ -451,7 +451,7 @@ function Invoke-HooksCommand {
                         foreach ($entry in $newEntries) {
                             # Check if an entry with this marker already exists
                             $exists = @($mergeTarget.PSObject.Properties[$eventType].Value) | Where-Object {
-                                $_.command -like "*$marker*"
+                                ($_ | ConvertTo-Json -Depth 10 -Compress) -like "*$marker*"
                             }
                             if ($exists.Count -gt 0) {
                                 if ($DryRun) {
@@ -521,7 +521,7 @@ function Invoke-HooksCommand {
                     $hooksTarget.PSObject.Properties | ForEach-Object {
                         $eventType = $_.Name
                         $entries = @($_.Value)
-                        $filtered = @($entries | Where-Object { $_.command -notlike "*$marker*" })
+                        $filtered = @($entries | Where-Object { ($_ | ConvertTo-Json -Depth 10 -Compress) -notlike "*$marker*" })
 
                         if ($filtered.Count -lt $entries.Count) {
                             if ($DryRun) {
@@ -579,7 +579,7 @@ function Invoke-HooksCommand {
                     if ($null -ne $hooksTarget) {
                         $hooksTarget.PSObject.Properties | ForEach-Object {
                             $entries = @($_.Value)
-                            if ($entries | Where-Object { $_.command -like "*$marker*" }) {
+                            if ($entries | Where-Object { ($_ | ConvertTo-Json -Depth 10 -Compress) -like "*$marker*" }) {
                                 $found = $true
                             }
                         }
