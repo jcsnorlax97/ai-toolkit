@@ -168,6 +168,13 @@ function Get-SettingsPath($ToolName, $ResolvedScope, $ResolvedTargetRepo) {
             return Join-Path $ResolvedTargetRepo ".claude/settings.json"
         }
     }
+    if ($ToolName -eq "codex") {
+        if ($ResolvedScope -eq "user") {
+            return Join-Path $HOME ".codex/hooks.json"
+        } else {
+            return Join-Path $ResolvedTargetRepo ".codex/hooks.json"
+        }
+    }
     return $null
 }
 
@@ -176,7 +183,7 @@ function Get-HookMarker($PackName) {
 }
 
 function Test-HookInstalled($ToolName, $PackName, $ResolvedScope, $ResolvedTargetRepo) {
-    if ($ToolName -ne "claude") {
+    if ($ToolName -ne "claude" -and $ToolName -ne "codex") {
         return $false
     }
 
@@ -192,6 +199,50 @@ function Test-HookInstalled($ToolName, $PackName, $ResolvedScope, $ResolvedTarge
 
 function Format-StatusCell($Label, $Value) {
     return ("[{0} {1}]" -f $Label, $Value)
+}
+
+function Get-HooksMergeTarget($ToolName, $Settings) {
+    # Codex: hooks.json has event names at root (no "hooks" wrapper)
+    if ($ToolName -eq "codex") { return $Settings }
+    # Claude and others: events nest under "hooks" key
+    if (-not $Settings.PSObject.Properties["hooks"]) {
+        $Settings | Add-Member -NotePropertyName "hooks" -NotePropertyValue ([PSCustomObject]@{})
+    }
+    return $Settings.hooks
+}
+
+function Get-HooksReadTarget($ToolName, $Settings) {
+    if ($ToolName -eq "codex") { return $Settings }
+    if (-not $Settings.PSObject.Properties["hooks"]) { return $null }
+    return $Settings.hooks
+}
+
+function Enable-CodexHooksFeature($IsDryRun) {
+    $configPath = Join-Path $HOME ".codex/config.toml"
+    if ($IsDryRun) {
+        Write-Output "would ensure codex_hooks = true in: $configPath"
+        return
+    }
+    if (-not (Test-Path -LiteralPath $configPath)) {
+        Write-Utf8Text $configPath "[features]`ncodex_hooks = true`n"
+        Write-Output "created $configPath with codex_hooks = true"
+        return
+    }
+    $content = Read-Utf8Text $configPath
+    if ($content -match 'codex_hooks\s*=\s*true') { return }
+    $lines = $content -split '\r?\n'
+    $insertAfter = -1
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '^\[features\]') { $insertAfter = $i; break }
+    }
+    if ($insertAfter -ge 0) {
+        $newLines = @($lines[0..$insertAfter]) + @('codex_hooks = true') + @($lines[($insertAfter + 1)..($lines.Count - 1)])
+        $content = $newLines -join "`n"
+    } else {
+        $content = $content.TrimEnd() + "`n`n[features]`ncodex_hooks = true`n"
+    }
+    Write-Utf8Text $configPath $content
+    Write-Output "enabled codex_hooks in: $configPath"
 }
 
 function Get-ManagedToolsDir {
@@ -307,7 +358,6 @@ function Invoke-HooksCommand {
                 $cells = @()
                 foreach ($tool in $listTools) {
                     $status = switch ($tool) {
-                        "codex"    { "n/i" }
                         "copilot"  { "n/a" }
                         default    { if (Test-HookInstalled $tool $packName $resolvedScope $resolvedTarget) { "+" } else { " " } }
                     }
@@ -317,7 +367,7 @@ function Invoke-HooksCommand {
             }
 
             Write-Output ""
-            Write-Output "Legend: [+ applied]  [ absent]  [n/i not yet implemented]  [n/a not applicable]"
+            Write-Output "Legend: [+ applied]  [ absent]  [n/a not applicable]"
         }
 
         "show" {
@@ -348,10 +398,6 @@ function Invoke-HooksCommand {
                 $packInfo = Read-PackJson $packName
 
                 foreach ($tool in $resolvedTools) {
-                    if ($tool -eq "codex") {
-                        Write-Output "skip $packName for codex: Codex hook support is not yet implemented"
-                        continue
-                    }
                     if ($tool -eq "copilot") {
                         Write-Output "skip $packName for copilot: Copilot does not support shell hooks"
                         continue
@@ -389,10 +435,7 @@ function Invoke-HooksCommand {
                         $settings = [PSCustomObject]@{}
                     }
 
-                    # Ensure hooks key exists
-                    if (-not $settings.PSObject.Properties["hooks"]) {
-                        $settings | Add-Member -NotePropertyName "hooks" -NotePropertyValue ([PSCustomObject]@{})
-                    }
+                    $mergeTarget = Get-HooksMergeTarget $tool $settings
 
                     $changed = $false
 
@@ -401,13 +444,13 @@ function Invoke-HooksCommand {
                         $eventType = $_.Name
                         $newEntries = $_.Value
 
-                        if (-not $settings.hooks.PSObject.Properties[$eventType]) {
-                            $settings.hooks | Add-Member -NotePropertyName $eventType -NotePropertyValue @()
+                        if (-not $mergeTarget.PSObject.Properties[$eventType]) {
+                            $mergeTarget | Add-Member -NotePropertyName $eventType -NotePropertyValue @()
                         }
 
                         foreach ($entry in $newEntries) {
                             # Check if an entry with this marker already exists
-                            $exists = @($settings.hooks.PSObject.Properties[$eventType].Value) | Where-Object {
+                            $exists = @($mergeTarget.PSObject.Properties[$eventType].Value) | Where-Object {
                                 $_.command -like "*$marker*"
                             }
                             if ($exists.Count -gt 0) {
@@ -425,9 +468,9 @@ function Invoke-HooksCommand {
                                 continue
                             }
 
-                            $current = @($settings.hooks.PSObject.Properties[$eventType].Value)
+                            $current = @($mergeTarget.PSObject.Properties[$eventType].Value)
                             $current += $entry
-                            $settings.hooks.PSObject.Properties[$eventType].Value = $current
+                            $mergeTarget.PSObject.Properties[$eventType].Value = $current
                             $changed = $true
                         }
                     }
@@ -436,6 +479,7 @@ function Invoke-HooksCommand {
                         $json = $settings | ConvertTo-Json -Depth 10
                         Write-Utf8Text $settingsPath $json
                         Write-Output "added $packName hooks for $tool in ${resolvedScope}: $settingsPath"
+                        if ($tool -eq "codex") { Enable-CodexHooksFeature $false }
                     }
                 }
 
@@ -450,10 +494,6 @@ function Invoke-HooksCommand {
 
             foreach ($packName in $packs) {
                 foreach ($tool in $resolvedTools) {
-                    if ($tool -eq "codex") {
-                        Write-Output "skip $packName for codex: Codex hook support is not yet implemented"
-                        continue
-                    }
                     if ($tool -eq "copilot") {
                         Write-Output "skip $packName for copilot: Copilot does not support shell hooks"
                         continue
@@ -470,14 +510,15 @@ function Invoke-HooksCommand {
                     $settingsText = Read-Utf8Text $settingsPath
                     $settings = $settingsText | ConvertFrom-Json
 
-                    if (-not $settings.PSObject.Properties["hooks"]) {
+                    $hooksTarget = Get-HooksReadTarget $tool $settings
+                    if ($null -eq $hooksTarget) {
                         Write-Output "skip $packName for $tool in ${resolvedScope}: no hooks section in settings"
                         continue
                     }
 
                     $changed = $false
 
-                    $settings.hooks.PSObject.Properties | ForEach-Object {
+                    $hooksTarget.PSObject.Properties | ForEach-Object {
                         $eventType = $_.Name
                         $entries = @($_.Value)
                         $filtered = @($entries | Where-Object { $_.command -notlike "*$marker*" })
@@ -486,7 +527,7 @@ function Invoke-HooksCommand {
                             if ($DryRun) {
                                 Write-Output "would remove $packName ($eventType) hook for $tool in ${resolvedScope}: $settingsPath"
                             } else {
-                                $settings.hooks.PSObject.Properties[$eventType].Value = $filtered
+                                $hooksTarget.PSObject.Properties[$eventType].Value = $filtered
                                 $changed = $true
                             }
                         }
@@ -516,10 +557,6 @@ function Invoke-HooksCommand {
                 $packInfo = Read-PackJson $packName
 
                 foreach ($tool in $resolvedTools) {
-                    if ($tool -eq "codex") {
-                        Write-Output "skip $packName for codex: Codex hook support is not yet implemented"
-                        continue
-                    }
                     if ($tool -eq "copilot") {
                         Write-Output "skip $packName for copilot: Copilot does not support shell hooks"
                         continue
@@ -538,8 +575,9 @@ function Invoke-HooksCommand {
                     $settings = $settingsText | ConvertFrom-Json
 
                     $found = $false
-                    if ($settings.PSObject.Properties["hooks"]) {
-                        $settings.hooks.PSObject.Properties | ForEach-Object {
+                    $hooksTarget = Get-HooksReadTarget $tool $settings
+                    if ($null -ne $hooksTarget) {
+                        $hooksTarget.PSObject.Properties | ForEach-Object {
                             $entries = @($_.Value)
                             if ($entries | Where-Object { $_.command -like "*$marker*" }) {
                                 $found = $true

@@ -112,6 +112,23 @@ current target repo's Claude, Codex, or Copilot instruction file.
 `skills list` shows each skill plus whether it is installed for the selected
 personal or project runtime target.
 
+List and apply hooks:
+
+```powershell
+./scripts/hooks.ps1 list
+./scripts/hooks.ps1 show ensure-vercel-cli
+./scripts/hooks.ps1 apply ensure-vercel-cli -TargetRepo <path> -DryRun
+./scripts/hooks.ps1 help
+```
+
+`hooks list` shows each pack plus whether it is already applied for the selected tool and scope.
+
+Install the optional `hooks` command shim:
+
+```powershell
+./scripts/hooks.ps1 shim install -AddToUserPath
+```
+
 Install optional command shims:
 
 ```powershell
@@ -127,6 +144,9 @@ Install optional command shims:
   folders, and ownership rules.
 - [Compatibility](docs/reference/compatibility.md): legacy repo name, legacy
   paths, legacy baseline markers, and migration behavior.
+- [CLI Comparison](docs/reference/cli-comparison.md): command vocabulary,
+  parameter names, scope values, and per-tool settings files across the
+  baseline, skills, and hooks CLIs.
 - [Upstream Sources](docs/upstream-sources.md): source and license records for
   imported material.
 - [Specs](docs/specs/): accepted and draft workflow/design specs.
