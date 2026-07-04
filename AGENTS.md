@@ -44,9 +44,9 @@ historical reference; do not treat it as current.
   capture layer. `ship-vertical-slice` and `diagnose-regression` were retired
   on 2026-07-03 as thin duplicates of `tdd` and `diagnose`; see
   `docs/adr/0002-no-parallel-thin-skill-variants.md`.)
-- Reusable candidate skills may live in `skills/engineering/`, but SkillOps
-  lifecycle metadata belongs in `../skillops/inventory/skills.yaml`. Do not
-  create a repo-local `inventory/` directory for SkillOps data.
+- Reusable candidate skills may live in `skills/engineering/`. Record their
+  lifecycle metadata in `docs/skills-inventory.yaml` (this repo's skills
+  only; the skillops repo is frozen).
 - Preserve `NOTICE.md` when changing or refreshing imported skills.
 - Update `docs/upstream-sources.md` before importing or refreshing external skill material.
 - Read `docs/reference/repo-layout.md` and

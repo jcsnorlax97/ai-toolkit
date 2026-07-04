@@ -12,10 +12,10 @@ project adapter.
 Treat `baselines/` as the canonical source for always-on baseline
 packs that can be applied to repo instruction files through managed blocks.
 
-Reusable candidate skills may live here, but SkillOps lifecycle metadata does
-not. Record status, confidence, evidence, and promotion decisions in
-`../skillops/inventory/skills.yaml`. Do not create a repo-local `inventory/`
-directory for SkillOps data.
+Reusable candidate skills may live here. Record their lifecycle status,
+confidence, evidence, and promotion decisions in
+`docs/skills-inventory.yaml` (this repo's skills only; split from the frozen
+skillops repo on 2026-07-03).
 
 ## Required Context
 

@@ -1,0 +1,148 @@
+# Skill lifecycle inventory for skills whose canonical_repo is ai-toolkit.
+# Split from skillops/inventory/skills.yaml on 2026-07-03 (ecosystem audit,
+# docs/ecosystem-audit-2026-07.md). This file records this repo's skills only.
+#
+# Update rules:
+# - Add an evidence entry after a real use, a lifecycle review, or a monthly
+#   usage-rollup (hook log + capture skills_used field).
+# - confidence vocabulary: emerging | validated | superseded.
+# - Mechanical adjustments: >=3 helped uses -> validated; 0 triggers in 60
+#   days -> flag stale (freeze candidate); >=2 fought verdicts -> flag review
+#   (deprecate candidate).
+
+skills:
+  - id: client-flow-diagrams
+    name: Client Flow Diagrams
+    status: candidate
+    confidence: emerging
+    distribution: shared
+    trigger: >
+      Use when creating or revising high-level workflow, process, integration,
+      or system-interaction diagrams for client or non-technical audiences.
+    canonical_repo: ai-toolkit
+    canonical_path: skills/engineering/client-flow-diagrams
+    owner: Justin
+    last_reviewed: "2026-06-10"
+    evidence:
+      - date: "2026-06-08"
+        type: first-real-use
+        notes: >
+          Created from a real task translating detailed technical design
+          material into business-level diagrams for a non-technical audience.
+          The first lifecycle review sanitized the lesson log and moved
+          unvalidated visual and tool preferences out of mandatory workflow
+          rules.
+      - date: "2026-06-08"
+        type: lifecycle-correction
+        notes: >
+          Kept proactive jargon removal and avoiding global Mermaid step-curve
+          styling as correctness lessons. Moved first-use visual preferences
+          back to evidence instead of treating them as mandatory workflow
+          rules.
+      - date: "2026-06-10"
+        type: second-real-use-review
+        notes: >
+          A second client-facing diagram task confirmed that precise swimlane
+          layout requirements can justify a draw.io output path when Mermaid
+          cannot control frame height or label placement. Lifecycle review also
+          found that the new lesson log retained identifiable client names and
+          promoted several once-observed style, coordinate, routing, and format
+          preferences into mandatory workflow rules before repeated validation.
+      - date: "2026-06-10"
+        type: revision-applied
+        notes: >
+          Sanitized the second-use lesson log, retained confirmed Mermaid layout
+          limitations in the core workflow, and moved exact draw.io styles,
+          coordinates, routing values, and proactive format heuristics back to
+          candidate evidence pending repeated validation.
+      - date: "2026-06-10"
+        type: continued-second-use-review
+        notes: >
+          Additional edge-clarity refinements from the same second task were
+          retained as candidate evidence rather than promoted into the core
+          workflow. Revised the color-coding lesson so color supplements clear
+          labels, spacing, or line styles instead of becoming the sole means of
+          distinguishing converging edges.
+    next_action: >
+      Use on one more client-facing diagram task, record a sanitized outcome,
+      then review whether the trigger and output-format guidance have enough
+      evidence for active status.
+
+  - id: social-live-photo-card
+    name: Social Live Photo Card
+    status: candidate
+    confidence: emerging
+    distribution: shared
+    trigger: >
+      Use when a user-provided short video, screen recording, product clip, or
+      lifestyle clip should become a social-platform Live Photo card with
+      first-frame, duration, crop, and publish-path checks.
+    canonical_repo: ai-toolkit
+    canonical_path: skills/media/social-live-photo-card/SKILL.md
+    owner: Justin
+    last_reviewed: "2026-07-03"
+    evidence:
+      - date: "2026-07-03"
+        type: methodology-intake
+        notes: >
+          Evaluated a public X post and referenced GitHub repository by op7418
+          describing Live Photo generation and editing for social cards. The
+          source showed repeatable workflow signals: platform duration
+          constraints, first-frame static-card review, contact-sheet screening,
+          card-structure choices, packaging caveats, and clear stop conditions.
+          The local ai-toolkit skill was written as a reference-based
+          adaptation with no upstream files, templates, assets, scripts, or
+          skill text imported from the AGPL-3.0 upstream repository.
+    next_action: >
+      Forward-test on one real user-provided short video and record whether the
+      first-frame, contact-sheet, duration, and publish-path checks were enough
+      before promoting beyond candidate status.
+
+  - id: ship-vertical-slice
+    name: Ship Vertical Slice
+    status: retired
+    confidence: superseded
+    distribution: none
+    trigger: >
+      Retired. Was: implement a feature or refactor one verifiable behavior at
+      a time with a short feedback loop.
+    canonical_repo: ai-toolkit
+    canonical_path: removed on 2026-07-03 (was skills/engineering/ship-vertical-slice/SKILL.md)
+    owner: Justin
+    last_reviewed: "2026-07-03"
+    evidence:
+      - date: "2026-07-03"
+        type: dedup-audit
+        notes: >
+          Skill audit found this local skill was a thin rewrite of the imported
+          tdd skill with an overlapping trigger surface ("implementing a
+          feature ... one behavior at a time" vs "test-first development").
+          Weaker models picking the thin variant lost the full anti-horizontal-
+          slicing methodology and reference docs. Retired in favor of tdd; see
+          ai-toolkit docs/adr/0002-no-parallel-thin-skill-variants.md.
+    next_action: >
+      None. Do not recreate; route the trigger to tdd.
+
+  - id: diagnose-regression
+    name: Diagnose Regression
+    status: retired
+    confidence: superseded
+    distribution: none
+    trigger: >
+      Retired. Was: reproduce, minimise, instrument, fix, regression-test when
+      something is broken, flaky, failing, or slower than expected.
+    canonical_repo: ai-toolkit
+    canonical_path: removed on 2026-07-03 (was skills/engineering/diagnose-regression/SKILL.md)
+    owner: Justin
+    last_reviewed: "2026-07-03"
+    evidence:
+      - date: "2026-07-03"
+        type: dedup-audit
+        notes: >
+          Skill audit found this local skill was a thin rewrite of the imported
+          diagnose skill with a nearly identical trigger ("broken, flaky,
+          failing, or slower"). The thin variant lacked the feedback-loop-first
+          discipline that is the core of diagnose. Retired in favor of
+          diagnose; see ai-toolkit docs/adr/0002-no-parallel-thin-skill-variants.md.
+    next_action: >
+      None. Do not recreate; route the trigger to diagnose.

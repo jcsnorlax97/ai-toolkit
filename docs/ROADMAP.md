@@ -16,8 +16,8 @@ reference (see Ecosystem Status below).
 3. Use real project work (for example `carman_church_website` vertical slices)
    to validate skills before expanding the skill set.
 4. Record skill lifecycle status, evidence, and promotion decisions in
-   `../skillops/inventory/skills.yaml`. skillops stays a separate, active
-   journal; do not create a repo-local `inventory/`.
+   `docs/skills-inventory.yaml` (this repo's skills only; the skillops
+   journal was frozen and split on 2026-07-03).
 
 ## Next Actions
 
@@ -33,9 +33,9 @@ reference (see Ecosystem Status below).
    building any meeting-specific workflow.
 6. Forward-test `social-live-photo-card` on one real user-provided short video
    before expanding it beyond trial status.
-7. Adopt `docs/skills-inventory.yaml` as this repo's lifecycle record once the
-   skillops inventory split executes (tickets in
-   `ecosystem-audit-2026-07.md`); it records this repo's skills only.
+7. Done 2026-07-03: `docs/skills-inventory.yaml` adopted as this repo's
+   lifecycle record (skillops inventory split executed; tickets in
+   `ecosystem-audit-2026-07.md`).
 8. Decide the single owner of multi-agent execution packets —
    `setup-agent-team` (this repo) vs ai-workbench task packets — before
    ai-workbench starts its Phase 2. One absorbs the other's role.
@@ -49,12 +49,12 @@ reference (see Ecosystem Status below).
   duplicates of `tdd` and `diagnose`; repositioned `grill-spec` (pre-plan
   grilling) and `staff-level-review` (bounded/non-GitHub review contract). See
   `docs/adr/0002-no-parallel-thin-skill-variants.md`; lifecycle evidence lives
-  in `../skillops/inventory/skills.yaml`.
+  in `docs/skills-inventory.yaml` (split from skillops on 2026-07-03).
 - 2026-07-03: ecosystem audit (`ecosystem-audit-2026-07.md`) froze
-  skillops; this repo's lifecycle records move to `docs/skills-inventory.yaml`
-  when the split ticket executes. Skill effectiveness evidence will come from
-  a skill-usage hook log plus optional `skills_used` capture frontmatter,
-  rolled up monthly by a cheap model.
+  skillops; this repo's lifecycle records now live in
+  `docs/skills-inventory.yaml` (split executed 2026-07-03). Skill
+  effectiveness evidence will come from a skill-usage hook log plus optional
+  `skills_used` capture frontmatter, rolled up monthly by a cheap model.
 
 ## Do Not Do Yet
 
@@ -68,8 +68,8 @@ reference (see Ecosystem Status below).
 This roadmap governs `ai-toolkit` only. Each layer records its own decisions:
 
 - `skillops` — frozen (2026-07-03 ecosystem audit). Lifecycle records split
-  to each canonical repo; this repo's records will live in
-  `docs/skills-inventory.yaml` once the split executes.
+  to each canonical repo; this repo's records live in
+  `docs/skills-inventory.yaml` (split executed 2026-07-03).
 - `ai-workbench` — active (Phase 1 dev-task CLI implemented 2026-07); consumes
   this repo via `AI_TOOLKIT_PATH` and governs itself in its own repo.
 - `ai-ops-ecosystem-spec` — frozen (2026-07-02). Historical ADRs and
