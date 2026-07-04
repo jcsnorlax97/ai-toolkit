@@ -33,6 +33,15 @@ reference (see Ecosystem Status below).
    building any meeting-specific workflow.
 6. Forward-test `social-live-photo-card` on one real user-provided short video
    before expanding it beyond trial status.
+7. Adopt `docs/skills-inventory.yaml` as this repo's lifecycle record once the
+   skillops inventory split executes (tickets in
+   `ecosystem-audit-2026-07.md`); it records this repo's skills only.
+8. Decide the single owner of multi-agent execution packets —
+   `setup-agent-team` (this repo) vs ai-workbench task packets — before
+   ai-workbench starts its Phase 2. One absorbs the other's role.
+9. Add `review_by: 2026-10-01` sunset review to both baseline packs: at
+   review, keep only rules with a concrete example of changing a session's
+   behavior in the past 90 days.
 
 ## Recent Skill Decisions
 
@@ -41,6 +50,11 @@ reference (see Ecosystem Status below).
   grilling) and `staff-level-review` (bounded/non-GitHub review contract). See
   `docs/adr/0002-no-parallel-thin-skill-variants.md`; lifecycle evidence lives
   in `../skillops/inventory/skills.yaml`.
+- 2026-07-03: ecosystem audit (`ecosystem-audit-2026-07.md`) froze
+  skillops; this repo's lifecycle records move to `docs/skills-inventory.yaml`
+  when the split ticket executes. Skill effectiveness evidence will come from
+  a skill-usage hook log plus optional `skills_used` capture frontmatter,
+  rolled up monthly by a cheap model.
 
 ## Do Not Do Yet
 
@@ -53,8 +67,9 @@ reference (see Ecosystem Status below).
 
 This roadmap governs `ai-toolkit` only. Each layer records its own decisions:
 
-- `skillops` — active. This repo's skill lifecycle journal; kept separate
-  because it records evidence this repo intentionally does not hold.
+- `skillops` — frozen (2026-07-03 ecosystem audit). Lifecycle records split
+  to each canonical repo; this repo's records will live in
+  `docs/skills-inventory.yaml` once the split executes.
 - `ai-workbench` — active (Phase 1 dev-task CLI implemented 2026-07); consumes
   this repo via `AI_TOOLKIT_PATH` and governs itself in its own repo.
 - `ai-ops-ecosystem-spec` — frozen (2026-07-02). Historical ADRs and

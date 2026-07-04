@@ -1,0 +1,17 @@
+<!-- BEGIN baseline:process-vs-work-doctrine v0.1.0 -->
+## Portable Agent Baseline: Process-vs-Work Doctrine（何時加流程、何時直接做事）
+
+流程的預設答案是「不要」。想建新 repo、skill、spec、自動化或治理層時，先過以下七關；過不了就直接做事。引用本準則擋下違規提案是正當行為。
+
+1. 痛先於流程：同一種失敗有兩次日期可指之前，不建流程、repo、skill 或 spec。
+2. 加一層必先殺一層：新 meta 層必須指名它取代誰；meta repo 淨數不得上升。
+3. 三次使用前只准最簡形式：不得有自己的 repo、spec 目錄、install script 或 CONTEXT.md。
+4. 只寫不讀即是死：60 天沒被任何決策引用的紀錄預設凍結。
+5. 凍結就是凍結：解凍需指出今天被擋住的真實任務；「可以更完整」不是理由。
+6. 一個 session 能做完的事，不准先搭鷹架：自動化要等同樣的事第二次出現。
+7. Meta 配額：連續 meta session 不得超過 1 個，開始前必須指出服務的下一個實際產出任務。
+
+全文與快速判斷表見 ai-toolkit `baselines/process-vs-work-doctrine/baseline.md`。
+
+This baseline takes precedence over ordinary planning habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
+<!-- END baseline:process-vs-work-doctrine -->

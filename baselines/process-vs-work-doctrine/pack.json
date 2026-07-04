@@ -1,0 +1,17 @@
+{
+  "name": "process-vs-work-doctrine",
+  "version": "0.1.0",
+  "status": "active",
+  "description": "Adjudication gate for adding process versus doing the work: pain before process, kill a layer to add a layer, minimal form before third real use, write-only records die, frozen means frozen, and a meta-session quota.",
+  "source": {
+    "title": "Ecosystem Audit 2026-07 Doctrine",
+    "repository": "local",
+    "license": "repo-local",
+    "relationship": "Authored as the third output of the 2026-07-03 ecosystem audit (docs/ecosystem-audit-2026-07.md), after the meta-to-product commit ratio reached roughly 13:1 across the workspace. Packaged as a portable baseline so every machine that pulls ai-toolkit can apply the same gate to its workspace instruction files."
+  },
+  "adapters": {
+    "codex": "adapters/AGENTS.md.block",
+    "claude": "adapters/CLAUDE.md.block",
+    "copilot": "adapters/copilot-instructions.md.block"
+  }
+}

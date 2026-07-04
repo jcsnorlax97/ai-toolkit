@@ -19,6 +19,7 @@ repo-specific instructions.
 | `oop-extension-safety` | active | Guards for OOP extension points: complete template methods, prefer primitive hook parameters, and mock concrete injected types in tests. |
 | `code-doc-sync` | active | Scan for adjacent architecture docs before closing any behavior-changing task; show concrete runtime types in flow diagrams rather than abstract declaration sites. |
 | `layered-ownership` | active | Keep decision records in the layer that owns them: cross-layer references are pointers not ownership, and no repo becomes a central governance hub. |
+| `process-vs-work-doctrine` | active | Adjudication gate for adding process versus doing the work: pain before process, kill a layer to add a layer, minimal form before third real use, write-only records die, frozen means frozen, meta-session quota. |
 
 ## Pack Shape
 
