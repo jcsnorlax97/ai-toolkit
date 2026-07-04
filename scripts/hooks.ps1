@@ -567,14 +567,14 @@ function Invoke-HooksCommand {
             }
 
             if ($IsMacOS -or $IsLinux) {
-                $shimScript = Join-Path $scriptDir "hooks/install-shim.sh"
+                $shimScript = Join-Path $scriptDir "hooks-setup/install-shim.sh"
                 $bashArgs = @()
                 if ($InstallDir) { $bashArgs += "--install-dir"; $bashArgs += $InstallDir }
                 if ($ShimAction -eq "verify") { $bashArgs += "--verify-only" }
                 if ($ShimAction -eq "remove") { $bashArgs += "--remove" }
                 & bash $shimScript @bashArgs
             } else {
-                $shimScript = Join-Path $scriptDir "hooks\install-shim.ps1"
+                $shimScript = Join-Path $scriptDir "hooks-setup\install-shim.ps1"
                 $shimArgs = @{}
                 if ($InstallDir) { $shimArgs.InstallDir = $InstallDir }
                 if ($AddToUserPath) { $shimArgs.AddToUserPath = $true }
