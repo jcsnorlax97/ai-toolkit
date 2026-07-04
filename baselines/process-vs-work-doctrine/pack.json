@@ -1,6 +1,6 @@
 {
   "name": "process-vs-work-doctrine",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "active",
   "description": "Adjudication gate for adding process versus doing the work: pain before process, kill a layer to add a layer, minimal form before third real use, write-only records die, frozen means frozen, and a meta-session quota.",
   "source": {
