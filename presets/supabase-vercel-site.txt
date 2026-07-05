@@ -1,0 +1,11 @@
+git-collaboration-hygiene
+repo-context-grounding
+karpathy-principles
+code-doc-sync
+vercel-operations
+supabase-operations
+layered-ownership
+process-vs-work-doctrine
+
+[hooks]
+ensure-vercel-cli
