@@ -66,3 +66,33 @@ Make presets a thin layer over the existing baseline engine, PowerShell-core:
   preset registry/CONTEXT.md).
 - No changes to baseline pack contents or versions.
 - No hooks auto-installation.
+
+## Executed
+
+Date: 2026-07-05
+
+**Shape chosen:** Preferred — `apply-preset` verb added to `scripts/baseline.ps1`. The `-TargetRepo` parameter already existed in baseline.ps1 (defaulting to cwd), so no new target-repo plumbing was required.
+
+**Target-repo support:** baseline.ps1 already accepted `-TargetRepo <path>` for all commands; `apply-preset` passes it through to `scripts/baselines/apply.ps1` per-pack, unchanged.
+
+**Files created/edited:**
+- `scripts/baseline.ps1` — added `apply-preset` to `$validCommands`, `Show-Usage`, `Write-FriendlyError`, tools-normalization block, and switch case; 43-line net addition.
+- `docs/how-to/install.md` — removed 3 apply-preset shim rows; added 3 `baseline apply-preset` command rows to the Commands table.
+- `docs/handoffs/2026-07-05-carman-retro-actions.md` — appended one pointer line to `## Executed`.
+
+**Files deleted:**
+- `scripts/apply-preset.sh` — retired bash implementation.
+- `scripts/presets/install-shim.sh` — retired preset shim installer (directory `scripts/presets/` also removed as it became empty).
+
+**Shim:** `scripts/presets/install-shim.sh --remove` ran first (removed `~/.local/bin/apply-preset`). No new shim needed — the existing `baseline` shim covers `baseline apply-preset`.
+
+**Verification results:**
+- `pwsh` syntax check: OK.
+- First apply to scratch dir: all 8 baselines created (CLAUDE.md, AGENTS.md, copilot-instructions.md).
+- Second apply (idempotency): all 8 show "updated", not "added" — no duplicate blocks.
+- `grep -c "<!-- BEGIN baseline:"` on CLAUDE.md, AGENTS.md, copilot-instructions.md: **8 exactly** after both runs.
+- `-DryRun`: printed "would create …" for all 24 file×pack combinations, wrote zero files.
+- `baseline verify <pack> -TargetRepo <scratch>` for all 8 preset packs: all "target ok".
+- `scripts/skills-setup/verify.sh`: passed ("Verified skills and adapters successfully.").
+- `baseline shim verify`: "shim ok: ~/.local/bin/baseline".
+- Scratch dirs cleaned up.

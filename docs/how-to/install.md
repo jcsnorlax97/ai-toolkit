@@ -76,6 +76,9 @@ Use the `skills` CLI for the assistant target you want to expose skills to:
 | Install one project skill for Claude Code | `skills install repo query-azure-devops claude` | `<project>/.claude/skills/` |
 | Install the project profile for Claude Code | `skills install repo claude` | `<project>/.claude/skills/` |
 | Verify a project skill profile | `skills verify repo claude` | Selected project repo |
+| Apply a preset to a target repo (macOS/Linux) | `baseline apply-preset supabase-vercel-site -TargetRepo /path/to/repo` | Target repo instruction files |
+| Apply a preset to a target repo (Windows) | `baseline apply-preset supabase-vercel-site -TargetRepo C:\path\to\repo` | Target repo instruction files |
+| Dry-run a preset without writing files | `baseline apply-preset supabase-vercel-site -TargetRepo /path/to/repo -DryRun` | No writes |
 
 Use positional `user` or `repo` to choose the install level, and `codex`,
 `claude`, `copilot`, or `all` to choose the target. The explicit `-User`,
@@ -127,9 +130,6 @@ Command shims are separate from runtime installs:
 | Install macOS/Linux `skills` shim | `./scripts/skills shim install` | One shell wrapper in `~/.local/bin` |
 | Verify macOS/Linux `skills` shim | `./scripts/skills shim verify` | No writes |
 | Remove macOS/Linux `skills` shim | `./scripts/skills shim remove` | One managed shell wrapper |
-| Install macOS/Linux `apply-preset` shim | `./scripts/apply-preset.sh shim install` | One shell wrapper in `~/.local/bin` |
-| Verify macOS/Linux `apply-preset` shim | `./scripts/apply-preset.sh shim verify` | No writes |
-| Remove macOS/Linux `apply-preset` shim | `./scripts/apply-preset.sh shim remove` | One managed shell wrapper |
 | Install Windows `baseline` shim | `./scripts/baseline.ps1 shim install -AddToUserPath` | User PATH and one `.cmd` wrapper |
 | Verify Windows `baseline` shim | `./scripts/baseline.ps1 shim verify` | No writes |
 | Remove Windows `baseline` shim | `./scripts/baseline.ps1 shim remove` | One managed `.cmd` wrapper |

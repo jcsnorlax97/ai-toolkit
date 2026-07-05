@@ -41,6 +41,7 @@ Usage:
   baseline remove <pack|all> [-Tools codex,claude,copilot|all] [-TargetRepo <path>] [-DryRun]
   baseline verify [pack|all] [-Tools codex,claude,copilot|all] [-TargetRepo <path>]
   baseline apply-all [-Tools codex,claude,copilot|all] [-TargetRepo <path>] [-DryRun] [-SkipMissing]
+  baseline apply-preset <preset-name> [-Tools codex,claude,copilot|all] [-TargetRepo <path>] [-DryRun] [-SkipMissing]
   baseline shim install|verify|remove [-AddToUserPath] [-InstallDir <path>]
   baseline help
 
@@ -63,6 +64,8 @@ function Write-FriendlyError($Message) {
         [Console]::Error.WriteLine("Suggestion: use -Tools codex,claude,copilot or -Tools all.")
     } elseif ($Message -like "Both baseline and legacy portable-agent-baseline blocks exist*") {
         [Console]::Error.WriteLine("Suggestion: remove one duplicate managed block manually, then rerun the command.")
+    } elseif ($Message -like "Preset not found:*") {
+        [Console]::Error.WriteLine("Suggestion: run 'baseline list' or check presets/ for available preset files.")
     } elseif ($Message -like "Unknown command:*") {
         [Console]::Error.WriteLine("Suggestion: run 'baseline help'.")
     } elseif ($Message -like "Unknown shim action:*") {
@@ -80,7 +83,7 @@ function Invoke-BaselineCommand {
         }
     }
 
-    $validCommands = @("list", "show", "apply", "remove", "verify", "shim", "help", "--help", "-h")
+    $validCommands = @("list", "show", "apply", "remove", "verify", "apply-preset", "shim", "help", "--help", "-h")
     if ($validCommands -notcontains $Command) {
         throw "Unknown command: $Command"
     }
@@ -228,6 +231,9 @@ if (@("show", "apply", "remove", "verify") -contains $Command) {
     $Packs = Resolve-PackNames $Pack
     $Tools = Normalize-Tools $Tools
 }
+if ($Command -eq "apply-preset") {
+    $Tools = Normalize-Tools $Tools
+}
 
 switch ($Command) {
     "list" {
@@ -292,6 +298,41 @@ switch ($Command) {
 
             & $verifyScript @verifyArgs
         }
+    }
+    "apply-preset" {
+        if (-not $Name) {
+            throw "Usage: baseline apply-preset <preset-name> [-Tools ...] [-TargetRepo <path>] [-DryRun] [-SkipMissing]"
+        }
+        $presetsRoot = Join-Path $repoRoot "presets"
+        $presetFile = Join-Path $presetsRoot "$Name.txt"
+        if (-not (Test-Path -LiteralPath $presetFile)) {
+            $available = @(Get-ChildItem -LiteralPath $presetsRoot -Filter "*.txt" -ErrorAction SilentlyContinue | ForEach-Object { $_.BaseName })
+            $availableMsg = if ($available.Count -gt 0) { "; available: $($available -join ', ')" } else { "" }
+            throw "Preset not found: $Name$availableMsg"
+        }
+        $presetBaselines = [System.Collections.Generic.List[string]]::new()
+        $presetHooks = [System.Collections.Generic.List[string]]::new()
+        $inHooks = $false
+        foreach ($line in [System.IO.File]::ReadAllLines($presetFile, [System.Text.Encoding]::UTF8)) {
+            $trimmed = $line.Trim()
+            if (-not $trimmed -or $trimmed.StartsWith('#')) { continue }
+            if ($trimmed -eq '[hooks]') { $inHooks = $true; continue }
+            if ($inHooks) { $presetHooks.Add($trimmed) } else { $presetBaselines.Add($trimmed) }
+        }
+        $applyScript = Join-Path $scriptDir "baselines\apply.ps1"
+        foreach ($packName in $presetBaselines) {
+            & $applyScript -TargetRepo $TargetRepo -Pack $packName -Tools $Tools -CreateMissing:$CreateMissing -SkipMissing:$SkipMissing -DryRun:$DryRun
+        }
+        if ($presetHooks.Count -gt 0) {
+            Write-Output ""
+            Write-Output "Hooks to install — run these commands from inside ${TargetRepo}:"
+            foreach ($hook in $presetHooks) {
+                Write-Output "  hooks apply $hook"
+            }
+        }
+        Write-Output ""
+        $resolvedTargetMsg = try { (Resolve-Path -LiteralPath $TargetRepo).Path } catch { $TargetRepo }
+        Write-Output "Done. Applied $($presetBaselines.Count) baseline(s) from preset '$Name' to $resolvedTargetMsg."
     }
     "shim" {
         if (@("install", "verify", "remove") -notcontains $ShimAction) {
