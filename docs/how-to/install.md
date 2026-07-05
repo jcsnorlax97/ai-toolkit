@@ -127,6 +127,9 @@ Command shims are separate from runtime installs:
 | Install macOS/Linux `skills` shim | `./scripts/skills shim install` | One shell wrapper in `~/.local/bin` |
 | Verify macOS/Linux `skills` shim | `./scripts/skills shim verify` | No writes |
 | Remove macOS/Linux `skills` shim | `./scripts/skills shim remove` | One managed shell wrapper |
+| Install macOS/Linux `apply-preset` shim | `./scripts/apply-preset.sh shim install` | One shell wrapper in `~/.local/bin` |
+| Verify macOS/Linux `apply-preset` shim | `./scripts/apply-preset.sh shim verify` | No writes |
+| Remove macOS/Linux `apply-preset` shim | `./scripts/apply-preset.sh shim remove` | One managed shell wrapper |
 | Install Windows `baseline` shim | `./scripts/baseline.ps1 shim install -AddToUserPath` | User PATH and one `.cmd` wrapper |
 | Verify Windows `baseline` shim | `./scripts/baseline.ps1 shim verify` | No writes |
 | Remove Windows `baseline` shim | `./scripts/baseline.ps1 shim remove` | One managed `.cmd` wrapper |

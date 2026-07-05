@@ -19,14 +19,28 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd -P)"
 usage() {
   cat >&2 <<USAGE
 Usage: $0 <preset-name> <target-repo>
+       $0 shim install|verify|remove
 
   Apply a preset's baselines to <target-repo>/CLAUDE.md.
 
   <preset-name>  Name of a preset file in $REPO_ROOT/presets/ (without .txt)
   <target-repo>  Path to the target repository root
+
+  shim install   Install the apply-preset command shim into ~/.local/bin
+  shim verify    Verify the shim without changing files
+  shim remove    Remove the managed shim
 USAGE
   exit 1
 }
+
+if [[ "${1:-}" == "shim" ]]; then
+  case "${2:-}" in
+    install) exec "$SCRIPT_DIR/presets/install-shim.sh" ;;
+    verify) exec "$SCRIPT_DIR/presets/install-shim.sh" --verify-only ;;
+    remove) exec "$SCRIPT_DIR/presets/install-shim.sh" --remove ;;
+    *) usage ;;
+  esac
+fi
 
 [[ $# -eq 2 ]] || usage
 
