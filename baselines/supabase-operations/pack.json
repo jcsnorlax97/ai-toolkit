@@ -1,0 +1,11 @@
+{
+  "name": "supabase-operations",
+  "version": "0.1.0",
+  "status": "active",
+  "description": "Operational habits for projects that use Supabase: diagnose read-only first, never write to shared data without explicit authorization, check process env before editing config.",
+  "adapters": {
+    "codex": "adapters/AGENTS.md.block",
+    "claude": "adapters/CLAUDE.md.block",
+    "copilot": "adapters/copilot-instructions.md.block"
+  }
+}

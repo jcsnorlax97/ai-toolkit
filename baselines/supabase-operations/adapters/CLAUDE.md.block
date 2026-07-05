@@ -1,0 +1,11 @@
+<!-- BEGIN baseline:supabase-operations v0.1.0 -->
+## Portable Agent Baseline: Supabase Operations
+
+- Diagnose read-only first: with a local service-role key, list auth users via `GET /auth/v1/admin/users`, compare emails against the app's allowlist, and query tables read-only before touching anything or asking the user for info the key can answer.
+- Never write to a shared or production Supabase database without explicit user authorization for that specific write; test data creation counts.
+- On "invalid credentials", verify the user exists in Supabase Auth before debugging config. On allowlist rejections, check the running process's real environment (`ps eww <pid>`) before editing `.env` — exported shell variables beat dotenv files.
+- Magic-link and OTP flows require each environment's exact landing URL in the Auth redirect allowlist; a missing URL silently lands on the wrong page. Set `create_user: false` to prevent unintended self-signup.
+- Passwords live only in Supabase Auth (hashed); "we store passwords in our DB" is a false premise to correct, not a risk to fix.
+
+This baseline takes precedence over ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
+<!-- END baseline:supabase-operations -->

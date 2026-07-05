@@ -166,8 +166,8 @@ and `diagnose-regression` were retired as thin duplicates of `tdd` and
 
 Current baseline packs include `karpathy-principles`,
 `git-collaboration-hygiene`, `repo-context-grounding`,
-`oop-extension-safety`, `code-doc-sync`, `layered-ownership`, and
-`vercel-operations`.
+`oop-extension-safety`, `code-doc-sync`, `layered-ownership`,
+`vercel-operations`, and `supabase-operations`.
 
 ## Development
 
