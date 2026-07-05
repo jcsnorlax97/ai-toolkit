@@ -30,6 +30,25 @@ grep -rL "## Executed" ~/Documents/a-ai-codex/*/docs/handoffs/*.md 2>/dev/null
 cd <owning-repo> && claude "Execute docs/handoffs/<file>.md"
 ```
 
+## Specs stop at the repo boundary
+
+A handoff written from outside the owning repo specs **outcomes,
+constraints, and evidence** — not implementation shape (language, framework,
+file layout, tooling). Shape belongs to the owning repo's ADRs and
+conventions, which the writer usually has not read.
+
+- Writer rule: do not prescribe implementation shape across a repo boundary
+  unless you have read the owning repo's ADRs and say so in the handoff.
+- Executor rule: ground in the owning repo's ADRs/conventions before coding.
+  If a handoff's implementation details conflict with a local ADR, the ADR
+  wins — flag the conflict in `## Executed` instead of complying silently.
+
+Dated evidence (2026-07-05): the carman retro handoff spec'd the preset
+apply script as "bash, no dependencies beyond coreutils"; the executor built
+exactly that, violating ADR 0001 (PowerShell as cross-platform core) and
+bypassing the baseline CLI's managed-block engine. Corrected the same day by
+`2026-07-05-preset-powershell-consistency.md`.
+
 ## Promotion threshold
 
 Do not wrap the grep or the execute one-liner in a skill or alias yet
