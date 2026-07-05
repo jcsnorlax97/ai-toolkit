@@ -1,10 +1,14 @@
-<!-- BEGIN baseline:vercel-operations v0.2.0 -->
+<!-- BEGIN baseline:vercel-operations v0.3.0 -->
 ## Portable Agent Baseline: Vercel Operations
 
 - Prefer CLI over dashboard: when `vercel` CLI is available, use `vercel logs`, `vercel inspect`, and `vercel env ls` instead of asking the user to copy-paste from the dashboard.
 - Check logs before reporting: before surfacing a Vercel function error to the user, run `vercel logs --output raw` to get the actual crash details.
 - Note redeployment requirements: after env var changes made outside the CLI, note that a manual redeploy may be needed.
 - Managed tools location: Vercel CLI managed by the ai-toolkit hook system lives at `~/.local/share/ai-toolkit/tools/node_modules/.bin/vercel`; if `vercel` is not in PATH, try that path directly.
+- Changing the production branch: use `PATCH /v9/projects/{id}/branch` with `{"branch": "<name>"}`; this fails with `git_branch_not_found` unless the branch already exists on the connected Git remote. The `PATCH /v9/projects` body does NOT accept `link.productionBranch`.
+- Stable per-branch preview URL: use `POST /v10/projects/{id}/domains` with `{"name": "<sub>.vercel.app", "gitBranch": "<branch>"}` — prefer this over auto-generated `-git-<branch>-` aliases, which get length-truncated.
+- Preview Deployment Protection: preview deployments 302-redirect to Vercel SSO login by default; check this before sharing a preview or INT link with a client. Disabling it is a security decision the user must make explicitly.
+- `vercel link` project file: `vercel link --yes` may create `.vercel/repo.json` (project id under `projects[]`) instead of `.vercel/project.json`; read both when looking for the project or org id.
 
 This baseline takes precedence over ordinary implementation habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions.
 <!-- END baseline:vercel-operations -->

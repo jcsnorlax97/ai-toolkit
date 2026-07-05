@@ -1,7 +1,7 @@
 # Vercel Operations Baseline
 
 Status: active
-Version: 0.2.0
+Version: 0.3.0
 
 This baseline installs operational habits for AI coding agents working on projects
 deployed to Vercel. It directs agents to use the Vercel CLI for observability tasks
@@ -28,6 +28,32 @@ Vercel dashboard.
    Vercel CLI managed by the ai-toolkit hook system lives at
    `~/.local/share/ai-toolkit/tools/node_modules/.bin/vercel`. If `vercel` is
    not in PATH, try that path directly before concluding the CLI is unavailable.
+
+5. Changing the production branch requires the branch to exist on the remote.
+   Use `PATCH /v9/projects/{id}/branch` with body `{"branch": "<name>"}` to
+   change the production branch. This call fails with `git_branch_not_found`
+   unless the branch already exists on the connected Git remote. The
+   `PATCH /v9/projects` body does NOT accept a `link.productionBranch` property.
+   (Learned 2026-07-05 in carman_church_website.)
+
+6. Use a branch-pinned custom domain for a stable per-branch preview URL.
+   A stable INT link is a branch-pinned custom domain, not an auto-generated
+   alias: `POST /v10/projects/{id}/domains` with
+   `{"name": "<sub>.vercel.app", "gitBranch": "<branch>"}`. Prefer this over
+   the auto-generated `-git-<branch>-` aliases — those get length-truncated on
+   long branch names. (Learned 2026-07-05 in carman_church_website.)
+
+7. Preview deployments are protected by Vercel SSO by default.
+   Preview deployments 302-redirect to Vercel SSO login (Deployment Protection)
+   by default. Check this before sharing a preview or INT link with a client;
+   disabling Deployment Protection is a security decision the user must make
+   explicitly. (Learned 2026-07-05 in carman_church_website.)
+
+8. `vercel link` may create `repo.json` instead of `project.json`.
+   `vercel link --yes` may create `.vercel/repo.json` (repo-style link, project
+   id under `projects[]`) instead of `.vercel/project.json`. Read both files
+   when looking for the project or org id. (Learned 2026-07-05 in
+   carman_church_website.)
 
 ## Priority
 
