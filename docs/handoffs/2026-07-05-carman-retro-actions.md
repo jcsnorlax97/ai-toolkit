@@ -87,3 +87,11 @@ process-vs-work-doctrine; hook: ensure-vercel-cli.
 - No automation for tagging releases or spawning cross-repo sessions — the
   existing one-liners suffice until the same friction has two dated
   occurrences.
+
+## Executed
+
+Date: 2026-07-05
+
+- **Task 1**: `baselines/vercel-operations/baseline.md` bumped 0.2.0 → 0.3.0; added rules 5–8 (production branch API, branch-pinned preview domain, Deployment Protection SSO default, repo.json vs project.json); all three adapter blocks and pack.json updated to match.
+- **Task 2**: `baselines/supabase-operations/` created at v0.1.0 with five rules distilled from four carman incidents; registered in `baselines/README.md` catalog (also added vercel-operations entry that was missing) and `README.md` baseline packs list.
+- **Task 3**: `presets/supabase-vercel-site.txt` created listing 8 baselines + `ensure-vercel-cli` hook; `scripts/apply-preset.sh` appends each baseline's CLAUDE.md.block to the target; re-apply appends again without corruption (dedupe not required, documented in script header); `bash -n` and scratch-target test passed.
