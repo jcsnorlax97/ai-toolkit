@@ -28,6 +28,10 @@ work after reviewing the report.
 6. Explain why the other destinations were not selected.
 7. If implementation is recommended, name the minimum vertical slice and
    verification.
+8. If retention is `parked` or `revisit-on-trigger`, record a dated one-line
+   verdict (source, destination, retention, trigger) in the repo's intake
+   ledger — in this repo, `docs/intake.md`. The verdict line is part of the
+   intake output, not follow-up work; do not write anything else there.
 
 ## Destinations
 
@@ -57,6 +61,13 @@ Use exactly one retention status:
 
 `No-op` does not mean delete or forget. A no-op source may still be parked or
 revisited later.
+
+Retention decisions must survive the conversation: `parked` and
+`revisit-on-trigger` require a verdict line in the repo's intake ledger
+(workflow step 8); `discard` requires none. `discard` also means no revisit
+trigger — if the verdict names a concrete condition for re-evaluating the
+source, the retention is `revisit-on-trigger`, not `discard`. Retention keeps
+the pointer and verdict, not a copy of the source.
 
 ## Skill Admission Gate
 
@@ -138,7 +149,7 @@ judgment principle for an existing workflow.
 ## Recommended Next Step
 
 - action:
-- revisit_trigger:
+- revisit_trigger: (n/a when retention is discard)
 - minimum vertical slice, if any:
 - verification:
 ```

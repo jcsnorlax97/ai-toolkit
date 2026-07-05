@@ -7,6 +7,19 @@ Intake items are not design decisions. Treat them as inputs to future grilling
 sessions until they have been verified, challenged, and either accepted into
 canonical docs or rejected.
 
+Classification of external methodology sources is owned by the
+`methodology-intake` skill; this file is its ledger for `parked` and
+`revisit-on-trigger` verdicts.
+
+## Intake Verdicts
+
+- 2026-07-05 — X post @mylifcc (Fable5 workflow) + `majiayu000/spellbook`:
+  destination `Rule` (weak-model instruction audit, absorbed into
+  `docs/high-stakes-session-brief-template.md`, commit `fd8dc87`); retention
+  `revisit-on-trigger` — re-evaluate spellbook's `codebase-audit` skill only
+  after two dated failures show a missing audit capability, and prefer lifting
+  the `staff-level-review` probation over importing a new skill.
+
 ## Scratch Captures
 
 Scratch captures may live under:
