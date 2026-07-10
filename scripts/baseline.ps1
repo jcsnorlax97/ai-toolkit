@@ -325,7 +325,7 @@ switch ($Command) {
         }
         if ($presetHooks.Count -gt 0) {
             Write-Output ""
-            Write-Output "Hooks to install — run these commands from inside ${TargetRepo}:"
+            Write-Output "Hooks to install - run these commands from inside ${TargetRepo}:"
             foreach ($hook in $presetHooks) {
                 Write-Output "  hooks apply $hook"
             }
