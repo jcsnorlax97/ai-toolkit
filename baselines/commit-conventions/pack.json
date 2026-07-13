@@ -1,0 +1,17 @@
+{
+  "name": "commit-conventions",
+  "version": "0.1.0",
+  "status": "active",
+  "description": "Always-on commit message format for AI coding agents: write every commit in the Conventional Commits format (<type>(scope): description) with an imperative, <=72-char subject, a body that explains why, and issue/work-item references in the footer.",
+  "source": {
+    "title": "Conventional Commits Specification",
+    "repository": "conventionalcommits.org",
+    "license": "CC-BY-3.0",
+    "relationship": "Authored as a portable baseline pack from the Conventional Commits spec; kept generic so it applies to work and personal repositories."
+  },
+  "adapters": {
+    "codex": "adapters/AGENTS.md.block",
+    "claude": "adapters/CLAUDE.md.block",
+    "copilot": "adapters/copilot-instructions.md.block"
+  }
+}

@@ -1,7 +1,7 @@
 # Git Collaboration Hygiene Baseline
 
 Status: active
-Version: 0.2.0
+Version: 0.3.0
 
 This is a tool-neutral always-on baseline for AI coding agents working in Git
 repositories. It captures collaboration safety that should apply before
@@ -32,6 +32,13 @@ workflow-specific PR, release, deploy, or multi-agent procedures.
    Read CI, test, merge, and conflict output before changing code. Do not
    blindly resolve conflicts or mark generated output as fixed without a
    concrete verification step.
+
+6. Base new work on an up-to-date remote base.
+   Before creating a branch or opening a PR, fetch and fast-forward the base
+   branch (e.g. `main`) to its remote tip so new work starts from current state
+   rather than a stale local ref. A local base branch can lag the remote even
+   after its own PR has merged; sync it before branching instead of assuming it
+   is current.
 
 ## Priority
 

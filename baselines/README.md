@@ -14,7 +14,8 @@ repo-specific instructions.
 | Pack | Status | Purpose |
 |---|---|---|
 | `repo-context-grounding` | active | Apply default startup habits for existing repositories: read local instructions, inspect context, discover workflows, respect boundaries, and verify with repo-native checks. |
-| `git-collaboration-hygiene` | active | Apply default Git collaboration safety: inspect status, protect user changes, stage explicit paths, review diffs, and avoid unsafe remote or conflict handling. |
+| `git-collaboration-hygiene` | active | Apply default Git collaboration safety: inspect status, protect user changes, stage explicit paths, review diffs, base new work on an up-to-date remote base, and avoid unsafe remote or conflict handling. |
+| `commit-conventions` | active | Write every commit in the Conventional Commits format: `<type>(scope): description` with an imperative <=72-char subject, a body that explains why, and issue/work-item footer references. |
 | `karpathy-principles` | active | Apply four default engineering principles: think before coding, simplicity first, surgical changes, and goal-driven execution. |
 | `oop-extension-safety` | active | Guards for OOP extension points: complete template methods, prefer primitive hook parameters, and mock concrete injected types in tests. |
 | `code-doc-sync` | active | Scan for adjacent architecture docs before closing any behavior-changing task; show concrete runtime types in flow diagrams rather than abstract declaration sites. |
