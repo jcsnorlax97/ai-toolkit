@@ -1,0 +1,17 @@
+{
+  "name": "branch-naming",
+  "version": "0.1.0",
+  "status": "active",
+  "description": "Always-on branch naming convention for AI coding agents: name every new branch <type>/<optional-tracking-id>-<short-kebab-description>, using the same type vocabulary as Conventional Commits, lowercase kebab-case, and a single slash.",
+  "source": {
+    "title": "Branch Naming Convention",
+    "repository": "local",
+    "license": "repo-local",
+    "relationship": "Authored as a portable baseline pack to sit alongside commit-conventions and git-collaboration-hygiene, sharing the Conventional Commits type vocabulary so branch names and commit subjects rhyme. Kept generic so it applies to work and personal repositories."
+  },
+  "adapters": {
+    "codex": "adapters/AGENTS.md.block",
+    "claude": "adapters/CLAUDE.md.block",
+    "copilot": "adapters/copilot-instructions.md.block"
+  }
+}

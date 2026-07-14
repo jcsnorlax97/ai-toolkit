@@ -75,7 +75,8 @@ its own commit convention, follow that instead.
 - This governs message *format* only. It composes with, and does not replace,
   the `git-collaboration-hygiene` baseline (stage explicit paths, review the
   staged diff, keep remote operations consent-based).
-- This does not govern branch naming, PR descriptions, changelogs, release
-  notes, or versioning policy.
+- This does not govern branch naming (see the `branch-naming` baseline), PR
+  descriptions (see the `pr-description` baseline), changelogs, release notes,
+  or versioning policy.
 - This does not require or forbid any specific commit-linting tooling; it
   describes the message the agent should write.

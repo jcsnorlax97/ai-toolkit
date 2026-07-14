@@ -1,0 +1,17 @@
+{
+  "name": "pr-description",
+  "version": "0.1.0",
+  "status": "active",
+  "description": "Always-on pull request description posture for AI coding agents: fill a repo's PR template when present, otherwise write a title in Conventional Commits form and a body covering what, why, how it was verified, and risk, with tracking references in the footer and no AI attribution.",
+  "source": {
+    "title": "PR Description Convention",
+    "repository": "local",
+    "license": "repo-local",
+    "relationship": "Authored as a portable baseline pack to sit alongside commit-conventions and git-collaboration-hygiene, governing the human-facing PR body rather than the commit message. Kept generic so it applies to work and personal repositories."
+  },
+  "adapters": {
+    "codex": "adapters/AGENTS.md.block",
+    "claude": "adapters/CLAUDE.md.block",
+    "copilot": "adapters/copilot-instructions.md.block"
+  }
+}

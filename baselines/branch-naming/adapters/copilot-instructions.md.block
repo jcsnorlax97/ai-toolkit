@@ -1,0 +1,12 @@
+<!-- BEGIN baseline:branch-naming v0.1.0 -->
+## Portable Agent Baseline: Branch Naming
+
+- Name every new branch `<type>/<short-kebab-description>`, optionally with a tracking id in front of the description: `<type>/<tracking-id>-<short-kebab-description>`.
+- Use the same types as `commit-conventions`: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`. One type, one slash, no deep nesting.
+- Describe the work in lowercase kebab-case, two to five words, using only `a-z`, `0-9`, `-`, and the single type slash. Aim for 50 characters or fewer.
+- Reference a tracking item with the bare id (`feat/12345-oauth-login`), never `AB#` or `#` in the branch name (`#` is a shell comment char); the full `AB#12345` / `Closes #123` reference belongs in the commit footer.
+- This governs new topic branches only. Do not rename or re-scope `main`, `master`, `develop`, or `release/*`; follow the repository's existing scheme for those.
+- This composes with `git-collaboration-hygiene` (fetch and fast-forward the base branch before branching, keep pushes consent-based) and `commit-conventions` (the commit messages written on the branch).
+
+This baseline takes precedence over ordinary branch-naming habits, but never use it to override explicit user instructions, safety rules, privacy boundaries, or stricter repo-local instructions (including a repository's own established branch naming scheme).
+<!-- END baseline:branch-naming -->
