@@ -1,12 +1,11 @@
 # AI Toolkit
 
-Reusable AI operating assets: skills, baselines, workflow definitions, agent
-role packs, supporting templates, and deterministic install/apply/verify
-tooling.
-
-This repo keeps reusable agent behavior in one maintained source tree and
-exposes it to tools such as Codex, Claude Code, and Copilot through explicit
-adapters or managed instruction blocks.
+Agent skills and instructions tend to stay locked to whichever tool they were
+written for. This repo keeps reusable agent behavior in one MIT-licensed
+source tree, currently 17 invocable skills and 12 always-on baseline packs,
+and exposes it to Claude Code, Codex, and Copilot through explicit adapters,
+managed instruction blocks, and deterministic install, apply, and verify
+scripts.
 
 ## Layout
 
@@ -53,14 +52,8 @@ templates/
 - `scripts/` owns deterministic install, apply, remove, verify, and shim
   commands.
 
-Skill lifecycle status, confidence, evidence, and promotion decisions are
-tracked by SkillOps in:
-
-```text
-../skillops/inventory/skills.yaml
-```
-
-Do not create a repo-local `inventory/` directory for SkillOps lifecycle data.
+Skill lifecycle status, confidence, evidence, and promotion decisions for this
+repo's skills are tracked in `docs/skills-inventory.yaml`.
 
 ## Quickstart
 
