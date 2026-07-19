@@ -98,6 +98,38 @@ skills:
       first-frame, contact-sheet, duration, and publish-path checks were enough
       before promoting beyond candidate status.
 
+  - id: draft-handoff
+    name: Draft Handoff
+    status: candidate
+    confidence: emerging
+    distribution: shared
+    trigger: >
+      Use when a drafted artifact must be handed to the user through the
+      clipboard, with post-copy verification and on-demand re-copy, for manual
+      pasting into a destination the agent must not or cannot write to
+      directly: a review-gated personal vault, a web form, another
+      application.
+    canonical_repo: ai-toolkit
+    canonical_path: skills/engineering/draft-handoff
+    owner: Justin
+    last_reviewed: "2026-07-18"
+    evidence:
+      - date: "2026-07-13"
+        type: first-real-use
+        notes: >
+          First real use as a manual pattern: draft in the session scratchpad,
+          pbcopy, user reviews and pastes into Obsidian. Skill creation
+          deferred per the process-vs-work doctrine (build after recurrence).
+      - date: "2026-07-18"
+        type: promotion-decision
+        notes: >
+          Five accumulated uses (Obsidian note 07-13, OSS application form,
+          project spec, investment policy, reference table 07-18). Two
+          clipboard-overwrite incidents on 07-18 were caught only because the
+          copy was verified. Promoted to a skill with three-point verification
+          (head, tail, line count), re-copy from the scratchpad source file,
+          and a no-selection warning as the core contract.
+
   - id: ship-vertical-slice
     name: Ship Vertical Slice
     status: retired
