@@ -11,6 +11,37 @@
 #   (deprecate candidate).
 
 skills:
+  - id: session-closeout
+    name: Session Closeout
+    status: candidate
+    confidence: emerging
+    distribution: personal
+    trigger: >
+      Use when the user wants to close out, wrap up, or end a work/coding
+      session in a company or project repo and capture everything worth
+      keeping (session log, personal lesson, repo-specific improvement
+      candidate) in one pass instead of invoking three skills separately.
+    canonical_repo: ai-toolkit
+    canonical_path: skills/engineering/session-closeout/SKILL.md
+    owner: Justin
+    last_reviewed: "2026-07-23"
+    evidence:
+      - date: "2026-07-23"
+        type: first-real-use
+        notes: >
+          Created after noticing that a session-log capture skill (in
+          ai-work-log-bootstrap), lesson-extraction (in my-vault), and
+          improvement-extraction (in ai-toolkit) were being invoked
+          separately every time a work session wrapped up, even though they
+          are spread across three different repos and only need to be
+          invoked by name via the Skill tool, not co-located. Scoped to
+          exclude the personal vault itself, which already runs its own
+          after-action.md three-step closeout.
+    next_action: >
+      Use at the end of one real work-repo session, confirm the three
+      sub-skills sequence cleanly and the consolidated report reads better
+      than three separate ones, then review for active status.
+
   - id: improvement-extraction
     name: Improvement Extraction
     status: candidate
