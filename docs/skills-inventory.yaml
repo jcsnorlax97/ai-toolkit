@@ -11,6 +11,33 @@
 #   (deprecate candidate).
 
 skills:
+  - id: improvement-extraction
+    name: Improvement Extraction
+    status: candidate
+    confidence: emerging
+    distribution: shared
+    trigger: >
+      Use when the user asks to extract improvement ideas, capture process
+      improvements, or save candidate CLAUDE.md/AGENTS.md baselines or
+      candidate skills surfaced during the current session.
+    canonical_repo: ai-toolkit
+    canonical_path: skills/engineering/improvement-extraction/SKILL.md
+    owner: Justin
+    last_reviewed: "2026-07-23"
+    evidence:
+      - date: "2026-07-23"
+        type: first-real-use
+        notes: >
+          Created from a reusable prompt (captured in a personal Improvements
+          folder) written after repeatedly having to ask, in full sentences,
+          for a session to be scanned for candidate baselines/skills. Ported
+          into both ai-toolkit and es-ai-toolkit with matching conventions per
+          repo.
+    next_action: >
+      Use on one real session, confirm the dedup step and file template hold
+      up, then review whether the trigger and workflow have enough evidence
+      for active status.
+
   - id: client-flow-diagrams
     name: Client Flow Diagrams
     status: candidate
