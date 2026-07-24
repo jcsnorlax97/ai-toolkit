@@ -70,7 +70,7 @@ State which files were created vs. extended, with a one-line summary of each.
 This is a third, distinct capture tool, not a replacement for whatever session-log or personal-lesson skills already exist in this environment:
 
 - A **session-log capture skill** (e.g. `capture-assistant-session`) → full session log, written to a personal work-log vault.
-- A **lesson-extraction skill** → sanitized, cross-company-portable personal lessons, written to a personal vault.
-- `improvement-extraction` (this skill) → unsanitized, company/repo-specific candidate baselines and skills, staying inside the work context (a project folder, not a personal vault).
+- A **lesson-extraction skill** → sanitized, cross-company-portable personal knowledge distilled into a personal vault for the user's own long-term reference. It is not aimed at producing a repo baseline or skill.
+- `improvement-extraction` (this skill) → things learned this session that could become a future CLAUDE.md/AGENTS.md baseline rule or a Claude Code skill, written as one candidate markdown file per idea so each can be reviewed and formalized into an actual baseline or skill later, one at a time. Stays inside the work context (a project folder), not a personal vault.
 
 If neither of the other two skills exists in this environment, that's fine — this skill still runs standalone.
